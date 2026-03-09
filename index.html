@@ -814,45 +814,31 @@ function showCardMeaning(idx){
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ─── ASTROLOGY ────────────────────────────────────────────────────────────
-async function submitAstrology(){
-  const name=document.getElementById('astro-name').value.trim();
-  const dob=document.getElementById('astro-dob').value;
-  const time=document.getElementById('astro-time').value;
-  const city=document.getElementById('astro-city').value.trim();
-  const question=document.getElementById('astro-question').value.trim();
-  const result=document.getElementById('astro-result');
+// ─── ASTROLOGY SUBMIT ─────────────────────────────────────────────────────
+function submitAstrology() {
+  const name = document.getElementById('astro-name').value;
+  const dob = document.getElementById('astro-dob').value;
+  const city = document.getElementById('astro-city').value;
+  const question = document.getElementById('astro-question').value;
+  const res = document.getElementById('astro-result');
   
-  if(!name||!dob||!city){
-    result.innerHTML='<p style="color:#f87171;font-style:italic;">Please fill in your name, date of birth, and city.</p>';
-    result.className='astro-result visible';
-    return;
-  }
-  
-  result.innerHTML='<div class="loading-ring" style="margin-top:8px;"></div><p style="text-align:center;margin-top:12px;font-style:italic;color:var(--muted);">Calculating your Vedic chart…</p>';
-  result.className='astro-result visible';
-  
-  try {
-    const resp=await fetch('https://jyogi-api.railway.app/api/chart',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,dob,time,city,question})
-    });
-    if(!resp.ok) throw new Error('API error');
-    const data=await resp.json();
-    result.innerHTML=`
-      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:16px;">✦ ${data.name || name}'s Vedic Chart</h3>
-      <div style="white-space:pre-wrap;font-size:15px;line-height:1.8;color:var(--text);">${data.report || data.text || JSON.stringify(data,null,2)}</div>
-    `;
-  } catch(e) {
-    result.innerHTML=`
-      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:12px;">✦ Chart Ready — Book Your Full Reading</h3>
-      <p style="color:var(--muted);font-style:italic;margin-bottom:16px;">Your details have been noted. To receive your complete Vedic chart with Lagna, Dasha analysis, Sadhe Sati, and planetary remedies — book a live session with Jyogi via WhatsApp.</p>
-      <a href="https://wa.me/${WA_NUMBER}?text=Hi Jyogi! I'd like a Vedic chart reading. Name: ${name}, DOB: ${dob}, City: ${city}${question?', Question: '+question:''}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#25D366,#1fa854);color:#fff;border-radius:24px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;text-decoration:none;">💬 Send My Chart Details to Jyogi</a>
+  res.style.display = 'block';
+  res.classList.add('visible');
+
+  if(name && dob && city) {
+    res.innerHTML = `
+      <div class="cmp-card-name">Chart Request for ${name}</div>
+      <p style="font-size:15px;color:var(--text);margin-bottom:12px;">
+        Your birth details have been captured. To receive your complete Vedic chart...
+      </p>
+      <a href="https://wa.me/${WA_NUMBER}?text=Hi Jyogi! I'd like a Vedic chart reading. Name: ${name}, DOB: ${dob}, City: ${city}${question ? ', Question: ' + question : ''}" 
+         target="_blank" 
+         style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#25D366,#1fa854);color:#fff;border-radius:24px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;text-decoration:none;">
+         💬 Send My Chart Details to Jyogi
+      </a>
     `;
   }
 }
-
 // ─── WHATSAPP ─────────────────────────────────────────────────────────────
 function openWhatsApp(msg){
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
