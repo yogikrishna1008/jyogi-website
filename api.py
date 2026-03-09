@@ -158,12 +158,11 @@ app = FastAPI(
 # ── CORS ──────────────────────────────────────────────────────────────────
 # Replace "jyogi.netlify.app" with your actual Netlify URL or custom domain.
 ALLOWED_ORIGINS = [
-    "https://jyogi.netlify.app",
-    "https://www.jyogi.com",          # add your custom domain here
-    "https://jyogi.com",
-    "http://localhost:3000",          # local dev
-    "http://127.0.0.1:5500",          # VS Code Live Server
-    "null",                           # file:// testing
+    "https://kaleidoscopic-gingersnap-448bbf.netlify.app",
+    "https://jyogi-api.onrender.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "null",
 ]
 
 app.add_middleware(

@@ -833,7 +833,7 @@ async function submitAstrology(){
   result.className='astro-result visible';
   
   try {
-    const resp=await fetch('https://jyogi-api.railway.app/api/chart',{
+    const resp=await fetch('https://jyogi-api.onrender.com/api/chart',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name,dob,time,city,question})
