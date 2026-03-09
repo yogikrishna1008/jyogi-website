@@ -11,7 +11,7 @@ Endpoints:
   POST /api/chart     — birth details → full Vedic chart + PDF
   POST /api/tarot     — spread id + question → AI tarot reading
   GET  /api/pdf/{id}  — download a generated PDF by session id
-  GET  /health        — health check (for Railway uptime monitor)
+  GET  /health        —  check (for Railway uptime monitor)
 """
 
 from __future__ import annotations
@@ -221,12 +221,14 @@ class TarotResponse(BaseModel):
     sections:     list[dict]
 
 
-# ── Health ─────────────────────────────────────────────────────────────────
+# ──  ─────────────────────────────────────────────────────────────────
 
 @app.get("/health", tags=["System"])
 def health():
     return {"status": "ok", "service": "Jyogi AI API", "version": "1.0.0"}
-
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "Jyogi AI API"}
 
 # ── Geocode ────────────────────────────────────────────────────────────────
 
