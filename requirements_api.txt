@@ -1,0 +1,19 @@
+# ── Existing jyogi dependencies (keep these) ──────────────────────────────
+openai>=1.30
+pyswisseph>=2.10
+pytz>=2023.3
+geopy>=2.4
+Pillow>=10.0
+reportlab>=4.0
+openpyxl>=3.1
+
+# ── New: FastAPI stack (replaces Streamlit for the public API) ────────────
+fastapi>=0.111
+uvicorn[standard]>=0.29
+
+# ── Streamlit stays for admin panel only ──────────────────────────────────
+# If you want to run both api.py and app.py from the same Railway service:
+streamlit>=1.32,<2.0
+
+# ── Note: pyswisseph requires system build tools on Railway ───────────────
+# Railway's Nixpacks handles this automatically — no extra config needed.

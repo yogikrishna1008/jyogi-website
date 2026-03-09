@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jyogi API — Deploy to Railway</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#03010a;--card:#0f0428;--panel:#160840;--border:rgba(255,195,64,0.14);
+  --gold:#FFC340;--green:#2B7A0B;--green2:#3d9e12;--teal:#2dd4bf;
+  --rose:#f472b6;--text:#f5ecd7;--muted:#9d8c6a;--dim:#5a4e36;
+}
+body{background:var(--bg);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.7;}
+.wrap{max-width:860px;margin:0 auto;padding:48px 28px 80px;}
+.hero{text-align:center;padding:48px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px;}
+.badge{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:0.5em;color:var(--gold);margin-bottom:14px;}
+h1{font-family:'Cinzel',serif;font-size:clamp(22px,4vw,34px);color:#fff;margin-bottom:10px;}
+h1 span{color:var(--gold);}
+.hero-sub{font-style:italic;color:var(--muted);font-size:15px;}
+h2{font-family:'Cinzel',serif;font-size:17px;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+h2::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,195,64,0.25),transparent);}
+h3{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);margin-bottom:10px;}
+.sec{margin-bottom:52px;}
+/* code blocks */
+pre,.code{background:rgba(0,0,0,0.55);border:1px solid rgba(255,195,64,0.12);border-radius:10px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);line-height:1.9;overflow-x:auto;position:relative;margin:12px 0;}
+.cm{color:rgba(157,142,199,0.38);}
+.hl{color:var(--gold);}
+.gr{color:#86efac;}
+.rs{color:var(--rose);}
+.kw{color:#93c5fd;}
+/* steps */
+.steps{display:flex;flex-direction:column;gap:18px;}
+.step{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start;}
+.sn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(43,122,11,0.3);}
+.sb{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;}
+.st{font-family:'Cinzel',serif;font-size:12px;color:var(--text);margin-bottom:5px;}
+.sd{font-size:14px;color:var(--muted);font-style:italic;line-height:1.55;}
+/* endpoint cards */
+.endpoints{display:flex;flex-direction:column;gap:16px;}
+.ep{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ep-head{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);}
+.method{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;}
+.method.post{background:rgba(43,122,11,0.2);border:1px solid rgba(43,122,11,0.4);color:#86efac;}
+.method.get{background:rgba(147,197,253,0.1);border:1px solid rgba(147,197,253,0.3);color:#93c5fd;}
+.ep-path{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);}
+.ep-desc{font-size:13px;color:var(--muted);font-style:italic;margin-left:auto;}
+.ep-body{padding:16px 20px;font-size:14px;color:var(--muted);}
+/* env var table */
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em;color:var(--muted);padding:10px 16px;text-align:left;background:var(--panel);}
+td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);}
+td:last-child{color:var(--muted);font-style:italic;}
+/* tags */
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;}
+.tag.req{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:#fca5a5;}
+.tag.opt{background:rgba(255,195,64,0.08);border:1px solid rgba(255,195,64,0.2);color:var(--gold);}
+/* warn box */
+.warn{background:rgba(43,122,11,0.06);border:1px solid rgba(43,122,11,0.3);border-radius:10px;padding:16px 20px;font-size:14px;color:var(--muted);margin:16px 0;}
+.warn strong{color:var(--gold);}
+.note{background:rgba(0,0,0,0.35);border-left:3px solid rgba(255,195,64,0.35);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13.5px;color:var(--muted);margin:12px 0;}
+.note strong{color:var(--text);}
+/* footer */
+.foot{border-top:1px solid var(--border);padding-top:28px;text-align:center;font-size:13px;color:var(--dim);font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="badge">✦ JYOGI AI · BACKEND DEPLOYMENT GUIDE ✦</div>
+  <h1>Deploying <span>api.py</span> to Railway</h1>
+  <p class="hero-sub">From your local files to a live URL in under 10 minutes.</p>
+</div>
+
+<!-- OVERVIEW -->
+<div class="sec">
+  <h2>✦ What You're Deploying</h2>
+  <p style="color:var(--muted);font-style:italic;margin-bottom:18px;">Four new files sit alongside your existing <code style="font-family:monospace;font-size:13px;color:var(--teal)">jyogi/</code> package — the package itself is unchanged.</p>
+  <pre><span class="hl">jyogi-website/</span>              <span class="cm">← your GitHub repo</span>
+│
+├── <span class="gr">api.py</span>              <span class="cm">← NEW: FastAPI backend (the main file)</span>
+├── <span class="gr">Procfile</span>            <span class="cm">← NEW: tells Railway how to start the server</span>
+├── <span class="gr">railway.json</span>        <span class="cm">← NEW: Railway config (health check, restart policy)</span>
+├── <span class="gr">requirements.txt</span>    <span class="cm">← UPDATED: adds fastapi + uvicorn</span>
+│
+├── app.py                  <span class="cm">← UNCHANGED: your Streamlit app</span>
+├── jyogi/                  <span class="cm">← UNCHANGED: entire package</span>
+│   ├── calc_engine.py
+│   ├── pipelines/
+│   ├── engines/
+│   └── ...</pre>
+</div>
+
+<!-- DEPLOY STEPS -->
+<div class="sec">
+  <h2>✦ Step-by-Step Deployment</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="sn">1</div>
+      <div class="sb">
+        <div class="st">Push your files to GitHub</div>
+        <div class="sd">Copy the 4 new files into your repo root, then push. Railway deploys directly from your GitHub repo.</div>
+        <pre>git add api.py Procfile railway.json requirements.txt
+git commit -m "add FastAPI backend"
+git push</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">2</div>
+      <div class="sb">
+        <div class="st">Create a Railway project</div>
+        <div class="sd">Go to <strong style="color:var(--text)">railway.app</strong> → New Project → Deploy from GitHub Repo → select your jyogi-website repo. Railway auto-detects Python and installs everything.</div>
+        <div class="note"><strong>Free tier:</strong> Railway gives 500 hours/month free — enough for ~16 hours/day of uptime. Your astrology API will never run 24/7, so this is plenty.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">3</div>
+      <div class="sb">
+        <div class="st">Add environment variables</div>
+        <div class="sd">In Railway → your project → Variables tab, add these:</div>
+        <table style="margin-top:14px;border-radius:8px;overflow:hidden;">
+          <thead><tr><th>Variable</th><th>Value</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>OPENAI_API_KEY</td><td>Your OpenAI key — sk-proj-...</td><td><span class="tag req">Required</span></td></tr>
+            <tr><td>PORT</td><td>Railway sets this automatically</td><td><span class="tag opt">Auto-set</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top:14px;"><strong>Security:</strong> Never put your API key in code or GitHub. Railway's Variables are encrypted at rest.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">4</div>
+      <div class="sb">
+        <div class="st">Get your Railway URL</div>
+        <div class="sd">After deploy succeeds: Railway → Settings → Domains → Generate Domain. You'll get something like:</div>
+        <pre><span class="gr">https://jyogi-api-production.up.railway.app</span></pre>
+        <div class="sd" style="margin-top:8px;">Test it by visiting <code style="font-family:monospace;font-size:12px;color:var(--teal)">/health</code> in your browser — you should see:</div>
+        <pre>{"status": "ok", "service": "Jyogi AI API", "version": "1.0.0"}</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">5</div>
+      <div class="sb">
+        <div class="st">Update the URL in jyogi_website.html</div>
+        <div class="sd">Find this line in your website and replace with your Railway URL:</div>
+        <pre><span class="cm">// Find this in jyogi_website.html:</span>
+<span class="rs">const resp = await fetch('https://jyogi-api.railway.app/api/chart'</span>
+
+<span class="cm">// Replace with your actual Railway URL:</span>
+<span class="gr">const resp = await fetch('https://jyogi-api-production.up.railway.app/api/chart'</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn">6</div>
+      <div class="sb">
+        <div class="st">Update CORS to your Netlify URL</div>
+        <div class="sd">In api.py, update the ALLOWED_ORIGINS list with your actual Netlify domain:</div>
+        <pre><span class="cm"># In api.py — find ALLOWED_ORIGINS and update:</span>
+ALLOWED_ORIGINS = [
+    <span class="gr">"https://YOUR-SITE.netlify.app"</span>,    <span class="cm">← your actual Netlify URL</span>
+    <span class="gr">"https://www.jyogi.com"</span>,            <span class="cm">← your custom domain (if any)</span>
+    "http://localhost:3000",
+]</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- API ENDPOINTS -->
+<div class="sec">
+  <h2>✦ API Endpoints Reference</h2>
+  <div class="endpoints">
+    <div class="ep">
+      <div class="ep-head">
+        <span class="method get">GET</span>
+        <span class="ep-path">/health</span>
+        <span class="ep-desc">Check if API is running</span>
+      </div>
+      <div class="ep-body">Returns <code style="font-family:monospace">{"status":"ok"}</code> — use this as your Railway health check URL.</div>
+    </div>
+    <div class="ep">
+      <div class="ep-head">
+        <span class="method post">POST</span>
+        <span class="ep-path">/api/geocode</span>
+        <span class="ep-desc">City name → coordinates</span>
+      </div>
+      <div class="ep-body">
+        <pre><span class="cm">// Request body:</span>
+{ <span class="hl">"city"</span>: <span class="gr">"Mumbai"</span> }
+
+<span class="cm">// Response:</span>
+{ <span class="hl">"lat"</span>: 19.0760, <span class="hl">"lon"</span>: 72.8777, <span class="hl">"address"</span>: <span class="gr">"Mumbai, Maharashtra, India"</span> }</pre>
+      </div>
+    </div>
+    <div class="ep">
+      <div class="ep-head">
+        <span class="method post">POST</span>
+        <span class="ep-path">/api/chart</span>
+        <span class="ep-desc">Full Vedic birth chart</span>
+      </div>
+      <div class="ep-body">
+        <pre><span class="cm">// Request body:</span>
+{
+  <span class="hl">"name"</span>:     <span class="gr">"Priya Sharma"</span>,
+  <span class="hl">"dob"</span>:      <span class="gr">"1992-04-15"</span>,         <span class="cm">// YYYY-MM-DD</span>
+  <span class="hl">"time"</span>:     <span class="gr">"07:30"</span>,              <span class="cm">// HH:MM 24h (optional, defaults 12:00)</span>
+  <span class="hl">"city"</span>:     <span class="gr">"Delhi"</span>,
+  <span class="hl">"question"</span>: <span class="gr">"When will I get married?"</span>  <span class="cm">// optional</span>
+}
+
+<span class="cm">// Response includes:</span>
+<span class="cm">// lp_num, lp_title — Life Path number</span>
+<span class="cm">// chart_text       — Full sidereal chart positions</span>
+<span class="cm">// lagna_text       — Lagna & personality analysis</span>
+<span class="cm">// dasha_text       — Current Mahadasha interpretation</span>
+<span class="cm">// ss_text          — Sadhe Sati status</span>
+<span class="cm">// qa_text          — AI answer to question (if provided)</span>
+<span class="cm">// pdf_id           — UUID to download PDF: /api/pdf/{pdf_id}</span>
+<span class="cm">// sections         — [{heading, text}, ...] for display</span></pre>
+      </div>
+    </div>
+    <div class="ep">
+      <div class="ep-head">
+        <span class="method post">POST</span>
+        <span class="ep-path">/api/tarot</span>
+        <span class="ep-desc">AI tarot reading</span>
+      </div>
+      <div class="ep-body">
+        <pre><span class="cm">// Request body:</span>
+{
+  <span class="hl">"spread_id"</span>:   <span class="gr">"3"</span>,                      <span class="cm">// "1" / "3" / "celtic" / etc</span>
+  <span class="hl">"question"</span>:    <span class="gr">"What does my career hold?"</span>,
+  <span class="hl">"client_name"</span>: <span class="gr">"Rahul"</span>                    <span class="cm">// optional, for PDF only</span>
+}
+
+<span class="cm">// Response includes:</span>
+<span class="cm">// spread_name   — human-readable spread name</span>
+<span class="cm">// card_summary  — cards drawn with orientations</span>
+<span class="cm">// affirmations  — per-card affirmations</span>
+<span class="cm">// ai_answer     — Jyogi's AI interpretation</span>
+<span class="cm">// pdf_id        — UUID to download PDF</span></pre>
+      </div>
+    </div>
+    <div class="ep">
+      <div class="ep-head">
+        <span class="method get">GET</span>
+        <span class="ep-path">/api/pdf/{pdf_id}</span>
+        <span class="ep-desc">Download generated PDF</span>
+      </div>
+      <div class="ep-body">Returns the PDF file. The <code style="font-family:monospace">pdf_id</code> comes from the chart or tarot response. PDFs are stored in memory and cleared on server restart — download immediately after generating.</div>
+    </div>
+  </div>
+</div>
+
+<!-- RATE LIMITING -->
+<div class="sec">
+  <h2>✦ Rate Limiting &amp; Security</h2>
+  <div class="warn">
+    <strong>Built-in protection:</strong> 20 AI calls per IP per hour. This mirrors your original Streamlit session limit but works across sessions and restarts. No database needed — it resets on deploy (which is fine for your usage pattern).
+  </div>
+  <p style="color:var(--muted);font-style:italic;font-size:14px;margin-top:14px;">The <strong style="color:var(--text)">geocode</strong> and <strong style="color:var(--text)">PDF download</strong> endpoints do not consume rate limit credits — only <code style="font-family:monospace;font-size:12px;color:var(--teal)">/api/chart</code> and <code style="font-family:monospace;font-size:12px;color:var(--teal)">/api/tarot</code> count (they make OpenAI calls). The geocoder results are also cached in memory to avoid repeat calls for the same city.</p>
+</div>
+
+<!-- TESTING LOCALLY -->
+<div class="sec">
+  <h2>✦ Testing Locally Before Deploy</h2>
+  <pre><span class="cm"># Install dependencies</span>
+pip install fastapi uvicorn openai pyswisseph geopy reportlab
+
+<span class="cm"># Set your API key</span>
+export OPENAI_API_KEY=sk-proj-your-key-here
+
+<span class="cm"># Start the server</span>
+uvicorn api:app --reload --port 8000
+
+<span class="cm"># Test health check</span>
+curl http://localhost:8000/health
+
+<span class="cm"># Test geocode</span>
+curl -X POST http://localhost:8000/api/geocode \
+  -H "Content-Type: application/json" \
+  -d '{"city": "Mumbai"}'
+
+<span class="cm"># Test chart (no question = pure Swiss Ephemeris, no AI cost)</span>
+curl -X POST http://localhost:8000/api/chart \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","dob":"1990-01-01","time":"12:00","city":"Delhi"}'</pre>
+  <div class="note"><strong>Interactive docs:</strong> With the server running, visit <a href="http://localhost:8000/docs" style="color:var(--teal)">http://localhost:8000/docs</a> for a full Swagger UI where you can test every endpoint visually.</div>
+</div>
+
+<!-- TROUBLESHOOTING -->
+<div class="sec">
+  <h2>✦ Common Issues</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="sn" style="background:linear-gradient(135deg,#7a3030,#a04040);font-size:18px;">!</div>
+      <div class="sb">
+        <div class="st">pyswisseph build fails on Railway</div>
+        <div class="sd">Railway's Nixpacks builder handles C extension compilation automatically. If it fails, add a <code style="font-family:monospace;font-size:12px">nixpacks.toml</code> file:</div>
+        <pre><span class="cm"># nixpacks.toml (create in repo root if needed)</span>
+[phases.setup]
+nixPkgs = ["gcc", "python3"]</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn" style="background:linear-gradient(135deg,#7a3030,#a04040);font-size:18px;">!</div>
+      <div class="sb">
+        <div class="st">CORS error in browser ("blocked by CORS policy")</div>
+        <div class="sd">Your Netlify URL isn't in ALLOWED_ORIGINS in api.py. Update the list and redeploy:</div>
+        <pre>ALLOWED_ORIGINS = [
+  <span class="gr">"https://YOUR-EXACT-NETLIFY-URL.netlify.app"</span>,
+  ...
+]</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn" style="background:linear-gradient(135deg,#7a3030,#a04040);font-size:18px;">!</div>
+      <div class="sb">
+        <div class="st">OpenAI API key not working</div>
+        <div class="sd">Check Railway → Variables → OPENAI_API_KEY is set exactly (no spaces, no quotes). Then trigger a redeploy from Railway dashboard.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="sn" style="background:linear-gradient(135deg,#7a3030,#a04040);font-size:18px;">!</div>
+      <div class="sb">
+        <div class="st">City not found (geocode returns 404)</div>
+        <div class="sd">The geocoder uses OpenStreetMap Nominatim. Some small Indian towns need the state added: "Shirdi, Maharashtra" instead of just "Shirdi". The website's astrology form sends a graceful WhatsApp fallback if geocoding fails.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">Jyogi AI · api.py v1.0 · FastAPI + Railway · Your jyogi/ package unchanged ✦</div>
+</div>
+</body>
+</html>
