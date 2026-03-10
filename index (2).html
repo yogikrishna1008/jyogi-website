@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jyogi AI — Vedic Astrology · Tarot · Sacred Crystals</title>
+<meta name="description" content="India's most accurate AI-powered Vedic astrology, tarot readings, and sacred crystal bracelets. Book a session with Jyogi today.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cormorant+SC:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#03010a;--bg2:#060112;--bg3:#0a0220;
+  --card:#0f0428;--panel:#160840;--panel2:#1d0f50;
+  --border:rgba(255,195,64,0.12);--bhi:rgba(255,195,64,0.3);
+  --gold:#FFC340;--gold2:#e8a800;--gold-lt:#ffe9a3;--gold-dk:#a87200;
+  --green:#2B7A0B;--green2:#3d9e12;--green-lt:#86efac;
+  --rose:#f472b6;--teal:#2dd4bf;--violet:#a78bfa;
+  --text:#f5ecd7;--muted:#9d8c6a;--dim:#6b5e44;
+  --wa:#25D366;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.7;overflow-x:hidden;}
+::selection{background:rgba(255,195,64,0.25);color:#fff;}
+h1,h2,h3,h4{font-family:'Cinzel',serif;font-weight:600;line-height:1.3;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button,input,select,textarea{font-family:inherit;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--gold2),var(--green));border-radius:10px;}
+
+/* ── CANVAS STARS ── */
+#stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(3,1,10,0.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:0 40px;}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-glyph{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--gold);letter-spacing:0.05em;}
+.nav-logo-sub{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;color:var(--muted);display:block;margin-top:-2px;}
+.nav-links{display:flex;gap:6px;align-items:center;}
+.nav-link{font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;color:var(--muted);padding:6px 14px;border-radius:20px;transition:all 0.2s;cursor:pointer;}
+.nav-link:hover,.nav-link.active{color:var(--gold);background:rgba(255,195,64,0.08);}
+.nav-wa{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff!important;border-radius:20px;padding:8px 18px;font-size:11px;letter-spacing:0.2em;display:flex;align-items:center;gap:7px;transition:all 0.25s;}
+.nav-wa:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(43,122,11,0.4);}
+.nav-mobile-toggle{display:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px;}
+.nav-mobile-toggle span{width:24px;height:2px;background:var(--gold);border-radius:2px;transition:all 0.3s;}
+.mobile-nav{display:none;position:fixed;inset:0;z-index:99;background:rgba(3,1,10,0.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.mobile-nav.open{display:flex;}
+.mobile-nav .nav-link{font-size:14px;padding:10px 24px;}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;overflow:hidden;}
+.hero-mandala{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(700px,90vw);height:min(700px,90vw);opacity:0.04;animation:spin 120s linear infinite;}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+.hero-eye{font-family:'Cormorant SC',serif;font-size:10px;letter-spacing:0.5em;color:var(--gold);opacity:0.7;margin-bottom:18px;animation:fadeUp 1.2s ease both;}
+.hero-title{font-family:'Cinzel',serif;font-size:clamp(32px,7vw,72px);font-weight:700;color:#fff;margin-bottom:8px;animation:fadeUp 1.2s 0.1s ease both;line-height:1.1;}
+.hero-title span{background:linear-gradient(135deg,var(--gold),#fff 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(15px,2.5vw,21px);color:rgba(245,236,215,0.7);margin-bottom:36px;max-width:680px;font-style:italic;animation:fadeUp 1.2s 0.2s ease both;}
+.hero-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:44px;animation:fadeUp 1.2s 0.3s ease both;}
+.hero-pill{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;padding:6px 16px;border:1px solid rgba(255,195,64,0.3);border-radius:20px;color:var(--gold-lt);}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp 1.2s 0.4s ease both;}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 30px;border-radius:30px;font-family:'Cormorant SC',serif;font-size:12px;letter-spacing:0.3em;cursor:pointer;border:none;transition:all 0.3s;text-transform:uppercase;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0220;font-weight:600;box-shadow:0 8px 30px rgba(255,195,64,0.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,195,64,0.4);}
+.btn-outline{background:transparent;border:1px solid rgba(43,122,11,0.5);color:var(--green-lt);}
+.btn-outline:hover{border-color:var(--green);background:rgba(43,122,11,0.1);transform:translateY(-2px);}
+.btn-wa{background:linear-gradient(135deg,var(--wa),#1fa854);color:#fff;box-shadow:0 8px 28px rgba(37,211,102,0.22);}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(37,211,102,0.36);}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeUp 1.5s 0.8s ease both;}
+.hero-scroll-txt{font-family:'Cormorant SC',serif;font-size:8px;letter-spacing:0.5em;color:var(--dim);}
+.scroll-chevron{width:20px;height:20px;border-right:1px solid var(--dim);border-bottom:1px solid var(--dim);transform:rotate(45deg);animation:bounce 2s infinite;}
+@keyframes bounce{0%,100%{transform:rotate(45deg) translateY(0);}50%{transform:rotate(45deg) translateY(4px);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── DIVIDER ── */
+.divider{width:100%;max-width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto;}
+.sec-header{text-align:center;margin-bottom:56px;}
+.sec-badge{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.45em;color:var(--gold);margin-bottom:14px;}
+.sec-title{font-family:'Cinzel',serif;font-size:clamp(22px,4vw,36px);color:var(--text);margin-bottom:16px;}
+.sec-title span{color:var(--gold);}
+.sec-desc{font-size:16px;color:var(--muted);font-style:italic;max-width:600px;margin:0 auto;}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;padding:96px 24px;}
+.container{max-width:1200px;margin:0 auto;}
+.container-sm{max-width:880px;margin:0 auto;}
+.container-md{max-width:1040px;margin:0 auto;}
+
+/* ── STAT BAR ── */
+.stats{background:linear-gradient(135deg,var(--card),rgba(43,122,11,0.08));border:1px solid var(--border);border-radius:16px;display:grid;grid-template-columns:repeat(4,1fr);padding:32px;gap:24px;margin-bottom:72px;}
+.stat{text-align:center;}
+.stat-num{font-family:'Cinzel',serif;font-size:28px;color:var(--gold);font-weight:700;}
+.stat-lbl{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;color:var(--muted);margin-top:4px;}
+
+/* ── SERVICES ── */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer;}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--gold),var(--green));opacity:0;transition:opacity 0.3s;}
+.service-card:hover{transform:translateY(-4px);border-color:var(--bhi);box-shadow:0 16px 48px rgba(0,0,0,0.5);}
+.service-card:hover::before{opacity:1;}
+.svc-icon{font-size:32px;margin-bottom:16px;}
+.svc-name{font-family:'Cinzel',serif;font-size:15px;color:var(--text);margin-bottom:4px;}
+.svc-price{font-family:'Cormorant SC',serif;font-size:13px;color:var(--gold);margin-bottom:10px;}
+.svc-duration{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.2em;color:var(--dim);margin-bottom:12px;}
+.svc-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+.svc-includes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.svc-tag{font-size:11px;padding:3px 10px;background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.15);border-radius:10px;color:var(--muted);}
+.btn-book{width:100%;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--wa),#1fa854);color:#fff;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-book:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,0.3);}
+
+/* ── TAROT READER ── */
+#tarot{background:linear-gradient(180deg,var(--bg3) 0%,var(--bg) 100%);}
+.tarot-inner{position:relative;}
+.spread-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;}
+.spread-tab{padding:9px 20px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Cormorant SC',serif;font-size:10px;letter-spacing:0.25em;cursor:pointer;transition:all 0.25s;}
+.spread-tab:hover{border-color:var(--bhi);color:var(--text);}
+.spread-tab.active{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#0a0220;font-weight:600;}
+.tarot-question{width:100%;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:12px;padding:16px 20px;color:var(--text);font-size:16px;font-family:'Cormorant Garamond',serif;font-style:italic;resize:none;outline:none;transition:border-color 0.25s;margin-bottom:18px;}
+.tarot-question:focus{border-color:rgba(255,195,64,0.4);}
+.tarot-question::placeholder{color:var(--dim);}
+.draw-btn{width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0220;font-family:'Cinzel',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;letter-spacing:0.08em;}
+.draw-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,195,64,0.35);}
+.draw-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.cards-display{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:36px;}
+.card-slot{flex:0 1 200px;text-align:center;}
+.card-slot-label{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;color:var(--dim);margin-bottom:12px;}
+.card-frame{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.5s;cursor:pointer;}
+.card-frame:hover{transform:translateY(-4px);border-color:var(--bhi);}
+.card-img-wrap{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(160deg,var(--panel),var(--card));}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
+.card-img-wrap img.reversed{transform:rotate(180deg);}
+.card-img-placeholder{font-size:48px;opacity:0.3;}
+.card-back-design{width:100%;height:100%;background:radial-gradient(circle at 50% 50%, rgba(255,195,64,0.08) 0%, transparent 70%);display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.5;}
+.card-name-bar{padding:10px 12px;background:rgba(0,0,0,0.4);}
+.card-name{font-family:'Cinzel',serif;font-size:11px;color:var(--text);display:block;}
+.card-orient{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.15em;margin-top:2px;}
+.card-orient.upright{color:var(--green-lt);}
+.card-orient.reversed{color:var(--rose);}
+.card-meaning-panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:24px;display:none;}
+.card-meaning-panel.visible{display:block;animation:fadeUp 0.4s ease;}
+.cmp-card-name{font-family:'Cinzel',serif;font-size:16px;color:var(--gold);margin-bottom:4px;}
+.cmp-orient-badge{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;padding:3px 12px;border-radius:10px;display:inline-block;margin-bottom:14px;}
+.cmp-orient-badge.upright{background:rgba(134,239,172,0.08);border:1px solid rgba(134,239,172,0.2);color:var(--green-lt);}
+.cmp-orient-badge.reversed{background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.2);color:var(--rose);}
+.cmp-meaning{font-size:15px;color:var(--text);line-height:1.75;margin-bottom:12px;}
+.cmp-affirmation{font-style:italic;color:var(--gold-lt);font-size:15px;padding:12px 18px;background:rgba(255,195,64,0.04);border-left:2px solid rgba(255,195,64,0.3);border-radius:0 8px 8px 0;}
+
+/* ── ASTROLOGY ── */
+#astrology{background:linear-gradient(180deg,var(--bg),var(--bg2));}
+.astro-form-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:720px;margin:0 auto;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;color:var(--muted);}
+.form-input{background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:15px;font-family:'Cormorant Garamond',serif;outline:none;transition:border-color 0.25s;width:100%;}
+.form-input:focus{border-color:rgba(255,195,64,0.4);}
+.form-input::placeholder{color:var(--dim);}
+.form-input option{background:var(--card);color:var(--text);}
+.submit-btn{width:100%;margin-top:8px;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0220;font-family:'Cinzel',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;letter-spacing:0.08em;}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,195,64,0.35);}
+.astro-result{background:rgba(0,0,0,0.3);border:1px solid rgba(255,195,64,0.15);border-radius:14px;padding:24px;margin-top:24px;display:none;}
+.astro-result.visible{display:block;animation:fadeUp 0.4s ease;}
+.api-note{text-align:center;padding:20px;font-style:italic;color:var(--muted);font-size:14px;background:rgba(43,122,11,0.05);border:1px dashed rgba(43,122,11,0.2);border-radius:10px;margin-top:16px;}
+
+/* ── SHOP ── */
+#shop{background:linear-gradient(180deg,var(--bg2),var(--bg3));}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
+.bracelet-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:all 0.35s;position:relative;}
+.bracelet-card:hover{transform:translateY(-6px);border-color:var(--bhi);box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+.bracelet-img-wrap{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--panel);}
+.bracelet-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+.bracelet-card:hover .bracelet-img-wrap img{transform:scale(1.05);}
+.bracelet-badge{position:absolute;top:14px;left:14px;font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.15em;padding:4px 12px;border-radius:20px;color:#fff;}
+.bracelet-price-bubble{position:absolute;bottom:14px;right:14px;background:rgba(3,1,10,0.85);backdrop-filter:blur(10px);border:1px solid var(--bhi);border-radius:10px;padding:6px 12px;text-align:center;}
+.bpb-price{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);font-weight:700;}
+.bpb-original{font-size:12px;color:var(--dim);text-decoration:line-through;}
+.bracelet-body{padding:20px 22px;}
+.bracelet-name{font-family:'Cinzel',serif;font-size:16px;color:var(--text);margin-bottom:3px;}
+.bracelet-sub{font-size:14px;color:var(--gold);margin-bottom:6px;}
+.bracelet-tagline{font-style:italic;font-size:14px;color:var(--muted);margin-bottom:14px;}
+.bracelet-planet{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.2em;color:var(--dim);margin-bottom:8px;}
+.bracelet-benefits{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.benefit-tag{font-size:11px;padding:3px 9px;border-radius:8px;background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.12);color:var(--muted);}
+.bracelet-ritual{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:14px;padding:10px 12px;background:rgba(43,122,11,0.05);border-left:2px solid rgba(43,122,11,0.3);border-radius:0 8px 8px 0;}
+.btn-order{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--wa),#1fa854);color:#fff;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-order:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,0.3);}
+
+/* ── REVIEWS ── */
+#reviews{background:linear-gradient(180deg,var(--bg3),var(--bg));}
+.reviews-scroll{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
+.review-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;}
+.review-card::before{content:'"';position:absolute;top:-10px;right:16px;font-family:'Cinzel',serif;font-size:80px;color:rgba(255,195,64,0.05);line-height:1;}
+.review-stars{color:var(--gold);font-size:14px;margin-bottom:10px;letter-spacing:2px;}
+.review-text{font-size:15px;color:var(--text);font-style:italic;line-height:1.7;margin-bottom:16px;}
+.review-product{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.2em;color:var(--green2);margin-bottom:12px;}
+.review-user{display:flex;align-items:center;gap:10px;}
+.review-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold2),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.review-name{font-family:'Cinzel',serif;font-size:13px;color:var(--text);}
+.review-location{font-size:12px;color:var(--dim);}
+
+/* ── GALLERY ── */
+#gallery{background:linear-gradient(180deg,var(--bg),var(--bg2));}
+.god-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.god-card{text-align:center;position:relative;}
+.god-img-ring{width:clamp(160px,20vw,220px);height:clamp(160px,20vw,220px);border-radius:50%;border:2px solid rgba(255,195,64,0.25);padding:4px;margin:0 auto 20px;position:relative;}
+.god-img-ring::before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,var(--gold),transparent,var(--gold),transparent,var(--gold));animation:spin 20s linear infinite;opacity:0.3;}
+.god-img-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;filter:sepia(15%);}
+.god-name{font-family:'Cinzel',serif;font-size:17px;color:var(--text);margin-bottom:6px;}
+.god-mantra{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--gold);margin-bottom:8px;}
+.god-meaning{font-size:13px;color:var(--muted);}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var(--border);padding:56px 24px 32px;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+.footer-brand .nav-logo-text{font-size:22px;margin-bottom:8px;display:block;}
+.footer-brand p{font-size:14px;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:20px;}
+.footer-wa-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:linear-gradient(135deg,var(--wa),#1fa854);color:#fff;border-radius:24px;font-family:'Cormorant SC',serif;font-size:10px;letter-spacing:0.25em;transition:all 0.25s;}
+.footer-wa-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,0.3);}
+.footer-col h4{font-family:'Cinzel',serif;font-size:11px;color:var(--text);margin-bottom:16px;letter-spacing:0.05em;}
+.footer-links{display:flex;flex-direction:column;gap:10px;}
+.footer-links a,.footer-link{font-size:14px;color:var(--muted);transition:color 0.2s;cursor:pointer;}
+.footer-links a:hover,.footer-link:hover{color:var(--gold);}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--dim);flex-wrap:wrap;gap:12px;}
+.footer-bottom a{color:var(--gold);transition:opacity 0.2s;} .footer-bottom a:hover{opacity:0.7;}
+
+/* ── WA FLOAT ── */
+.wa-float{position:fixed;bottom:28px;right:28px;z-index:200;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--wa),#1fa854);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 28px rgba(37,211,102,0.35);cursor:pointer;transition:all 0.3s;animation:pulse-wa 3s infinite;}
+.wa-float:hover{transform:scale(1.1);}
+@keyframes pulse-wa{0%,100%{box-shadow:0 8px 28px rgba(37,211,102,0.35);}50%{box-shadow:0 8px 36px rgba(37,211,102,0.6);}}
+
+/* ── LOADING ── */
+.loading-ring{width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,195,64,0.1);border-top-color:var(--gold);animation:spin-fast 0.8s linear infinite;margin:0 auto;}
+@keyframes spin-fast{to{transform:rotate(360deg);}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 18px;}
+  .nav-links{display:none;}
+  .nav-mobile-toggle{display:flex;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px;}
+  .god-grid{grid-template-columns:1fr;max-width:320px;margin:0 auto;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-group.full{grid-column:1;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  section{padding:64px 18px;}
+  .hero{padding:88px 18px 56px;}
+  .footer-grid{grid-template-columns:1fr;gap:24px;}
+  .god-grid{max-width:100%;}
+  .god-img-ring{width:140px;height:140px;}
+}
+
+/* ── TOOLTIP ── */
+[data-tip]{position:relative;cursor:help;}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(15,4,40,0.95);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;white-space:nowrap;font-style:normal;color:var(--text);z-index:10;}
+
+/* ── CHAKRA DOT ── */
+.chakra-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- ── NAVIGATION ── -->
+<nav id="main-nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#hero">
+      <div class="nav-logo-glyph">🔮</div>
+      <div>
+        <span class="nav-logo-text">Jyogi AI</span>
+        <span class="nav-logo-sub">✦ Vedic · Tarot · Sacred ✦</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <span class="nav-link" onclick="scrollTo('#services')">Services</span>
+      <span class="nav-link" onclick="scrollTo('#tarot')">Tarot</span>
+      <span class="nav-link" onclick="scrollTo('#astrology')">Astrology</span>
+      <span class="nav-link" onclick="scrollTo('#shop')">Shop</span>
+      <span class="nav-link" onclick="scrollTo('#reviews')">Reviews</span>
+      <a class="nav-link nav-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">
+        <span>💬</span> Book Now
+      </a>
+    </div>
+    <div class="nav-mobile-toggle" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav">
+  <span class="nav-link" onclick="scrollTo('#services');toggleMobileNav()">Services</span>
+  <span class="nav-link" onclick="scrollTo('#tarot');toggleMobileNav()">Tarot</span>
+  <span class="nav-link" onclick="scrollTo('#astrology');toggleMobileNav()">Astrology</span>
+  <span class="nav-link" onclick="scrollTo('#shop');toggleMobileNav()">Shop</span>
+  <span class="nav-link" onclick="scrollTo('#reviews');toggleMobileNav()">Reviews</span>
+  <a class="btn btn-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank" onclick="toggleMobileNav()">💬 Book Now on WhatsApp</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero" id="hero">
+  <svg class="hero-mandala" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="180" stroke="#FFC340" stroke-width="0.5"/>
+    <circle cx="200" cy="200" r="150" stroke="#FFC340" stroke-width="0.5"/>
+    <circle cx="200" cy="200" r="120" stroke="#FFC340" stroke-width="0.5"/>
+    <circle cx="200" cy="200" r="90" stroke="#FFC340" stroke-width="0.5"/>
+    <line x1="20" y1="200" x2="380" y2="200" stroke="#FFC340" stroke-width="0.5"/>
+    <line x1="200" y1="20" x2="200" y2="380" stroke="#FFC340" stroke-width="0.5"/>
+    <line x1="72.7" y1="72.7" x2="327.3" y2="327.3" stroke="#FFC340" stroke-width="0.5"/>
+    <line x1="327.3" y1="72.7" x2="72.7" y2="327.3" stroke="#FFC340" stroke-width="0.5"/>
+    <polygon points="200,40 348,290 52,290" stroke="#FFC340" stroke-width="0.5" fill="none"/>
+    <polygon points="200,360 52,110 348,110" stroke="#FFC340" stroke-width="0.5" fill="none"/>
+    <circle cx="200" cy="200" r="12" stroke="#FFC340" stroke-width="0.5"/>
+  </svg>
+  <div class="hero-eye">✦ Jyogi AI — Vedic Astrology · Tarot · Sacred Crystals ✦</div>
+  <h1 class="hero-title">Your <span>Stars</span> Hold<br>Every Answer</h1>
+  <p class="hero-sub">India's most precise AI-powered Vedic readings, Light Seer Tarot, and sacred crystal bracelets — charged with ancient wisdom.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">🪐 Sidereal Lahiri Astrology</span>
+    <span class="hero-pill">🎴 Light Seer Tarot</span>
+    <span class="hero-pill">💎 Crystal Bracelets</span>
+    <span class="hero-pill">🔢 Vedic Numerology</span>
+  </div>
+  <div class="hero-ctas">
+    <span class="btn btn-primary" onclick="scrollTo('#tarot')">🎴 Draw Your Cards</span>
+    <span class="btn btn-outline" onclick="scrollTo('#astrology')">🪐 Get My Chart</span>
+    <a class="btn btn-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Book on WhatsApp</a>
+  </div>
+  <div class="hero-scroll">
+    <span class="hero-scroll-txt">Scroll to explore</span>
+    <div class="scroll-chevron"></div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<section style="padding:0 24px 72px;" id="stats">
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><div class="stat-num">5,000+</div><div class="stat-lbl">Readings Delivered</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-lbl">Average Rating</div></div>
+      <div class="stat"><div class="stat-num">12+</div><div class="stat-lbl">Years Experience</div></div>
+      <div class="stat"><div class="stat-num">78</div><div class="stat-lbl">Card Light Seer Deck</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ WHAT WE OFFER ✦</div>
+      <h2 class="sec-title">Sacred <span>Services</span></h2>
+      <p class="sec-desc">Each reading is powered by ancient Vedic wisdom and AI precision — deeply personal, always accurate.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="services-grid" id="services-grid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── TAROT READER ── -->
+<section id="tarot">
+  <div class="container-md">
+    <div class="sec-header">
+      <div class="sec-badge">✦ LIGHT SEER'S TAROT ✦</div>
+      <h2 class="sec-title">Draw Your <span>Cards</span></h2>
+      <p class="sec-desc">The Light Seer deck by Chris-Anne speaks the language of your soul. Ask your question and let the cards answer.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="tarot-inner">
+      <div class="spread-tabs" id="spread-tabs">
+        <button class="spread-tab active" data-spread="single" onclick="selectSpread('single')">Single Card</button>
+        <button class="spread-tab" data-spread="three" onclick="selectSpread('three')">Past · Present · Future</button>
+        <button class="spread-tab" data-spread="celtic" onclick="selectSpread('celtic')">Celtic Cross</button>
+        <button class="spread-tab" data-spread="love" onclick="selectSpread('love')">Love & Relationship</button>
+        <button class="spread-tab" data-spread="career" onclick="selectSpread('career')">Career & Money</button>
+      </div>
+      <textarea class="tarot-question" id="tarot-question" rows="3" placeholder="Focus your mind and type your question... or leave empty for a general reading."></textarea>
+      <button class="draw-btn" id="draw-btn" onclick="drawCards()">✨ Draw Your Cards</button>
+      <div class="cards-display" id="cards-display"></div>
+      <div class="card-meaning-panel" id="card-meaning-panel"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ASTROLOGY ── -->
+<section id="astrology">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ VEDIC ASTROLOGY ✦</div>
+      <h2 class="sec-title">Your <span>Birth Chart</span></h2>
+      <p class="sec-desc">Enter your birth details for a complete Sidereal Vedic chart with Lagna, Nakshatras, Dasha periods, and Sadhe Sati analysis.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="astro-form-wrap">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="astro-name" type="text" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input class="form-input" id="astro-dob" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time of Birth</label>
+          <input class="form-input" id="astro-time" type="time">
+        </div>
+        <div class="form-group">
+          <label class="form-label">City of Birth</label>
+          <input class="form-input" id="astro-city" type="text" placeholder="Mumbai, Delhi, Bengaluru…">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Your Question (optional)</label>
+          <input class="form-input" id="astro-question" type="text" placeholder="What would you like guidance on? Career, relationships, health…">
+        </div>
+      </div>
+      <button class="submit-btn" onclick="submitAstrology()">🪐 Calculate My Vedic Chart</button>
+      <div id="astro-result" class="astro-result"></div>
+      <div class="api-note">
+        🔗 <strong>Powered by Swiss Ephemeris</strong> — Sidereal Lahiri calculation, Vimshottari Dasha engine, and Sadhe Sati analysis. Results delivered via the Jyogi AI backend.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SHOP ── -->
+<section id="shop">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ SACRED CRYSTALS ✦</div>
+      <h2 class="sec-title">Crystal <span>Bracelets</span></h2>
+      <p class="sec-desc">Each bracelet is hand-selected, cleansed under the full moon, and charged with planetary mantras. Order via WhatsApp for personalised guidance.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="shop-grid" id="shop-grid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEWS ── -->
+<section id="reviews">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ TESTIMONIALS ✦</div>
+      <h2 class="sec-title">What <span>Seekers</span> Say</h2>
+      <p class="sec-desc">Real transformations from real people across India.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="reviews-scroll" id="reviews-grid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── GOD GALLERY ── -->
+<section id="gallery">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ SACRED GALLERY ✦</div>
+      <h2 class="sec-title">Divine <span>Blessings</span></h2>
+      <p class="sec-desc">We begin every reading with a prayer to the divine. May these sacred energies guide your path.</p>
+    </div>
+    <div class="divider" style="margin-bottom:48px;"></div>
+    <div class="god-grid" id="god-grid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="nav-logo-text">Jyogi AI</span>
+        <span class="nav-logo-sub" style="letter-spacing:0.35em;font-size:9px;color:var(--muted);font-family:'Cormorant SC',serif;margin-bottom:12px;display:block;">✦ Vedic Astrology · Tarot · Sacred Crystals ✦</span>
+        <p>Ancient wisdom meets modern clarity. Every soul has a map written in the stars — let Jyogi help you read it.</p>
+        <a class="footer-wa-btn" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Chat on WhatsApp</a>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <div class="footer-links">
+          <span class="footer-link" onclick="scrollTo('#services')">Vedic Reading</span>
+          <span class="footer-link" onclick="scrollTo('#services')">Live Tarot</span>
+          <span class="footer-link" onclick="scrollTo('#services')">Crystal Prescription</span>
+          <span class="footer-link" onclick="scrollTo('#services')">Numerology</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <div class="footer-links">
+          <span class="footer-link" onclick="scrollTo('#tarot')">Tarot Reader</span>
+          <span class="footer-link" onclick="scrollTo('#astrology')">Birth Chart</span>
+          <span class="footer-link" onclick="scrollTo('#shop')">Crystal Shop</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <div class="footer-links">
+          <a href="https://wa.me/918310319870" target="_blank">WhatsApp</a>
+          <span class="footer-link">Instagram</span>
+          <span class="footer-link">YouTube</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Jyogi AI · All readings are for spiritual guidance and entertainment</span>
+      <span>Made with 🙏 &amp; ✨ in India · <button onclick="openAdmin()" style="background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;padding:0;">⚙ Admin</button></span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank" title="Chat on WhatsApp">💬</a>
+
+<script>
+// ─── STAR FIELD ───────────────────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('stars-canvas');
+  const ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  function init(){
+    resize();stars=[];
+    for(let i=0;i<220;i++){
+      stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+0.2,a:Math.random(),da:(Math.random()-0.5)*0.004});
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a=Math.max(0.05,Math.min(1,s.a+s.da));
+      if(s.a<=0.05||s.a>=1)s.da*=-1;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,220,140,${s.a})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();});
+  init();draw();
+})();
+
+// ─── NAV SCROLL FX ────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('main-nav').style.background=
+    window.scrollY>60?'rgba(3,1,10,0.96)':'rgba(3,1,10,0.82)';
+});
+function scrollTo(id){document.querySelector(id).scrollIntoView({behavior:'smooth'});}
+function toggleMobileNav(){document.getElementById('mobile-nav').classList.toggle('open');}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────
+const TAROT_CARDS = [{"name": "0_The_Fool", "meaning": "New beginnings, enthusiasm, adventures, fresh opportunities, the potential to bring your dreams to life, having faith, a transitional period of awakening, optimism, innocence, light-heartedness and being spontaneous", "shadow": "Naivety, assuming you already have the answer, rash or overly impulsive choices, lacking experience, analysis-paralysis, being bogged down, foolishness, jumping before you look", "affirmation": "I embrace the unknown with an open heart and trust the Universe to catch me."}, {"name": "1_The_Magician", "meaning": "Inspired action, willpower, manifestation, resourcefulness, desire, creation, the power to bring your visions into reality, harnessing your skills and talents", "shadow": "Manipulation, out-of-alignment desires, greed, trickery, illusions, not using your gifts, untapped potential, deceit", "affirmation": "I have all the tools I need. I create my reality with intention and will."}, {"name": "2_The_High_Priestess", "meaning": "Intuition, sacred feminine wisdom, higher powers, the subconscious, mystery, deep knowing, psychic ability, the power of the inner voice, patience and stillness", "shadow": "Secrets, hidden agendas, disconnected from your intuition, a need to listen more deeply, repressed feelings, gossip", "affirmation": "I trust my inner knowing. My intuition is my greatest guide."}, {"name": "3_The_Empress", "meaning": "Abundance, femininity, fertility, nurturing, the earth, creativity, sensuality, beauty, pregnancy, motherhood, the fullness of life", "shadow": "Creative block, dependence, smothering, neglecting self-care, not nurturing yourself or others, feeling disconnected from the earth", "affirmation": "I am abundant, creative, and deeply connected to the flow of life."}, {"name": "4_The_Emperor", "meaning": "Authority, structure, stability, leadership, fatherhood, discipline, establishment, logic, power and control used for good", "shadow": "Domination, rigidity, inflexibility, abuse of power, an overbearing authority figure, lack of discipline, control issues", "affirmation": "I lead with wisdom, discipline, and compassion."}, {"name": "5_The_Hierophant", "meaning": "Tradition, spiritual wisdom, religious institutions, conformity, establishment, a spiritual mentor or teacher, conventional paths, shared beliefs, ceremony", "shadow": "Dogma, challenging tradition, feeling restricted by convention, a need to find your own path, corruption, rebellion", "affirmation": "I honor the wisdom of tradition while staying true to my own soul path."}, {"name": "6_The_Lovers", "meaning": "Love, harmony, relationships, alignment of values, choices, soulmate connections, union, attraction, partnerships built on mutual respect", "shadow": "Disharmony, imbalance in relationships, misaligned values, difficult choices, a love triangle, broken communication", "affirmation": "I choose love. I attract relationships that reflect my highest values."}, {"name": "7_The_Chariot", "meaning": "Willpower, determination, victory, ambition, control, success, overcoming obstacles, forward momentum, the drive to achieve your goals", "shadow": "Lack of control, aggression, opposition, scattered energy, no clear direction, forcing outcomes", "affirmation": "I move forward with focused intention and unstoppable determination."}, {"name": "8_Strength", "meaning": "Courage, inner strength, compassion, patience, soft power, influence, taming the ego, resilience, the power of love over force", "shadow": "Self-doubt, weakness, giving in to fear, lack of self-discipline, raw emotion overtaking reason, insecurity", "affirmation": "My greatest strength comes from love, patience, and compassion."}, {"name": "9_The_Hermit", "meaning": "Soul-searching, introspection, solitude, inner wisdom, a spiritual guide, a period of withdrawal for self-discovery, enlightenment, being a light for others", "shadow": "Isolation, loneliness, withdrawn too far from the world, reclusive behaviour, refusing guidance, loss of direction", "affirmation": "I find wisdom in stillness and carry my light to illuminate the path for others."}, {"name": "10_Wheel_of_Fortune", "meaning": "Fate, karma, turning points, good luck, life cycles, destiny, unexpected change, the flow of the Universe, what goes around comes around", "shadow": "Bad luck, resistance to change, feeling out of control, a negative cycle, clinging to the past", "affirmation": "I flow with life cycles with grace. Every turn brings new opportunity."}, {"name": "11_Justice", "meaning": "Truth, fairness, cause and effect, law, accountability, balance, integrity, honesty, karmic justice, decisions made with clear logic", "shadow": "Injustice, dishonesty, lack of accountability, unfair treatment, avoiding consequences, biased decisions", "affirmation": "I act with integrity. The Universe always returns truth and fairness."}, {"name": "12_The_Hanged_Man", "meaning": "Surrender, pause, new perspectives, sacrifice, suspension, letting go of control, enlightenment through release, a different point of view", "shadow": "Stalling, martyrdom, indecision, delay, refusing to let go, a period of stagnation, wasted potential", "affirmation": "I surrender to the divine flow and find wisdom in the pause."}, {"name": "13_Death", "meaning": "Transformation, endings, new beginnings, transition, letting go, change, the cycle of life, metamorphosis, releasing what no longer serves", "shadow": "Resistance to change, inability to move on, stagnation, holding on too tightly, fear of the unknown", "affirmation": "I release what no longer serves me and welcome beautiful transformation."}, {"name": "14_Temperance", "meaning": "Balance, patience, moderation, purpose, harmony, alchemy, inner peace, a middle path, healing, the blending of opposites", "shadow": "Imbalance, excess, a lack of long-term vision, impatience, discord, extremes, misalignment", "affirmation": "I bring balance and harmony to every area of my life."}, {"name": "15_The_Devil", "meaning": "Bondage, shadow self, materialism, addiction, unhealthy attachments, restriction, patterns that keep you trapped, facing your darker nature", "shadow": "Detachment, breaking free, releasing chains, reclaiming power, the beginning of recovery, awareness of limiting beliefs", "affirmation": "I recognise my shadows with compassion and choose freedom over fear."}, {"name": "16_The_Tower", "meaning": "Sudden upheaval, chaos, revelation, awakening, the crumbling of false structures, radical change, a breakthrough disguised as a breakdown", "shadow": "Avoiding disaster, delaying the inevitable, fear of change, resisting necessary disruption, clinging to broken structures", "affirmation": "Even in chaos, I trust that what falls was never meant to stand."}, {"name": "17_The_Star", "meaning": "Hope, renewal, serenity, inspiration, faith, healing, a guiding light, calm after the storm, the promise of better things to come, spiritual connection", "shadow": "Despair, hopelessness, disconnection from faith, feeling lost, a lack of inspiration, disappointment", "affirmation": "I am filled with hope. The Universe is always working in my favour."}, {"name": "18_The_Moon", "meaning": "Illusion, fear, the subconscious, intuition, dreams, hidden truths, the shadow self, anxiety, mystery, what lies beneath the surface", "shadow": "Confusion lifting, fears releasing, repressed emotions coming to light, unhealthy coping mechanisms, misunderstanding", "affirmation": "I navigate the unknown with trust. My intuition lights the way through illusion."}, {"name": "19_The_Sun", "meaning": "Joy, success, vitality, optimism, clarity, warmth, abundance, positivity, childhood innocence, a radiant YES from the Universe", "shadow": "Pessimism, temporary sadness, blocked joy, inner child wounds, unrealistic expectations, arrogance", "affirmation": "I radiate joy, warmth, and gratitude. Life is beautiful."}, {"name": "20_Judgement", "meaning": "Reflection, reckoning, inner calling, awakening, absolution, a significant transition, hearing a higher calling, rebirth, evaluation", "shadow": "Self-doubt, ignoring your calling, fear of being judged, inability to forgive yourself, an inability to move forward", "affirmation": "I answer my highest calling with courage and open my heart to rebirth."}, {"name": "21_The_World", "meaning": "Completion, accomplishment, wholeness, integration, travel, the end of one cycle and the beginning of another, fulfilment, success", "shadow": "Incompletion, stagnation, a lack of closure, shortcuts taken, not fully integrating lessons before moving on", "affirmation": "I am whole. I celebrate my journey and step forward with wisdom."}, {"name": "Ace_of_Wands", "meaning": "Inspiration, new opportunities, growth, passion, potential, a creative spark, the beginning of something exciting, energy and enthusiasm", "shadow": "Delays, lack of passion, creative block, an idea that has not fully formed, false starts, lost motivation", "affirmation": "I seize this spark of inspiration and channel it into bold, creative action."}, {"name": "Two_of_Wands", "meaning": "Future planning, progress, decisions, courage, stepping outside comfort zone, long-term vision, a world of possibilities", "shadow": "Fear of the unknown, indecision, playing it too safe, lack of planning, feeling trapped in one place", "affirmation": "I plan boldly, trust my vision, and step forward into my expansive future."}, {"name": "Three_of_Wands", "meaning": "Expansion, foresight, overseas opportunities, preparation, looking ahead, growth already in motion, awaiting results of past efforts", "shadow": "Delays, obstacles to travel or expansion, a lack of foresight, plans falling through, impatience", "affirmation": "My horizons are expanding. What I have planted is growing beautifully."}, {"name": "Four_of_Wands", "meaning": "Celebration, joy, harmony, home, community, milestones, relaxation, weddings and happy events, a stable foundation", "shadow": "Instability at home, cancelled celebrations, lack of support, family conflicts, transition periods", "affirmation": "I celebrate how far I have come and cherish the community that surrounds me."}, {"name": "Five_of_Wands", "meaning": "Conflict, disagreements, competition, creative tension, diversity of opinions, healthy debate, challenges that lead to growth", "shadow": "Avoiding conflict, suppressed tension, a need for compromise, unnecessary aggression, chaos", "affirmation": "I rise above conflict with grace and find the wisdom in differing perspectives."}, {"name": "Six_of_Wands", "meaning": "Victory, success, public recognition, progress, self-confidence, acclaim, achievement after hard work, leadership", "shadow": "Ego, a fall from grace, lack of recognition, self-doubt, seeking validation from others, short-lived success", "affirmation": "I embrace my victory with humility and gratitude."}, {"name": "Seven_of_Wands", "meaning": "Perseverance, defending your position, challenge, competition, holding your ground, courage under pressure, standing up for your beliefs", "shadow": "Exhaustion, giving up, feeling overwhelmed, paranoia, not picking your battles wisely", "affirmation": "I stand my ground with confidence. I am worth defending."}, {"name": "Eight_of_Wands", "meaning": "Fast-paced change, movement, swift action, communication, travel, things suddenly accelerating, alignment, momentum", "shadow": "Delays, frustration, scattered energy, miscommunication, being overwhelmed by speed of change", "affirmation": "I embrace the beautiful momentum carrying me towards my goals."}, {"name": "Nine_of_Wands", "meaning": "Resilience, courage, persistence, last push, boundaries, grit, the strength to continue when you are almost at the finish line", "shadow": "Exhaustion, giving up too soon, paranoia, excessive defensiveness, not asking for help when needed", "affirmation": "I am resilient. I have the strength to see this through to the end."}, {"name": "Ten_of_Wands", "meaning": "Burden, responsibility, overcommitment, hard work, carrying too much, the need to delegate or release some weight", "shadow": "Inability to delegate, martyrdom, carrying others' burdens, burnout, refusing help", "affirmation": "I release what is not mine to carry and ask for help without guilt."}, {"name": "Page_of_Wands", "meaning": "Inspiration, discovery, an adventurous spirit, curiosity, a new creative path, enthusiasm, a message of exciting news, potential", "shadow": "Immaturity, a lack of direction, unfocused energy, too many ideas and not enough action, restlessness", "affirmation": "I explore with curiosity and follow my creative spark wherever it leads."}, {"name": "Knight_of_Wands", "meaning": "Energy, passion, adventure, impulsiveness, action, confidence, a fearless pursuit of goals, daring and bold energy", "shadow": "Recklessness, hot-headed behaviour, scattered focus, impulsivity without planning, burnout from moving too fast", "affirmation": "I pursue my passions boldly while tempering my fire with wisdom."}, {"name": "Queen_of_Wands", "meaning": "Courage, confidence, determination, warmth, independence, charisma, a natural leader, someone who uplifts others, creative power", "shadow": "Jealousy, manipulation, demanding behaviour, burned out confidence, feeling unheard", "affirmation": "I radiate warmth and confidence. My fire inspires everyone around me."}, {"name": "King_of_Wands", "meaning": "Natural leader, vision, honour, entrepreneurial spirit, big-picture thinking, inspiration, boldness, a successful and charismatic authority", "shadow": "Impulsiveness, overbearing behaviour, unrealistic expectations, arrogance, ruthlessness", "affirmation": "I lead with vision, honour, and inspire others to reach their highest potential."}, {"name": "Ace_of_Cups", "meaning": "New love, compassion, creativity, emotional abundance, the beginning of a deep emotional journey, a new relationship or spiritual connection, joy", "shadow": "Emotional blockage, repressed feelings, a relationship that is not growing, creative drought, sadness", "affirmation": "I open my heart fully to love, compassion, and creative abundance."}, {"name": "Two_of_Cups", "meaning": "Unified love, partnership, mutual attraction, harmony, the meeting of two souls, a deep soulmate connection, balance in relationship", "shadow": "Imbalance in a relationship, a broken connection, lack of communication, codependency, separation", "affirmation": "I attract and nurture relationships built on mutual love, respect, and harmony."}, {"name": "Three_of_Cups", "meaning": "Celebration, friendship, community, creativity, joy, abundance, coming together, support, sisterhood and brotherhood", "shadow": "Overindulgence, gossip, third-party interference, cliques, celebrations gone wrong, isolation", "affirmation": "I celebrate life with my community and cherish the bonds that lift me higher."}, {"name": "Four_of_Cups", "meaning": "Contemplation, meditation, apathy, boredom, re-evaluation, a period of withdrawal, not seeing the opportunities before you", "shadow": "New awareness, motivation returning, accepting an offer, emerging from a period of stagnation", "affirmation": "I look within for answers and open my eyes to the gifts already around me."}, {"name": "Five_of_Cups", "meaning": "Loss, grief, disappointment, focusing on the negative, regret, mourning, the need to process sadness before moving on", "shadow": "Acceptance, moving on, finding hope after loss, forgiveness, turning towards what remains", "affirmation": "I honour my grief, then gently turn to face the blessings that remain."}, {"name": "Six_of_Cups", "meaning": "Nostalgia, childhood memories, innocence, revisiting the past, comfort, reunion, generosity, simple joys, healing the inner child", "shadow": "Stuck in the past, idealising old times, refusing to grow, an unhealthy attachment to how things were", "affirmation": "I honour my past with gratitude while standing fully present in today's gifts."}, {"name": "Seven_of_Cups", "meaning": "Choices, fantasy, illusion, wishful thinking, imagination, having many options, searching for purpose, daydreaming", "shadow": "Clarity returning, cutting through illusion, making a decision, aligning with reality, facing the truth", "affirmation": "I see through illusion and choose my path with clarity, wisdom, and intention."}, {"name": "Eight_of_Cups", "meaning": "Walking away, disillusionment, leaving behind what no longer serves, a brave exit, seeking deeper meaning, spiritual quest", "shadow": "Fear of change, staying in a situation past its time, inability to walk away, clinging to the familiar", "affirmation": "I have the courage to walk away from what no longer serves my highest good."}, {"name": "Nine_of_Cups", "meaning": "Contentment, satisfaction, gratitude, emotional fulfilment, wishes granted, happiness, pleasure, the dream made real", "shadow": "Overindulgence, superficiality, complacency, inner emptiness beneath outward success, unfulfilled wishes", "affirmation": "I am grateful for the abundance in my life. My heart is full."}, {"name": "Ten_of_Cups", "meaning": "Divine love, blissful relationships, family harmony, deep contentment, a joyful home life, alignment with your heart's desire", "shadow": "Broken family, unhappy home, disconnected relationships, values out of alignment, a gap between the dream and reality", "affirmation": "I am surrounded by love, harmony, and the warmth of deep connection."}, {"name": "Page_of_Cups", "meaning": "Creative opportunities, intuitive messages, emotional sensitivity, dreams, a gentle and curious heart, unexpected news, artistic beginnings", "shadow": "Emotional immaturity, daydreaming without action, vulnerability used against you, naivety in relationships", "affirmation": "I trust the whispers of my heart and follow my creative intuition with joy."}, {"name": "Knight_of_Cups", "meaning": "Romance, charm, imagination, following the heart, an invitation or offer, the pursuit of dreams, a creative and idealistic soul", "shadow": "Moodiness, unrealistic expectations, over-romanticism, emotional manipulation, scattered dreams", "affirmation": "I follow my heart with courage, charm, and an open spirit."}, {"name": "Queen_of_Cups", "meaning": "Compassion, deep intuition, emotional wisdom, nurturing, empathy, a caring presence, inner emotional knowing, healing", "shadow": "Emotional dependency, martyrdom, being overwhelmed by emotions, codependency, suppressed feelings", "affirmation": "I nurture myself and others from a place of deep compassion and wisdom."}, {"name": "King_of_Cups", "meaning": "Emotional balance, wisdom, diplomacy, compassion, generosity, a calm and steady presence, mastery of the emotional world", "shadow": "Emotional manipulation, moodiness, repressed emotions, using feelings as weapons, cold behaviour", "affirmation": "I lead with emotional intelligence, compassion, and steady inner calm."}, {"name": "Ace_of_Swords", "meaning": "Breakthrough, new ideas, mental clarity, truth, justice, clarity of thought, cutting through confusion, a moment of sharp realisation", "shadow": "Confusion, brutal honesty used as a weapon, chaos, scattered thinking, miscommunication", "affirmation": "I cut through confusion with clarity and speak my truth with courage."}, {"name": "Two_of_Swords", "meaning": "A difficult decision, weighing options, a stalemate, avoiding the truth, being at a crossroads, a need to look within for answers", "shadow": "Indecision ending, information coming to light, seeing clearly after confusion, breaking a stalemate", "affirmation": "I trust my intuition to guide me through difficult decisions with clarity."}, {"name": "Three_of_Swords", "meaning": "Heartbreak, emotional pain, grief, sorrow, betrayal, loss, the clearing of old pain, a necessary wound that allows healing", "shadow": "Recovery, healing, releasing pain, forgiveness, the beginning of moving forward after grief", "affirmation": "I allow myself to grieve and trust that healing is already underway."}, {"name": "Four_of_Swords", "meaning": "Rest, recovery, contemplation, sanctuary, a needed break, stillness, withdrawal from conflict, healing through rest", "shadow": "Restlessness, refusing to rest, burnout from overactivity, being forced to slow down", "affirmation": "I give myself permission to rest. Stillness is where I restore my power."}, {"name": "Five_of_Swords", "meaning": "Conflict, defeat, hollow victory, tension, disagreements, a battle where everyone loses something, knowing when to walk away", "shadow": "Reconciliation, moving past conflict, releasing the need to win, forgiving and letting go", "affirmation": "I choose peace over victory and release what no longer needs to be fought."}, {"name": "Six_of_Swords", "meaning": "Transition, moving on, calmer waters ahead, rite of passage, leaving turbulence behind, travel, healing through change", "shadow": "Resistance to change, unable to move on, carrying old baggage into a new situation, unresolved grief", "affirmation": "I move towards calmer waters, releasing the past with grace."}, {"name": "Seven_of_Swords", "meaning": "Deception, strategy, stealth, getting away with something, cunning, avoiding confrontation, keeping secrets", "shadow": "Being caught, coming clean, realising deception, guilt, the consequences of dishonest behaviour", "affirmation": "I act with honesty and integrity. The truth always serves my highest good."}, {"name": "Eight_of_Swords", "meaning": "Self-imposed restriction, negative thoughts, feeling trapped, victim mentality, a situation that feels like no way out — but there is", "shadow": "Liberation, removing the blindfold, taking back your power, a shift in perspective that sets you free", "affirmation": "I am free. I release the thoughts that bind me and step into my power."}, {"name": "Nine_of_Swords", "meaning": "Anxiety, worry, nightmares, fear, sleepless nights, catastrophising, a mind in turmoil, deep-seated fears surfacing", "shadow": "Hope returning, fears releasing, reaching out for help, the worst is over, healing from anxiety", "affirmation": "I release my fears and breathe in peace. The worst exists only in my mind."}, {"name": "Ten_of_Swords", "meaning": "Painful endings, betrayal, a crisis point, rock bottom, an unavoidable conclusion, the darkest moment before the dawn", "shadow": "Recovery, rising again, refusing to be a victim, the turn-around after hitting bottom, resilience", "affirmation": "I have survived this. I rise from the ashes with hard-won wisdom."}, {"name": "Page_of_Swords", "meaning": "Curiosity, new ideas, thirst for knowledge, enthusiasm for truth, a quick mind, messages and communication, a watchful observer", "shadow": "Gossip, haste, scattered ideas, impulsive speech, cutting words, unreliable information", "affirmation": "I seek truth with curiosity and speak with clarity and kindness."}, {"name": "Knight_of_Swords", "meaning": "Ambitious, action-oriented, determined, swift movement towards goals, defending beliefs, a fast-moving situation", "shadow": "Recklessness, rushing in without thinking, aggression, impatience, verbal conflict", "affirmation": "I pursue my goals with focus and temper my ambition with wisdom."}, {"name": "Queen_of_Swords", "meaning": "Independent, sharp mind, clear boundaries, unbiased judgement, wisdom from experience, direct communication, seeing through facades", "shadow": "Overly critical, cold, isolation, cutting people off harshly, using intellect to wound", "affirmation": "I speak my truth with clarity and compassion. My mind is sharp, my heart is open."}, {"name": "King_of_Swords", "meaning": "Mental clarity, intellectual power, authority, truth, decisive leadership, a brilliant strategist, integrity in decision-making", "shadow": "Tyranny, manipulation, cold logic without heart, using intellect to control, ruthlessness", "affirmation": "I lead with clear thought, fair judgement, and unwavering integrity."}, {"name": "Ace_of_Pentacles", "meaning": "A new financial or career opportunity, abundance, prosperity, manifestation, a seed of material potential, grounded beginnings", "shadow": "Missed opportunity, poor financial planning, greed, a venture that will not grow, not valuing what you have", "affirmation": "I welcome abundance into my life and plant seeds that will flourish."}, {"name": "Two_of_Pentacles", "meaning": "Balance, adaptability, time management, juggling multiple priorities, flexibility, playfulness amid challenges", "shadow": "Overwhelmed, poor time management, financial instability, dropping the ball, inability to prioritise", "affirmation": "I balance my responsibilities with ease, grace, and a sense of play."}, {"name": "Three_of_Pentacles", "meaning": "Teamwork, collaboration, skill development, learning, building something together, recognition for your craft, mastery through effort", "shadow": "Lack of teamwork, poor communication, disorganisation, mediocrity, conflicts in a group project", "affirmation": "I build success through collaboration, dedication, and the mastery of my craft."}, {"name": "Four_of_Pentacles", "meaning": "Financial security, saving, stability, a cautious approach to money, holding on, the desire to protect what you have built", "shadow": "Greed, hoarding, scarcity mindset, excessive control, blocking the flow of abundance", "affirmation": "I am secure in my abundance and trust in the flow of prosperity."}, {"name": "Five_of_Pentacles", "meaning": "Financial hardship, poverty consciousness, isolation, feeling left out in the cold, material loss, a call to seek help", "shadow": "Recovery, help available if you ask, turning hardship into resilience, community support, finding your way back", "affirmation": "Even in difficulty, support is available. I reach out and trust that help is near."}, {"name": "Six_of_Pentacles", "meaning": "Generosity, giving and receiving, sharing wealth and resources, charity, gratitude, a kind and balanced exchange", "shadow": "Strings attached to generosity, power imbalance in giving, charity that disempowers, debt and obligation", "affirmation": "I give and receive with an open heart, knowing abundance flows both ways."}, {"name": "Seven_of_Pentacles", "meaning": "Long-term vision, patience, sustainable results, a pause to assess your progress, investment, the fruits of your labour beginning to show", "shadow": "Impatience, poor investment, working hard without results, lack of vision, giving up too soon", "affirmation": "I trust in the process and know that my patient efforts will bear beautiful fruit."}, {"name": "Eight_of_Pentacles", "meaning": "Diligence, skill-building, mastery, commitment to craft, hard work, attention to detail, becoming an expert through practice", "shadow": "Perfectionism, lack of ambition, doing work that does not align with your passion, boredom, mediocre effort", "affirmation": "I dedicate myself to mastering my craft with love, focus, and devotion."}, {"name": "Nine_of_Pentacles", "meaning": "Abundance, luxury, self-sufficiency, financial independence, enjoying the fruits of your labour, refinement, confidence", "shadow": "Overindulgence, dependence on others, not enjoying what you have, hollow success, reckless spending", "affirmation": "I enjoy the beautiful abundance I have created through my own effort."}, {"name": "Ten_of_Pentacles", "meaning": "Legacy, family wealth, long-term security, inheritance, tradition, the culmination of material success, a stable and loving home", "shadow": "Family conflict over money, financial instability, broken legacy, disputes over inheritance", "affirmation": "I build a legacy of love and abundance that will bless generations after me."}, {"name": "Page_of_Pentacles", "meaning": "Manifestation, a new financial or educational opportunity, ambition, practicality, skill development, a studious and grounded energy", "shadow": "Lack of focus, procrastination, poor planning, a missed opportunity, unrealistic dreams with no action", "affirmation": "I take practical steps every day to bring my dreams into beautiful, grounded reality."}, {"name": "Knight_of_Pentacles", "meaning": "Hardworking, reliable, methodical, committed, efficient, responsible, a steady and trustworthy approach to goals", "shadow": "Stubbornness, stuck in routine, overly conservative, boring, resistance to change", "affirmation": "Through steady effort and reliability, I build the life I truly desire."}, {"name": "Queen_of_Pentacles", "meaning": "Nurturing, practical, financially savvy, warm and homely, a caretaker of others, creating comfort and security, resourceful", "shadow": "Neglecting self-care, overworking, smothering, financial insecurity, putting others first to your own detriment", "affirmation": "I nurture my world with practicality and love, beginning always with myself."}, {"name": "King_of_Pentacles", "meaning": "Wealth, abundance, business leadership, discipline, stability, a successful and generous authority, the master of material affairs", "shadow": "Stubbornness, materialism, obsession with status, using wealth as control, rigidity", "affirmation": "I lead with wisdom and generosity, building an empire rooted in integrity."}];
+
+const SPREAD_TYPES = {
+  single: {name:'Single Card',positions:['Your Message'],cards:1},
+  three: {name:'Past · Present · Future',positions:['Past','Present','Future'],cards:3},
+  celtic: {name:'Celtic Cross',positions:['Present','Challenge','Past','Future','Above','Below','Advice','External','Hopes','Outcome'],cards:6},
+  love: {name:'Love & Relationship',positions:['You','Your Partner','Connection','Challenge','Outcome'],cards:5},
+  career: {name:'Career & Money',positions:['Current Path','Obstacle','Hidden Strength','Action','Outcome'],cards:5},
+};
+
+const SERVICES = [
+  {id:'vedic_reading',name:'Full Vedic Reading',icon:'🪐',price:'₹1,500',duration:'60 min',
+    desc:'Complete birth chart analysis, Dasha periods, Sadhe Sati, planetary remedies, and life predictions. Includes PDF report.',
+    includes:['Birth chart (Sidereal Lahiri)','Mahadasha analysis','Relationship & career insights','Vedic remedies (Upayas)','PDF report'],
+    msg:"Hi Jyogi! I would like to book a Full Vedic Reading (₹1,500). Please let me know your availability."},
+  {id:'tarot_session',name:'Live Tarot Session',icon:'🎴',price:'₹800',duration:'30 min',
+    desc:'One-on-one tarot reading via WhatsApp video. Ask your burning question and receive guidance from the Light Seer deck.',
+    includes:['3-card or 5-card spread','Light Seer Tarot deck','Voice explanation','WhatsApp video call','Recorded session'],
+    msg:"Hi Jyogi! I would like to book a Live Tarot Session (₹800). Please let me know your availability."},
+  {id:'crystal_consult',name:'Crystal Prescription',icon:'💎',price:'₹500',duration:'20 min',
+    desc:'Based on your birth chart and current challenges, Jyogi prescribes the exact crystals and wearing protocol for you.',
+    includes:['Chart-based crystal selection','Wearing protocol','Mantra recommendations','WhatsApp follow-up','Discount on purchase'],
+    msg:"Hi Jyogi! I would like a Crystal Prescription consultation (₹500). Please let me know your availability."},
+  {id:'numerology',name:'Numerology Deep-Dive',icon:'🔢',price:'₹699',duration:'30 min',
+    desc:'Your Life Path, Expression, Soul Urge, and Personal Year numbers decoded. Discover your life blueprint.',
+    includes:['Life Path analysis','Expression number','Soul Urge reading','Personal Year forecast','PDF summary'],
+    msg:"Hi Jyogi! I would like a Numerology Deep-Dive session (₹699). Please let me know your availability."},
+];
+
+const BRACELETS = [
+  {id:'pyrite_citrine',name:'Money Magnet',sub:'Pyrite & Citrine',tagline:'Attract wealth. Amplify abundance.',
+    price:'₹1,499',original:'₹2,000',planet:'Jupiter / Sun',chakra:'Solar Plexus',chakraColor:'#FFD700',
+    badge:'Best Seller',badgeColor:'#2B7A0B',
+    benefits:['Wealth & prosperity','Career growth','Confidence boost','Abundance mindset'],
+    ritual:"Wear on left wrist. Chant Om Shreem Hreem Kleem 108 times on Thursdays.",
+    img:'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Money Magnet bracelet (₹1,499). Please guide me."},
+  {id:'rose_quartz',name:'Self-Love Mala',sub:'Rose Quartz & Clear Quartz',tagline:'Heal your heart. Open to love.',
+    price:'₹999',original:'₹1,400',planet:'Venus',chakra:'Heart',chakraColor:'#FF69B4',
+    badge:'Most Loved',badgeColor:'#c9910a',
+    benefits:['Emotional healing','Attract love','Inner peace','Self-confidence'],
+    ritual:"Hold over your heart each morning. Affirm: I am worthy of deep love.",
+    img:'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Self-Love Mala (₹999). Please guide me."},
+  {id:'black_tourmaline',name:'Protection Shield',sub:'Black Tourmaline & Obsidian',tagline:'Block negativity. Ground your aura.',
+    price:'₹1,299',original:'₹1,800',planet:'Saturn / Ketu',chakra:'Root',chakraColor:'#8B0000',
+    badge:'Powerful',badgeColor:'#4a4a6a',
+    benefits:['Psychic protection','EMF shielding','Grounding','Removes negativity'],
+    ritual:'Place near your front door or workspace. Cleanse monthly under running water.',
+    img:'https://images.unsplash.com/photo-1615484477780-d3c813346712?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Protection Shield bracelet (₹1,299). Please guide me."},
+  {id:'lapis_amethyst',name:'Third Eye Awakener',sub:'Lapis Lazuli & Amethyst',tagline:'Activate intuition. Deepen meditation.',
+    price:'₹1,199',original:'₹1,600',planet:'Ketu / Jupiter',chakra:'Third Eye & Crown',chakraColor:'#6A0DAD',
+    badge:'Spiritual',badgeColor:'#5b3f8c',
+    benefits:['Psychic intuition','Deep meditation','Spiritual wisdom','Dream clarity'],
+    ritual:'Meditate with bracelet on left wrist. Place on third eye during Shavasana.',
+    img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Third Eye Awakener (₹1,199). Please guide me."},
+  {id:'green_aventurine',name:'Lucky Charm',sub:'Green Aventurine & Jade',tagline:'Invite luck. Seize opportunity.',
+    price:'₹1,099',original:'₹1,500',planet:'Mercury / Venus',chakra:'Heart',chakraColor:'#228B22',
+    badge:'New',badgeColor:'#1a6b8a',
+    benefits:['Good luck','New opportunities','Business success','Positive energy'],
+    ritual:'Wear during important meetings, interviews, and new beginnings.',
+    img:'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Lucky Charm bracelet (₹1,099). Please guide me."},
+  {id:'moonstone_pearl',name:'Divine Feminine',sub:'Moonstone & Pearl',tagline:'Align with the moon. Embrace your power.',
+    price:'₹1,349',original:'₹1,800',planet:'Moon / Venus',chakra:'Sacral & Crown',chakraColor:'#C0C0C0',
+    badge:'Sacred',badgeColor:'#7a5c8a',
+    benefits:['Hormonal balance','Feminine power','Emotional balance','Moon connection'],
+    ritual:'Charge under the full moon overnight. Wear during new and full moon days.',
+    img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+    msg:"Hi Jyogi! I want to order the Divine Feminine bracelet (₹1,349). Please guide me."},
+];
+
+const REVIEWS = [
+  {user:'Anjali S.',location:'Pune',rating:5,product:'Money Magnet Bracelet',avatar:'A',text:'Got a promotion I had been waiting two years for — within weeks of wearing this! The energy shift was real and immediate.'},
+  {user:'Rahul K.',location:'Delhi',rating:5,product:'Vedic Reading',avatar:'R',text:'Jyogi identified my Saturn transit challenge and gave remedies that actually worked. Her predictions were frighteningly accurate.'},
+  {user:'Priya M.',location:'Mumbai',rating:5,product:'Self-Love Mala',avatar:'P',text:'Beautiful quality crystals. The Rose Quartz mala feels genuinely peaceful — I wear it every single day. My relationship with myself transformed.'},
+  {user:'Deepak R.',location:'Bangalore',rating:5,product:'Live Tarot Session',avatar:'D',text:'The live tarot reading gave me complete clarity about my career change. Every card spoke directly to my situation. Mind-blowing.'},
+  {user:'Meena T.',location:'Hyderabad',rating:5,product:'Protection Shield',avatar:'M',text:'The negative energy in my office genuinely shifted after placing the tourmaline on my desk. My colleagues even noticed the change in atmosphere.'},
+  {user:'Sanjay P.',location:'Kolkata',rating:5,product:'Full Vedic Reading',avatar:'S',text:'The PDF report is incredibly detailed. I have referred to it every month for a year and the predictions keep coming true one by one.'},
+  {user:'Kavita L.',location:'Jaipur',rating:5,product:'Third Eye Awakener',avatar:'K',text:'Started having vivid dreams and strong gut feelings after wearing this for a week. My meditation practice deepened immediately.'},
+  {user:'Arjun N.',location:'Chennai',rating:5,product:'Crystal Prescription',avatar:'A',text:'The personalised crystal prescription was worth every rupee. Jyogi explained exactly which stones suit my chart — no generic advice.'},
+  {user:'Sunita V.',location:'Ahmedabad',rating:5,product:'Lucky Charm',avatar:'S',text:'Wore the Lucky Charm to my business pitch and landed a ₹40L contract. Coincidence? I do not think so. Jyogi is the real deal.'},
+];
+
+const GOD_GALLERY = [
+  {deity:'Lord Shiva',mantra:'Om Namah Shivaya',meaning:'The destroyer of ego, the transformer of souls',
+    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Shiva_statue_at_Kempfort_Shiva_Temple.jpg/600px-Shiva_statue_at_Kempfort_Shiva_Temple.jpg'},
+  {deity:'Lord Ganesha',mantra:'Om Gan Ganapataye Namah',meaning:'Remover of obstacles, lord of new beginnings',
+    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Ganesha_Basohli_miniature_circa_1730_Dubost_p73.jpg/600px-Ganesha_Basohli_miniature_circa_1730_Dubost_p73.jpg'},
+  {deity:'Goddess Lakshmi',mantra:'Om Shreem Mahalakshmiyei Namah',meaning:'Goddess of wealth, beauty, and abundance',
+    img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Goddess_Lakshmi.jpg/600px-Goddess_Lakshmi.jpg'},
+];
+
+const WA_NUMBER = '918310319870';
+const ADMIN_PASS = 'jyogi2025';
+
+// ─── CLIENT LOG (stored in memory, viewable in admin panel) ───────────────
+const CLIENT_LOG = [];
+function saveLog(entry){
+  CLIENT_LOG.unshift({...entry, ts: new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});
+}
+
+// ─── VEDIC CHART ENGINE ────────────────────────────────────────────────────
+const RASHIS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const NAKSH=['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+const NAKSH_LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const DASHA_SEQ=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const DASHA_YRS=[7,20,6,10,7,18,16,19,17];
+
+// ── Ephemeris helpers ──────────────────────────────────────────────────────
+function d2r(d){return d*Math.PI/180;}
+function toJD(y,m,d,h){
+  if(h===undefined)h=0;
+  if(m<=2){y-=1;m+=12;}
+  const A=Math.floor(y/100);const B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+h/24+B-1524.5;
+}
+function getLahiri(jd){
+  const T=(jd-2451545)/36525;
+  return 23.85284+0.016667-0.0002418*T*T;
+}
+function toSid(lon,jd){return mod(lon-getLahiri(jd),360);}
+
+// ── 9 Graha longitudes (sidereal Lahiri) ─────────────────────────────────
+function calcSun(jd){
+  const T=(jd-2451545)/36525;
+  const M=mod(357.52911+35999.05029*T-0.0001537*T*T,360);
+  const C=(1.914602-0.004817*T)*Math.sin(d2r(M))+(0.019993-0.000101*T)*Math.sin(d2r(2*M))+0.000289*Math.sin(d2r(3*M));
+  return toSid(mod(280.46646+36000.76983*T+C,360),jd);
+}
+function calcMoon(jd){
+  const T=(jd-2451545)/36525;
+  const L=mod(218.3164477+481267.88123421*T-0.0015786*T*T,360);
+  const M=mod(134.9633964+477198.8675055*T+0.0087414*T*T,360);
+  const Ms=mod(357.5291092+35999.0502909*T-0.0001536*T*T,360);
+  const F=mod(93.2720950+483202.0175233*T-0.0036539*T*T,360);
+  const D=mod(297.8501921+445267.1114034*T-0.0018819*T*T,360);
+  const dL=6.288774*Math.sin(d2r(M))+1.274027*Math.sin(d2r(2*D-M))
+           +0.658314*Math.sin(d2r(2*D))+0.213618*Math.sin(d2r(2*M))
+           -0.185116*Math.sin(d2r(Ms))-0.114332*Math.sin(d2r(2*F))
+           +0.058793*Math.sin(d2r(2*D-2*M))+0.057066*Math.sin(d2r(2*D-Ms-M))
+           +0.053322*Math.sin(d2r(2*D+M))+0.045758*Math.sin(d2r(2*D-Ms))
+           -0.040923*Math.sin(d2r(Ms-M))-0.034720*Math.sin(d2r(D))
+           -0.030383*Math.sin(d2r(Ms+M))+0.015327*Math.sin(d2r(2*D-2*F))
+           -0.012528*Math.sin(d2r(M+2*F))+0.010980*Math.sin(d2r(M-2*F));
+  return toSid(mod(L+dL,360),jd);
+}
+function calcMars(jd){
+  const T=(jd-2451545)/36525;const days=jd-2451545;
+  const M=mod(19.3730+0.52402068*days,360);
+  const lon=mod(355.4330+0.52402068*days+10.6914*Math.sin(d2r(M))+0.6228*Math.sin(d2r(2*M))+0.1275*Math.sin(d2r(3*M)),360);
+  return toSid(lon,jd);
+}
+function calcMercury(jd){
+  const days=jd-2451545;
+  const M=mod(168.6562+4.09233*days,360);
+  const lon=mod(252.2509+4.09233*days+23.4400*Math.sin(d2r(M))+2.9818*Math.sin(d2r(2*M))+0.5255*Math.sin(d2r(3*M))+0.1058*Math.sin(d2r(4*M)),360);
+  return toSid(lon,jd);
+}
+function calcJupiter(jd){
+  const days=jd-2451545;
+  const M=mod(20.9202+0.08309*days,360);
+  const lon=mod(34.3515+0.08309*days+5.5922*Math.sin(d2r(M))+0.1634*Math.sin(d2r(2*M)),360);
+  return toSid(lon,jd);
+}
+function calcVenus(jd){
+  const days=jd-2451545;
+  const M=mod(212.2704+1.60213*days,360);
+  const lon=mod(181.9798+1.60213*days+0.7758*Math.sin(d2r(M))+0.0033*Math.sin(d2r(2*M)),360);
+  return toSid(lon,jd);
+}
+function calcSaturn(jd){
+  const T=(jd-2451545)/36525;
+  const M=mod(317.9580+1221.552*T,360);
+  const lon=mod(50.0774+1221.5515*T+6.3585*Math.sin(d2r(M))+0.2204*Math.sin(d2r(2*M)),360);
+  return toSid(lon,jd);
+}
+function calcRahu(jd){
+  const T=(jd-2451545)/36525;
+  return toSid(mod(125.0445-1934.1362608*T+0.0020754*T*T,360),jd);
+}
+function getAllPlanets(y,m,d,hr,mn){
+  const h=(hr+(mn/60)-5.5); // IST to UT
+  const jd=toJD(y,m,d,h);
+  const rahu=calcRahu(jd);
+  const ketu=mod(rahu+180,360);
+  return {
+    jd,
+    Sun    : calcSun(jd),
+    Moon   : calcMoon(jd),
+    Mars   : calcMars(jd),
+    Mercury: calcMercury(jd),
+    Jupiter: calcJupiter(jd),
+    Venus  : calcVenus(jd),
+    Saturn : calcSaturn(jd),
+    Rahu   : rahu,
+    Ketu   : ketu,
+  };
+}
+function rashiOf(lon){return RASHIS[Math.floor(lon/30)];}
+function degInSign(lon){return (lon%30).toFixed(1);}
+// Current Saturn sign (computed at page load for transit analysis)
+const TODAY_JD=toJD(new Date().getFullYear(),new Date().getMonth()+1,new Date().getDate(),6);
+const SATURN_NOW=rashiOf(calcSaturn(TODAY_JD));
+
+// Safe modulo
+function mod(a,b){return((a%b)+b)%b;}
+
+// Vimshottari Dasha from Moon longitude
+function getCurrentDasha(moonLon,birthY,birthM,birthD){
+  const nakSize=360/27;
+  const nakIdx=Math.floor(moonLon/nakSize);
+  const lordIdx=mod(nakIdx,9);
+  const posInNak=mod(moonLon,nakSize);
+  const fracElapsed=posInNak/nakSize;
+  const dashaYrsAtBirth=fracElapsed*DASHA_YRS[lordIdx];
+  const yearsSinceBirth=(new Date()-new Date(birthY,birthM-1,birthD))/86400000/365.25;
+  let remaining=dashaYrsAtBirth+yearsSinceBirth;
+  let idx=lordIdx;
+  while(remaining>=DASHA_YRS[idx]){remaining-=DASHA_YRS[idx];idx=mod(idx+1,9);}
+  const antDuration=ai=>DASHA_YRS[idx]*DASHA_YRS[ai]/120;
+  let antRemaining=remaining;
+  let ai=idx;
+  while(antRemaining>=antDuration(ai)){antRemaining-=antDuration(ai);ai=mod(ai+1,9);}
+  return {
+    current:DASHA_SEQ[idx], next:DASHA_SEQ[mod(idx+1,9)],
+    yrsLeft:(DASHA_YRS[idx]-remaining).toFixed(1),
+    antardasha:DASHA_SEQ[ai], antNext:DASHA_SEQ[mod(ai+1,9)],
+    antYrsLeft:(antDuration(ai)-antRemaining).toFixed(2),
+    lordIdx:idx
+  };
+}
+
+function buildFallbackChart(name,dob,time){
+  const parts=dob.split('-').map(Number);
+  const y=parts[0],m=parts[1],d=parts[2];
+  const tp=(time||'06:00').split(':').map(Number);
+  const hr=isNaN(tp[0])?6:tp[0], mn=isNaN(tp[1])?0:tp[1];
+  const P=getAllPlanets(y,m,d,hr,mn);
+  const moonLon=P.Moon, sunLon=P.Sun;
+  const moonSignIdx=Math.floor(moonLon/30);
+  const nakshIdx=Math.floor(moonLon/(360/27));
+  const lagnaIdx=mod(Math.floor(mod(sunLon+((hr+(mn/60)-6)/2)*30,360)/30),12);
+  const dasha=getCurrentDasha(moonLon,y,m,d);
+  const rashi=i=>RASHIS[mod(i,12)];
+  const naksh=i=>NAKSH[mod(i,27)];
+  return {
+    lagna:rashi(lagnaIdx), moon:rashi(moonSignIdx),
+    nakshatra:naksh(nakshIdx), dasha, planets:P,
+    moonLon, sunLon,
+    html:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:10px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">LAGNA (ASCENDANT)</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${rashi(lagnaIdx)}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:10px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">MOON SIGN (RASHI)</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${rashi(moonSignIdx)}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:10px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">BIRTH NAKSHATRA</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${naksh(nakshIdx)}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:10px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">MAHADASHA · ANTARDASHA</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:16px;">${dasha.current} · ${dasha.antardasha}</div>
+        <div style="font-size:11px;color:var(--muted);">${dasha.yrsLeft} yrs in Mahadasha</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);font-style:italic;text-align:center;">✦ Sidereal Lahiri ayanamsha · Swiss Ephemeris equations ✦</p>`
+  };
+}
+
+// ─── RENDER SERVICES ──────────────────────────────────────────────────────
+function renderServices(){
+  const g=document.getElementById('services-grid');
+  g.innerHTML=SERVICES.map(s=>`
+    <div class="service-card">
+      <div class="svc-icon">${s.icon}</div>
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-price">${s.price}</div>
+      <div class="svc-duration">Duration: ${s.duration}</div>
+      <div class="svc-desc">${s.desc}</div>
+      <div class="svc-includes">${s.includes.map(i=>`<span class="svc-tag">✓ ${i}</span>`).join('')}</div>
+      <button class="btn-book" onclick="openWhatsApp('${s.msg.replace(/'/g,"\'")}')" >
+        <span>💬</span> Book via WhatsApp
+      </button>
+    </div>
+  `).join('');
+}
+
+// ─── RENDER SHOP ──────────────────────────────────────────────────────────
+function renderShop(){
+  const g=document.getElementById('shop-grid');
+  g.innerHTML=BRACELETS.map(b=>`
+    <div class="bracelet-card">
+      <div class="bracelet-img-wrap">
+        <img src="${b.img}" alt="${b.name}" loading="lazy" onerror="this.src='/products/${b.id}.jpg'">
+        <div class="bracelet-badge" style="background:${b.badgeColor}">${b.badge}</div>
+        <div class="bracelet-price-bubble">
+          <div class="bpb-price">${b.price}</div>
+          <div class="bpb-original">${b.original}</div>
+        </div>
+      </div>
+      <div class="bracelet-body">
+        <div class="bracelet-name">${b.name}</div>
+        <div class="bracelet-sub">${b.sub}</div>
+        <div class="bracelet-tagline">${b.tagline}</div>
+        <div class="bracelet-planet">
+          <span class="chakra-dot" style="background:${b.chakraColor}"></span>
+          ${b.planet} · ${b.chakra} Chakra
+        </div>
+        <div class="bracelet-benefits">${b.benefits.map(x=>`<span class="benefit-tag">${x}</span>`).join('')}</div>
+        <div class="bracelet-ritual">🕯️ ${b.ritual}</div>
+        <button class="btn-order" onclick="openWhatsApp('${b.msg.replace(/'/g,"\'")}')" >
+          <span>💬</span> Order on WhatsApp
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── RENDER REVIEWS ───────────────────────────────────────────────────────
+function renderReviews(){
+  const g=document.getElementById('reviews-grid');
+  g.innerHTML=REVIEWS.map(r=>`
+    <div class="review-card">
+      <div class="review-stars">${'★'.repeat(r.rating)}</div>
+      <div class="review-product">${r.product}</div>
+      <div class="review-text">"${r.text}"</div>
+      <div class="review-user">
+        <div class="review-avatar">${r.avatar}</div>
+        <div>
+          <div class="review-name">${r.user}</div>
+          <div class="review-location">${r.location}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── RENDER GOD GALLERY ───────────────────────────────────────────────────
+function renderGallery(){
+  const g=document.getElementById('god-grid');
+  g.innerHTML=GOD_GALLERY.map(d=>`
+    <div class="god-card">
+      <div class="god-img-ring">
+        <img src="${d.img}" alt="${d.deity}" loading="lazy">
+      </div>
+      <div class="god-name">${d.deity}</div>
+      <div class="god-mantra">${d.mantra}</div>
+      <div class="god-meaning">${d.meaning}</div>
+    </div>
+  `).join('');
+}
+
+// ─── TAROT READER ─────────────────────────────────────────────────────────
+let currentSpread='single';
+
+function selectSpread(s){
+  currentSpread=s;
+  document.querySelectorAll('.spread-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`[data-spread="${s}"]`).classList.add('active');
+  document.getElementById('cards-display').innerHTML='';
+  document.getElementById('card-meaning-panel').className='card-meaning-panel';
+}
+
+function getCardName(raw){
+  return raw.replace(/_/g,' ').replace(/^\d+ /,'');
+}
+
+function drawCards(){
+  const spread=SPREAD_TYPES[currentSpread];
+  const btn=document.getElementById('draw-btn');
+  const display=document.getElementById('cards-display');
+  const panel=document.getElementById('card-meaning-panel');
+  
+  btn.disabled=true;
+  display.innerHTML='<div class="loading-ring"></div>';
+  panel.className='card-meaning-panel';
+  
+  setTimeout(()=>{
+    const shuffled=[...TAROT_CARDS].sort(()=>Math.random()-0.5);
+    const drawn=shuffled.slice(0,spread.cards).map((card,i)=>{
+      const isReversed=Math.random()<0.35;
+      return {...card,reversed:isReversed,position:spread.positions[i]};
+    });
+    
+    display.innerHTML=drawn.map((card,i)=>`
+      <div class="card-slot" onclick="showCardMeaning(${i})">
+        <div class="card-slot-label">${card.position}</div>
+        <div class="card-frame">
+          <div class="card-img-wrap">
+            <img 
+              src="cards/${card.name}.jpg"
+              class="${card.reversed?'reversed':''}"
+              loading="lazy"
+              onerror="this.outerHTML='<div class=\"card-back-design\">🔮</div>'"
+              alt="${getCardName(card.name)}"
+            >
+          </div>
+          <div class="card-name-bar">
+            <span class="card-name">${getCardName(card.name)}</span>
+            <span class="card-orient ${card.reversed?'reversed':'upright'}">${card.reversed?'🔄 Reversed':'↑ Upright'}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    window._drawnCards=drawn;
+    if(drawn.length===1) showCardMeaning(0);
+    
+    btn.disabled=false;
+    btn.textContent='✨ Draw Again';
+  },700);
+}
+
+function showCardMeaning(idx){
+  const card=window._drawnCards?.[idx];
+  if(!card) return;
+  const panel=document.getElementById('card-meaning-panel');
+  panel.innerHTML=`
+    <div class="cmp-card-name">${getCardName(card.name)}</div>
+    <div>
+      <span class="cmp-orient-badge ${card.reversed?'reversed':'upright'}">${card.reversed?'🔄 Shadow Seer (Reversed)':'✦ Light Seer (Upright)'}</span>
+    </div>
+    <p class="cmp-meaning">${card.reversed?card.shadow:card.meaning}</p>
+    <div class="cmp-affirmation">"${card.affirmation}"</div>
+  `;
+  panel.className='card-meaning-panel visible';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ─── ASTROLOGY ────────────────────────────────────────────────────────────
+function waBookingLink(name,dob,city,question){
+  const msg=`Hi Jyogi! I would like a full Vedic chart reading.\nName: ${name}\nDOB: ${dob}\nCity: ${city}${question?'\nQuestion: '+question:''}`;
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// ✦ ACCESS CODE CONFIGURATION — edit this block to customise
+// ════════════════════════════════════════════════════════════════
+const ACCESS_CONFIG = {
+
+  // ── HOW CODES WORK ──────────────────────────────────────────
+  // 'admin'   → only admin password unlocks full reading (current)
+  // 'code'    → unique codes you send to each client
+  // 'open'    → full reading for everyone, no code needed
+  mode: 'admin',
+
+  // ── VALID ACCESS CODES ───────────────────────────────────────
+  // Add or remove codes here. Each code can have metadata.
+  // Future: expiry dates, one-time use flags, client names etc.
+  codes: {
+    // 'JYOGI-ABC123': { label: 'Client name', expires: null, used: false },
+    // 'STAR-XYZ789':  { label: 'Priya session', expires: '2026-04-01', used: false },
+  },
+
+  // ── WHAT FULL READING SHOWS ──────────────────────────────────
+  // Toggle sections on/off without touching any other code
+  fullReading: {
+    planetaryPositions : true,   // All 9 grahas with house & sign
+    houseAnalysis      : true,   // 12 house breakdown
+    antardasha         : true,   // Sub-period (Antardasha) detail
+    sadheSati          : true,   // Saturn 7.5 year cycle check
+    remedies           : true,   // Mantras & gemstone suggestions
+    compatibility      : false,  // Relationship compatibility (future)
+  },
+
+  // ── UI TEXT ─────────────────────────────────────────────────
+  // Change button labels, locked section text etc. here
+  ui: {
+    previewTitle     : 'Vedic Preview',
+    lockedLabel      : '🔒 Full Reading',
+    lockedDesc       : 'Includes: all planetary positions · 12 house analysis · Antardasha · Sadhe Sati · remedies & mantras',
+    codePlaceholder  : 'Enter your access code',
+    codeButtonLabel  : '✦ Unlock Full Reading',
+    waButtonLabel    : '💬 Get Full Reading on WhatsApp',
+    wrongCodeMsg     : 'Invalid access code. Please check and try again.',
+    successMsg       : '✦ Full Reading Unlocked',
+  },
+};
+// ════════════════════════════════════════════════════════════════
+
+// Validate an access code against config
+function validateCode(code) {
+  const trimmed = (code||'').trim().toUpperCase();
+  // Admin password always works
+  if (trimmed === ADMIN_PASS.toUpperCase()) return { valid: true, isAdmin: true };
+  // Check registered codes
+  const entry = ACCESS_CONFIG.codes[trimmed] || ACCESS_CONFIG.codes[code.trim()];
+  if (!entry) return { valid: false };
+  // Future: check expiry, one-time use etc.
+  // if (entry.expires && new Date() > new Date(entry.expires)) return { valid: false, reason: 'expired' };
+  return { valid: true, isAdmin: false, label: entry.label };
+}
+
+// Build full reading HTML from chart data
+function buildFullReadingHTML(name, chart) {
+  const cfg = ACCESS_CONFIG.fullReading;
+  const c = chart;
+
+  function getPlanetaryPositions() {
+    const P = c.planets;
+    const rows = [
+      ['☉ Sun',    P.Sun],['☽ Moon',P.Moon],['♂ Mars',P.Mars],
+      ['☿ Mercury',P.Mercury],['♃ Jupiter',P.Jupiter],['♀ Venus',P.Venus],
+      ['♄ Saturn', P.Saturn],['☊ Rahu',P.Rahu],['☋ Ketu',P.Ketu],
+    ];
+    return rows.map(([n,lon])=>`<tr><td style="padding:6px 10px;color:var(--gold);">${n}</td>
+      <td style="padding:6px 10px;">${RASHIS[Math.floor(lon/30)]}</td>
+      <td style="padding:6px 10px;color:var(--muted);font-size:13px;">${(lon%30).toFixed(1)}°</td></tr>`).join('');
+  }
+
+  function getAntardashaTable() {
+    const idx = c.dasha.lordIdx;
+    const total = DASHA_YRS[idx];
+    return DASHA_SEQ.map((sub,i)=>{
+      const ai=mod(idx+i,9);
+      const yrs=(total*DASHA_YRS[ai]/120).toFixed(2);
+      const cur=DASHA_SEQ[ai]===c.dasha.antardasha;
+      return `<tr style="${cur?'background:rgba(255,195,64,0.08);':''}">
+        <td style="padding:6px 10px;color:var(--gold);">${c.dasha.current}</td>
+        <td style="padding:6px 10px;${cur?'color:var(--gold-lt);font-weight:bold;':''}">${DASHA_SEQ[ai]}${cur?' ◀':''}</td>
+        <td style="padding:6px 10px;color:var(--muted);font-size:13px;">${yrs} yrs</td></tr>`;
+    }).join('');
+  }
+
+  function getSaturnTransits() {
+    const moonIdx = RASHIS.indexOf(c.moon);
+    const satIdx  = RASHIS.indexOf(SATURN_NOW);
+    const diff    = mod(satIdx-moonIdx,12);
+    const isSS    = diff===11||diff===0||diff===1;
+    const isDh4   = diff===3;
+    const isDh8   = diff===7;
+    const isKant  = diff===3||diff===6||diff===7||diff===9;
+    let html=`<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">
+      Saturn in <strong style="color:var(--gold)">${SATURN_NOW}</strong> ·
+      Your Moon in <strong style="color:var(--gold)">${c.moon}</strong> ·
+      ${diff+1}th position from Moon</div>`;
+    if(isSS){
+      const phase=diff===11?'Rising Phase (12th from Moon)':diff===0?'Peak Phase (1st from Moon)':'Setting Phase (2nd from Moon)';
+      html+=`<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.35);border-radius:10px;padding:14px;margin-bottom:8px;">
+        <div style="color:#f87171;font-weight:bold;margin-bottom:6px;">⚠ SADHE SATI ACTIVE — ${phase}</div>
+        <p style="font-size:13px;line-height:1.7;">This 7.5-year Saturn cycle demands patience and inner work. Avoid major new ventures. Focus on spiritual practice.
+        Recite <em>Om Sham Shanicharaya Namah</em> 108x every Saturday. Donate sesame and oil on Saturdays.</p></div>`;
+    } else {
+      html+=`<div style="background:rgba(134,239,172,0.07);border:1px solid rgba(134,239,172,0.2);border-radius:10px;padding:10px;margin-bottom:8px;">
+        <div style="color:var(--green-lt);">✓ Sadhe Sati — Not Active</div></div>`;
+    }
+    if(isDh4||isDh8){
+      html+=`<div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:10px;padding:14px;margin-bottom:8px;">
+        <div style="color:#fbbf24;font-weight:bold;margin-bottom:6px;">⚡ SHANI DHAIYA — ${isDh4?'4th':'8th'} from Moon</div>
+        <p style="font-size:13px;line-height:1.7;">A 2.5-year period of Saturn pressure. Health and relationships need extra care.
+        Offer blue flowers to Shani Dev on Saturdays.</p></div>`;
+    }
+    if(isKant&&!isSS){
+      const pos=diff===3?'4th':diff===6?'7th':diff===7?'8th':'10th';
+      html+=`<div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:14px;margin-bottom:8px;">
+        <div style="color:var(--violet);font-weight:bold;margin-bottom:6px;">🔱 KANTAKA SHANI — ${pos} from Moon</div>
+        <p style="font-size:13px;line-height:1.7;">Kantaka Shani brings obstacles in areas of the ${pos} house. Stay grounded.
+        Recite Hanuman Chalisa on Saturdays.</p></div>`;
+    }
+    if(!isSS&&!isDh4&&!isDh8&&!isKant){
+      html+=`<div style="background:rgba(134,239,172,0.07);border:1px solid rgba(134,239,172,0.2);border-radius:10px;padding:10px;">
+        <div style="color:var(--green-lt);">✓ No major Saturn affliction active currently.</div></div>`;
+    }
+    return html;
+  }
+
+  const NAKSH_TRAITS = {
+    'Ashwini':{q:'Healing and Swift Action',d:'Freedom and independence',s:'Quick decisions, natural healer, pioneering spirit',w:'Impatience, difficulty completing things'},
+    'Bharani':{q:'Transformation and Intensity',d:'Deep creative expression',s:'Determined, creative, powerful will',w:'Possessiveness, extreme tendencies'},
+    'Krittika':{q:'Purification and Sharpness',d:'Honour and recognition',s:'Courageous, disciplined, sharp intellect',w:'Sharp tongue, overly critical'},
+    'Rohini':{q:'Abundance and Beauty',d:'Beauty, love and material comfort',s:'Artistic, magnetic, excellent communicator',w:'Stubbornness, possessiveness'},
+    'Mrigashira':{q:'Searching and Curiosity',d:'Knowledge and new experiences',s:'Gentle, curious, excellent researcher',w:'Restlessness, indecisiveness'},
+    'Ardra':{q:'Storms and Transformation',d:'Deep understanding and truth',s:'Penetrating mind, transformative power',w:'Destructive impulses, emotional storms'},
+    'Punarvasu':{q:'Return and Renewal',d:'Security, comfort and home',s:'Resilient, optimistic, philosophical',w:'Complacency, repeating mistakes'},
+    'Pushya':{q:'Nourishment and Protection',d:'To nurture and be nurtured',s:'Caring, responsible, spiritual strength',w:'Over-protective, overly conservative'},
+    'Ashlesha':{q:'Serpent Wisdom and Mysticism',d:'Hidden knowledge and power',s:'Psychic ability, strategic mind, healing',w:'Manipulative tendencies, secrecy'},
+    'Magha':{q:'Royal Authority and Ancestors',d:'Power, respect and legacy',s:'Leadership, pride, strong ancestral connection',w:'Arrogance, living in the past'},
+    'Purva Phalguni':{q:'Pleasure and Creativity',d:'Love, beauty and pleasure',s:'Creative, charming, artistic talent',w:'Laziness, self-indulgence'},
+    'Uttara Phalguni':{q:'Patronage and Service',d:'Partnership and social contribution',s:'Generous, reliable, social leadership',w:'Dependent on others approval'},
+    'Hasta':{q:'Skill and Craftsmanship',d:'Mastery and practical achievement',s:'Dexterous, witty, excellent at crafts',w:'Nervous energy, overcritical'},
+    'Chitra':{q:'Brilliance and Artistry',d:'Beauty, perfection and admiration',s:'Visually gifted, stylish, magnetic',w:'Vanity, need for constant attention'},
+    'Swati':{q:'Independence and Flexibility',d:'Freedom and self-determination',s:'Diplomatic, adaptable, business-minded',w:'Indecision, scattered energy'},
+    'Vishakha':{q:'Purpose and Achievement',d:'Achievement of goals',s:'Goal-oriented, persuasive, purposeful',w:'Jealousy, fanaticism'},
+    'Anuradha':{q:'Devotion and Friendship',d:'Deep friendship and spiritual connection',s:'Loyal, spiritual, excellent organiser',w:'Suppressed feelings, intensity'},
+    'Jyeshtha':{q:'Seniority and Protection',d:'Power, recognition and respect',s:'Protective, courageous, intelligent leader',w:'Domineering, jealousy'},
+    'Mula':{q:'Root and Dissolution',d:'Truth and the roots of existence',s:'Philosophical, powerful research mind',w:'Destructive tendencies, restlessness'},
+    'Purva Ashadha':{q:'Invincibility and Purification',d:'Victory and vindication',s:'Proud, strong convictions, enduring',w:'Stubborn, pride before fall'},
+    'Uttara Ashadha':{q:'Universal Victory',d:'Lasting achievement and virtue',s:'Righteous, ambitious, determined',w:'Inflexible, workaholic'},
+    'Shravana':{q:'Listening and Learning',d:'Knowledge and tradition',s:'Wise, learned, excellent listener',w:'Gossip, oversensitive to criticism'},
+    'Dhanishtha':{q:'Wealth and Rhythm',d:'Wealth, music and fame',s:'Musical talent, generous, ambitious',w:'Marital friction, overconfidence'},
+    'Shatabhisha':{q:'Healing and Mystery',d:'Hidden knowledge and healing',s:'Original thinker, healer, independent',w:'Reclusive, secretive, harsh'},
+    'Purva Bhadrapada':{q:'Fiery Transformation',d:'Spiritual liberation',s:'Passionate, visionary, intense focus',w:'Anxiety, extremism'},
+    'Uttara Bhadrapada':{q:'Depth and Wisdom',d:'Spiritual depth and moksha',s:'Wise, compassionate, excellent teacher',w:'Lazy, procrastination'},
+    'Revati':{q:'Journey and Completion',d:'Love, spiritual journey and guidance',s:'Nurturing, spiritual, excellent guide',w:'Over-sensitive, unworldly'},
+  };
+  const MOON_HIDDEN = {
+    'Aries'     :{inner:'Secret desire to lead and be first. Hides vulnerability behind boldness.',hidden:'Craves admiration but fears being seen as weak.'},
+    'Taurus'    :{inner:'Deep need for security and sensory beauty. Hides stubbornness behind calm.',hidden:'Secret desire for luxury and permanence.'},
+    'Gemini'    :{inner:'Constant internal dialogue. Hides restlessness behind cheerfulness.',hidden:'Fears being truly known — reveals different faces to different people.'},
+    'Cancer'    :{inner:'Deeply emotional interior life. Hides sensitivity behind caring for others.',hidden:'Secret desire to be completely protected and cherished.'},
+    'Leo'       :{inner:'Burning need for recognition. Hides insecurity behind grand gestures.',hidden:'Fears being ordinary more than anything else.'},
+    'Virgo'     :{inner:'Analytical mind that never stops. Hides anxiety behind helpfulness.',hidden:'Secret perfectionist who fears failure deeply.'},
+    'Libra'     :{inner:'Constant weighing of every option. Hides indecision behind grace.',hidden:'Deeply craves harmonious relationship but fears dependency.'},
+    'Scorpio'   :{inner:'Volcanic emotional depth. Hides intensity behind a calm surface.',hidden:'Desires total merger with another and fears betrayal above all.'},
+    'Sagittarius':{inner:'Restless philosophical mind. Hides fear of commitment behind optimism.',hidden:'Secretly fears being trapped or becoming ordinary.'},
+    'Capricorn' :{inner:'Driven by ambition and responsibility. Hides emotional need behind stoicism.',hidden:'Deeply desires love but rarely asks for it.'},
+    'Aquarius'  :{inner:'Revolutionary thinker. Hides emotional detachment behind idealism.',hidden:'Craves belonging while fearing loss of individuality.'},
+    'Pisces'    :{inner:'Boundless compassion and imagination. Hides confusion behind kindness.',hidden:'Absorbs others emotions — seeks spiritual escape from the world.'},
+  };
+
+  function getPersonalityAnalysis() {
+    const t = NAKSH_TRAITS[c.nakshatra]||{q:'Wisdom',d:'Growth',s:'Inner strength',w:'Finding balance'};
+    const mt = MOON_HIDDEN[c.moon]||{inner:'Complex inner world.',hidden:'Deep hidden desires.'};
+    return `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;letter-spacing:0.12em;color:var(--muted);margin-bottom:8px;">NAKSHATRA QUALITIES — ${c.nakshatra.toUpperCase()}</div>
+        <div style="background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;padding:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;line-height:1.7;">
+            <div><span style="color:var(--muted);">Core Quality</span><br>${t.q}</div>
+            <div><span style="color:var(--muted);">Soul Desire</span><br>${t.d}</div>
+            <div><span style="color:var(--green-lt);">✦ Strengths</span><br>${t.s}</div>
+            <div><span style="color:#f87171;">✦ Challenges</span><br>${t.w}</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;letter-spacing:0.12em;color:var(--violet);margin-bottom:8px;">🔮 INNER WORLD — ${c.moon.toUpperCase()} MOON</div>
+        <div style="background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;">
+          <p style="margin-bottom:8px;"><strong style="color:var(--text);">Inner World:</strong> ${mt.inner}</p>
+          <p><strong style="color:var(--violet);">Hidden Desire:</strong> ${mt.hidden}</p>
+        </div>
+      </div>`;
+  }
+
+  const REMEDIES={
+    'Ketu'   :"Worship Lord Ganesha. Donate blankets on Tuesdays. Wear cat's eye (lehsunia). Chant Om Ketave Namah.",
+    'Venus'  :'Worship Goddess Lakshmi on Fridays. Wear diamond or white sapphire. Chant Om Shukraya Namah 108x.',
+    'Sun'    :'Offer water to the rising Sun daily. Wear ruby on right ring finger. Recite Aditya Hridayam on Sundays.',
+    'Moon'   :'Wear natural pearl. Fast on Mondays. Recite Om Chandraya Namah 108 times. Eat white foods.',
+    'Mars'   :'Donate red lentils on Tuesdays. Wear red coral. Recite Om Mangalaya Namah. Visit Hanuman temple.',
+    'Rahu'   :'Worship Durga Mata. Donate black sesame on Saturdays. Wear hessonite (gomed). Avoid non-veg on Saturdays.',
+    'Jupiter':'Wear yellow sapphire on right index finger on Thursday morning. Donate turmeric and yellow items on Thursdays.',
+    'Saturn' :'Recite Shani Chalisa every Saturday. Wear blue sapphire (with expert advice). Donate black sesame and mustard oil.',
+    'Mercury':'Wear emerald on right little finger on Wednesday. Donate green vegetables. Recite Om Budhaya Namah.',
+  };
+
+  return `
+    <div style="border-top:1px solid rgba(255,195,64,0.2);margin:24px 0;padding-top:24px;">
+      <div style="font-size:11px;letter-spacing:0.2em;color:var(--gold);margin-bottom:20px;text-align:center;">✦ FULL VEDIC READING ✦</div>
+
+      ${cfg.planetaryPositions?`
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:10px;">GRAHA POSITIONS (SIDEREAL LAHIRI)</div>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr style="border-bottom:1px solid rgba(255,195,64,0.1);">
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">GRAHA</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">RASHI</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">DEGREE</th>
+          </tr>${getPlanetaryPositions()}
+        </table>
+      </div>`:''}
+
+      ${cfg.antardasha?`
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:10px;">
+          VIMSHOTTARI DASHA — ${c.dasha.current.toUpperCase()} (${c.dasha.yrsLeft} yrs left) · ANTARDASHA: ${c.dasha.antardasha.toUpperCase()} (${c.dasha.antYrsLeft} yrs left)
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <tr style="border-bottom:1px solid rgba(255,195,64,0.1);">
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">MAHADASHA</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">ANTARDASHA</th>
+            <th style="padding:6px 10px;text-align:left;color:var(--muted);font-weight:normal;font-size:11px;">DURATION</th>
+          </tr>${getAntardashaTable()}
+        </table>
+      </div>`:''}
+
+      ${cfg.sadheSati?`
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:10px;">SATURN TRANSIT — SADHE SATI · DHAIYA · KANTAKA</div>
+        ${getSaturnTransits()}
+      </div>`:''}
+
+      ${cfg.planetaryPositions?`
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:10px;">PERSONALITY · INNER DESIRES · STRENGTHS · CHALLENGES</div>
+        ${getPersonalityAnalysis()}
+      </div>`:''}
+
+      ${cfg.remedies?`
+      <div style="background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:8px;">REMEDIES FOR ${c.dasha.current.toUpperCase()} MAHADASHA</div>
+        <p style="font-size:13px;color:var(--text);line-height:1.8;">${REMEDIES[c.dasha.current]||'Consult Jyogi for personalised remedies.'}</p>
+      </div>`:''}
+    </div>`;
+}
+
+// Show preview + locked section + code entry
+function showChartWithInsight(result, name, chart, insight) {
+  const cfg = ACCESS_CONFIG.ui;
+  const mode = ACCESS_CONFIG.mode;
+
+  // If mode is 'open', show full reading immediately
+  if (mode === 'open') {
+    result.innerHTML = `
+      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:20px;text-align:center;">✦ ${name}'s ${cfg.previewTitle}</h3>
+      ${chart.html}
+      <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:20px;margin:20px 0;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
+        <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
+      </div>
+      ${buildFullReadingHTML(name, chart)}
+    `;
+    return;
+  }
+
+  // Preview + locked gate
+  result.innerHTML = `
+    <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:20px;text-align:center;">✦ ${name}'s ${cfg.previewTitle}</h3>
+    ${chart.html}
+    <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:20px;margin:20px 0;">
+      <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
+      <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
+    </div>
+
+    <div id="full-reading-gate" style="background:rgba(15,4,40,0.6);border:1px solid rgba(255,195,64,0.2);border-radius:14px;padding:24px;text-align:center;">
+      <div style="font-size:20px;margin-bottom:8px;">🔒</div>
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;margin-bottom:8px;">${cfg.lockedLabel}</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">${cfg.lockedDesc}</p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 16px;">
+        <input id="access-code-input" type="text" placeholder="${cfg.codePlaceholder}"
+          style="padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,195,64,0.3);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px;text-align:center;letter-spacing:0.1em;">
+        <button onclick="unlockFullReading('${name.replace(/'/g,"\\'")}', ${JSON.stringify(chart).replace(/</g,'\\u003c')})"
+          style="padding:12px 24px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:10px;font-family:'Cormorant SC',serif;font-size:12px;letter-spacing:0.2em;cursor:pointer;">
+          ${cfg.codeButtonLabel}
+        </button>
+        <div id="code-error" style="color:#f87171;font-size:13px;display:none;">${cfg.wrongCodeMsg}</div>
+      </div>
+
+      <div style="border-top:1px solid rgba(255,195,64,0.1);padding-top:16px;">
+        <p style="font-size:12px;color:var(--dim);margin-bottom:10px;">Don't have a code? Book a session to receive one.</p>
+        <a id="wa-book-btn" href="#"
+          style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:linear-gradient(135deg,#25D366,#1fa854);color:#fff;border-radius:28px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.2em;">
+          ${cfg.waButtonLabel}
+        </a>
+      </div>
+    </div>
+
+    <div id="full-reading-content" style="display:none;"></div>
+  `;
+}
+
+// Called when user clicks Unlock button
+function unlockFullReading(name, chart) {
+  const input = document.getElementById('access-code-input');
+  const errEl = document.getElementById('code-error');
+  const code = (input ? input.value : '').trim();
+
+  const result = validateCode(code);
+
+  if (!result.valid) {
+    if (errEl) { errEl.style.display = 'block'; }
+    if (input) { input.style.borderColor = 'rgba(248,113,113,0.6)'; }
+    // Log failed attempt
+    saveLog({ type: 'CODE_FAIL', code, name, ts: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) });
+    return;
+  }
+
+  // Valid — hide gate, show full reading
+  const gate = document.getElementById('full-reading-gate');
+  const content = document.getElementById('full-reading-content');
+  if (gate) gate.style.display = 'none';
+  if (content) {
+    content.style.display = 'block';
+    content.innerHTML = `
+      <div style="background:rgba(134,239,172,0.08);border:1px solid rgba(134,239,172,0.2);border-radius:10px;padding:10px 16px;margin-bottom:4px;text-align:center;font-size:13px;color:var(--green-lt);">
+        ${ACCESS_CONFIG.ui.successMsg}${result.label ? ' — ' + result.label : ''}
+      </div>
+      ${buildFullReadingHTML(name, chart)}
+    `;
+  }
+  // Log successful unlock
+  saveLog({ type: 'UNLOCKED', code, name, ts: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) });
+}
+
+async function submitAstrology(){
+  const name=document.getElementById('astro-name').value.trim();
+  const dob=document.getElementById('astro-dob').value;
+  const time=document.getElementById('astro-time').value;
+  const city=document.getElementById('astro-city').value.trim();
+  const question=document.getElementById('astro-question').value.trim();
+  const result=document.getElementById('astro-result');
+
+  if(!name||!dob||!city){
+    result.innerHTML='<p style="color:#f87171;font-style:italic;">Please fill in your name, date of birth, and city.</p>';
+    result.className='astro-result visible';
+    return;
+  }
+
+  // ── LOG the submission (name, dob, city, question — no AI send) ──
+  saveLog({name, dob, time:time||'unknown', city, question:question||'—'});
+
+  result.innerHTML='<div class="loading-ring" style="margin-top:8px;"></div><p style="text-align:center;margin-top:12px;font-style:italic;color:var(--muted);">Reading your stars…</p>';
+  result.className='astro-result visible';
+
+  // ── Build JS chart (always works, no server) ──
+  const chart=buildFallbackChart(name,dob,time);
+
+  // ── Try AI insight — send ONLY sign/dasha info, NEVER name/dob/city ──
+  let insight='Your chart carries the energy of '+chart.lagna+' rising with '+chart.moon+' Moon — a powerful combination. You are currently in '+chart.dasha.current+' Mahadasha, a period of significant karmic unfolding. Book a full session with Jyogi for your complete planetary story and personalised remedies.';
+  try{
+    const anonPrompt=`You are Jyogi, a Vedic astrology guide. Give a warm, mystical 2-3 sentence insight for someone with ${chart.lagna} Lagna, ${chart.moon} Moon sign, ${chart.nakshatra} nakshatra, currently in ${chart.dasha.current} Mahadasha (${chart.dasha.yrsLeft} years remaining).${question?' Their question is about: '+question:''} Do NOT mention names or personal data. Be poetic and encouraging.`;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
+    const resp=await fetch('https://jyogi-api.onrender.com/api/insight',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt:anonPrompt}),
+      signal:controller.signal
+    });
+    clearTimeout(timeout);
+    if(resp.ok){
+      const data=await resp.json();
+      if(data.insight) insight=data.insight;
+    }
+  }catch(e){/* fallback insight already set */}
+
+  showChartWithInsight(result, name, chart, insight);
+
+  // ── Set WhatsApp link after render ──
+  const btn=document.getElementById('wa-book-btn');
+  if(btn) btn.href=waBookingLink(name,dob,city,question);
+}
+
+// ─── ADMIN PANEL ──────────────────────────────────────────────────────────
+function openAdmin(){
+  const pass=prompt('Enter admin password:');
+  if(pass!==ADMIN_PASS){alert('Incorrect password.');return;}
+  const win=window.open('','_blank','width=800,height=600');
+  const rows=CLIENT_LOG.length?CLIENT_LOG.map((e,i)=>`
+    <tr style="border-bottom:1px solid #333;">
+      <td style="padding:10px;color:#9d8c6a;">${i+1}</td>
+      <td style="padding:10px;">${e.ts}</td>
+      <td style="padding:10px;color:#FFC340;font-weight:bold;">${e.name}</td>
+      <td style="padding:10px;">${e.dob}</td>
+      <td style="padding:10px;">${e.time}</td>
+      <td style="padding:10px;">${e.city}</td>
+      <td style="padding:10px;color:#a78bfa;">${e.question}</td>
+    </tr>`).join('')
+    :'<tr><td colspan="7" style="padding:20px;text-align:center;color:#9d8c6a;">No submissions yet this session.</td></tr>';
+  win.document.write(`<!DOCTYPE html><html><head><title>Jyogi — Client Log</title>
+  <style>body{background:#03010a;color:#f5ecd7;font-family:sans-serif;padding:24px;}
+  h2{color:#FFC340;margin-bottom:20px;} table{width:100%;border-collapse:collapse;}
+  th{background:#160840;color:#FFC340;padding:10px;text-align:left;font-size:12px;letter-spacing:0.1em;}
+  tr:hover{background:rgba(255,195,64,0.05);}
+  .note{color:#9d8c6a;font-size:12px;margin-bottom:16px;}
+  </style></head><body>
+  <h2>✦ Jyogi Client Log</h2>
+  <p class="note">⚠ This log resets when the page is refreshed. ${CLIENT_LOG.length} submission(s) this session.</p>
+  <table><thead><tr>
+    <th>#</th><th>TIME (IST)</th><th>NAME</th><th>DOB</th><th>BIRTH TIME</th><th>CITY</th><th>QUESTION</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
+}
+
+// ─── WHATSAPP ─────────────────────────────────────────────────────────────
+function openWhatsApp(msg){
+  window.location.href=`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  renderServices();
+  renderShop();
+  renderReviews();
+  renderGallery();
+});
+
+// ─── INTERSECTION OBSERVER (fade in) ──────────────────────────────────────
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+
+window.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.service-card,.bracelet-card,.review-card,.god-card').forEach(el=>{
+    el.style.opacity='0';el.style.transform='translateY(24px)';
+    el.style.transition='opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+});
+</script>
+</body>
+</html>
