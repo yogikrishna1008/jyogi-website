@@ -667,63 +667,135 @@ const NAKSH=['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punar
 const DASHA_SEQ=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
 const DASHA_YRS=[7,20,6,10,7,18,16,19,17];
 
-function getSunSign(month,day){
-  const cuts=[[3,21],[4,20],[5,21],[6,21],[7,23],[8,23],[9,23],[10,23],[11,22],[12,22],[1,20],[2,19]];
-  for(let i=0;i<12;i++){const[m,d]=cuts[i];if(month===m&&day>=d||month===(m%12)+1&&day<cuts[(i+1)%12][1])return i;}
-  return 0;
+// Safe modulo that always returns positive (JS % can return negative)
+function mod(a,b){return((a%b)+b)%b;}
+
+// Julian Day Number for any date
+function toJD(y,m,d){
+  if(m<=2){y-=1;m+=12;}
+  const A=Math.floor(y/100);
+  const B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;
 }
-function getMoonSign(year,month,day){
-  // Simplified sidereal Moon cycle approximation
-  const ref=new Date(2000,0,1); const now=new Date(year,month-1,day);
-  const days=Math.floor((now-ref)/86400000);
-  return Math.floor(((days*13.176+118.3)%360)/30)%12;
+
+// Sidereal Moon longitude (Lahiri ayanamsha) — accurate to ~1 degree
+function getSiderealMoonLon(y,m,d,h){
+  const jd=toJD(y,m,d)+(h-5.5)/24; // convert IST to UT
+  const T=(jd-2451545.0)/36525;
+  // Mean longitude of Moon
+  let L=218.3164477+481267.88123421*T-0.0015786*T*T+T*T*T/538841;
+  // Mean anomaly of Moon
+  const M=134.9633964+477198.8675055*T+0.0087414*T*T+T*T*T/69699;
+  // Mean anomaly of Sun
+  const Ms=357.5291092+35999.0502909*T-0.0001536*T*T;
+  // Moon's argument of latitude
+  const F=93.2720950+483202.0175233*T-0.0036539*T*T;
+  // Longitude of ascending node
+  const Om=125.0445479-1934.1362608*T+0.0020754*T*T;
+  // Main corrections (degrees)
+  const dL=6.288774*Math.sin(M*Math.PI/180)
+           +1.274027*Math.sin((2*(L-F)-M)*Math.PI/180)
+           +0.658314*Math.sin(2*(L-F)*Math.PI/180)
+           +0.213618*Math.sin(2*M*Math.PI/180)
+           -0.185116*Math.sin(Ms*Math.PI/180)
+           -0.114332*Math.sin(2*F*Math.PI/180)
+           +0.058793*Math.sin((2*(L-F)-2*M)*Math.PI/180)
+           -0.020558*Math.sin((2*(L-F)-Ms-M)*Math.PI/180);
+  // Tropical longitude
+  let tropLon=mod(L+dL,360);
+  // Lahiri ayanamsha (approximate)
+  const ayan=23.85+0.0136*(y-2000)/100*36525/365.25;
+  // Sidereal longitude
+  return mod(tropLon-ayan,360);
 }
-function getNakshatra(year,month,day){
-  const ref=new Date(2000,0,1); const now=new Date(year,month-1,day);
-  const days=Math.floor((now-ref)/86400000);
-  return Math.floor(((days*13.176+118.3)%360)/(360/27))%27;
+
+// Sidereal Sun longitude (Lahiri) — for lagna estimation
+function getSiderealSunLon(y,m,d){
+  const jd=toJD(y,m,d);
+  const T=(jd-2451545.0)/36525;
+  const M=mod(357.5291+35999.0503*T,360);
+  const C=1.9146*Math.sin(M*Math.PI/180)+0.0200*Math.sin(2*M*Math.PI/180);
+  const sunLon=mod(280.4665+36000.7698*T+C,360);
+  const ayan=23.85+0.0136*(y-2000)/100*36525/365.25;
+  return mod(sunLon-ayan,360);
 }
-function getCurrentDasha(year,month,day){
-  const ref=new Date(1900,0,1); const now=new Date(year,month-1,day);
-  const totalDays=Math.floor((now-ref)/86400000);
-  const totalYrs=120; const cycleDays=totalYrs*365.25;
-  let pos=(totalDays%cycleDays); let i=0;
-  while(pos>0){pos-=DASHA_YRS[i]*365.25;if(pos<0)break;i=(i+1)%9;}
-  const current=DASHA_SEQ[i];
-  const next=DASHA_SEQ[(i+1)%9];
-  const daysLeft=Math.ceil(Math.abs(pos));
-  const yrsLeft=(daysLeft/365.25).toFixed(1);
-  return {current,next,yrsLeft};
-}
-function getLagna(hour,min,moonIdx){
-  // Approximate lagna from birth time
+
+// Approximate Lagna from Sun longitude + birth time (IST)
+function getLagnaFromTime(sunLon,hour,min){
   const timeH=hour+(min/60);
-  return Math.floor((moonIdx+Math.floor(timeH/2))%12);
+  // Sun is on the eastern horizon at sunrise (~6am). Lagna moves ~1 sign per 2 hours.
+  const sunrise=6;
+  const lagnaShift=((timeH-sunrise)/2)*30; // degrees
+  return mod(Math.floor(mod(sunLon+lagnaShift,360)/30),12);
+}
+
+// Vimshottari Mahadasha from Moon nakshatra
+function getCurrentDasha(moonLon, birthY, birthM, birthD){
+  // Nakshatra index (0-26)
+  const nakIdx=Math.floor(moonLon/(360/27));
+  // Nakshatra lord sequence: Ketu=0,Venus=1,Sun=2,Moon=3,Mars=4,Rahu=5,Jup=6,Sat=7,Mer=8
+  // Each nakshatra: 0=Ketu,1=Venus,2=Sun,3=Moon,4=Mars,5=Rahu,6=Jup,7=Sat,8=Mer (repeats)
+  const lordIdx=mod(nakIdx,9);
+  // How far through the nakshatra are we?
+  const nakSize=360/27;
+  const posInNak=mod(moonLon,nakSize);
+  const fracUsed=posInNak/nakSize;
+  // Years already elapsed in this dasha at birth
+  const dashaYrsTotal=DASHA_YRS[lordIdx];
+  const yearsElapsedAtBirth=fracUsed*dashaYrsTotal;
+  // Birth date as JS Date
+  const birthDate=new Date(birthY,birthM-1,birthD);
+  const today=new Date();
+  const daysSinceBirth=(today-birthDate)/86400000;
+  const yearsSinceBirth=daysSinceBirth/365.25;
+  // Walk through dashas from birth
+  let remaining=yearsElapsedAtBirth+yearsSinceBirth; // total years from start of birth-dasha
+  // Subtract the partial first dasha
+  let idx=lordIdx;
+  // We start with the birth-dasha lord
+  while(remaining>=DASHA_YRS[idx]){
+    remaining-=DASHA_YRS[idx];
+    idx=mod(idx+1,9);
+  }
+  const yrsLeft=(DASHA_YRS[idx]-remaining).toFixed(1);
+  return {current:DASHA_SEQ[idx], next:DASHA_SEQ[mod(idx+1,9)], yrsLeft};
 }
 
 function buildFallbackChart(name,dob,time){
-  const [y,m,d]=dob.split('-').map(Number);
-  const [hr,mn]=(time||'12:00').split(':').map(Number);
-  const moon=getMoonSign(y,m,d);
-  const lagna=getLagna(hr,mn,moon);
-  const naksh=getNakshatra(y,m,d);
-  const dasha=getCurrentDasha(y,m,d);
-  const sunApprox=getSunSign(m,d);
+  const parts=dob.split('-').map(Number);
+  const y=parts[0], m=parts[1], d=parts[2];
+  const timeParts=(time||'06:00').split(':').map(Number);
+  const hr=isNaN(timeParts[0])?6:timeParts[0];
+  const mn=isNaN(timeParts[1])?0:timeParts[1];
 
-  return {lagna:RASHIS[lagna], moon:RASHIS[moon], sun:RASHIS[sunApprox],
-          nakshatra:NAKSH[naksh], dasha, html:`
+  // Accurate sidereal calculations
+  const moonLon=getSiderealMoonLon(y,m,d,hr+(mn/60));
+  const sunLon=getSiderealSunLon(y,m,d);
+  const moonSign=Math.floor(moonLon/30);
+  const nakshIdx=Math.floor(moonLon/(360/27));
+  const lagnaIdx=getLagnaFromTime(sunLon,hr,mn);
+  const dasha=getCurrentDasha(moonLon,y,m,d);
+
+  // Validate indices before array lookup
+  const safeRashi=(i)=>RASHIS[mod(Math.floor(i),12)]||'?';
+  const safeNaksh=(i)=>NAKSH[mod(Math.floor(i),27)]||'?';
+
+  return {
+    lagna:safeRashi(lagnaIdx), moon:safeRashi(moonSign),
+    nakshatra:safeNaksh(nakshIdx), dasha,
+    html:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
       <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">LAGNA (ASCENDANT)</div>
-        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${RASHIS[lagna]}</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${safeRashi(lagnaIdx)}</div>
       </div>
       <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">MOON SIGN (RASHI)</div>
-        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${RASHIS[moon]}</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${safeRashi(moonSign)}</div>
       </div>
       <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">BIRTH NAKSHATRA</div>
-        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${NAKSH[naksh]}</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${safeNaksh(nakshIdx)}</div>
       </div>
       <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">CURRENT MAHADASHA</div>
