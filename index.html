@@ -514,7 +514,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
     </div>
     <div class="footer-bottom">
       <span>© 2025 Jyogi AI · All readings are for spiritual guidance and entertainment</span>
-      <span>Made with 🙏 &amp; ✨ in India</span>
+      <span>Made with 🙏 &amp; ✨ in India · <button onclick="openAdmin()" style="background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;padding:0;">⚙ Admin</button></span>
     </div>
   </div>
 </footer>
@@ -653,6 +653,89 @@ const GOD_GALLERY = [
 ];
 
 const WA_NUMBER = '918310319870';
+const ADMIN_PASS = 'jyogi2025';
+
+// ─── CLIENT LOG (stored in memory, viewable in admin panel) ───────────────
+const CLIENT_LOG = [];
+function saveLog(entry){
+  CLIENT_LOG.unshift({...entry, ts: new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});
+}
+
+// ─── BASIC JS VEDIC CHART (no server, no AI, pure math) ──────────────────
+const RASHIS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const NAKSH=['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishtha','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'];
+const DASHA_SEQ=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const DASHA_YRS=[7,20,6,10,7,18,16,19,17];
+
+function getSunSign(month,day){
+  const cuts=[[3,21],[4,20],[5,21],[6,21],[7,23],[8,23],[9,23],[10,23],[11,22],[12,22],[1,20],[2,19]];
+  for(let i=0;i<12;i++){const[m,d]=cuts[i];if(month===m&&day>=d||month===(m%12)+1&&day<cuts[(i+1)%12][1])return i;}
+  return 0;
+}
+function getMoonSign(year,month,day){
+  // Simplified sidereal Moon cycle approximation
+  const ref=new Date(2000,0,1); const now=new Date(year,month-1,day);
+  const days=Math.floor((now-ref)/86400000);
+  return Math.floor(((days*13.176+118.3)%360)/30)%12;
+}
+function getNakshatra(year,month,day){
+  const ref=new Date(2000,0,1); const now=new Date(year,month-1,day);
+  const days=Math.floor((now-ref)/86400000);
+  return Math.floor(((days*13.176+118.3)%360)/(360/27))%27;
+}
+function getCurrentDasha(year,month,day){
+  const ref=new Date(1900,0,1); const now=new Date(year,month-1,day);
+  const totalDays=Math.floor((now-ref)/86400000);
+  const totalYrs=120; const cycleDays=totalYrs*365.25;
+  let pos=(totalDays%cycleDays); let i=0;
+  while(pos>0){pos-=DASHA_YRS[i]*365.25;if(pos<0)break;i=(i+1)%9;}
+  const current=DASHA_SEQ[i];
+  const next=DASHA_SEQ[(i+1)%9];
+  const daysLeft=Math.ceil(Math.abs(pos));
+  const yrsLeft=(daysLeft/365.25).toFixed(1);
+  return {current,next,yrsLeft};
+}
+function getLagna(hour,min,moonIdx){
+  // Approximate lagna from birth time
+  const timeH=hour+(min/60);
+  return Math.floor((moonIdx+Math.floor(timeH/2))%12);
+}
+
+function buildFallbackChart(name,dob,time){
+  const [y,m,d]=dob.split('-').map(Number);
+  const [hr,mn]=(time||'12:00').split(':').map(Number);
+  const moon=getMoonSign(y,m,d);
+  const lagna=getLagna(hr,mn,moon);
+  const naksh=getNakshatra(y,m,d);
+  const dasha=getCurrentDasha(y,m,d);
+  const sunApprox=getSunSign(m,d);
+
+  return {lagna:RASHIS[lagna], moon:RASHIS[moon], sun:RASHIS[sunApprox],
+          nakshatra:NAKSH[naksh], dasha, html:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">LAGNA (ASCENDANT)</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${RASHIS[lagna]}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">MOON SIGN (RASHI)</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${RASHIS[moon]}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">BIRTH NAKSHATRA</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${NAKSH[naksh]}</div>
+      </div>
+      <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
+        <div style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px;">CURRENT MAHADASHA</div>
+        <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:18px;">${dasha.current}</div>
+        <div style="font-size:12px;color:var(--muted);">${dasha.yrsLeft} yrs remaining</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);font-style:italic;text-align:center;">
+      ✦ Approximate chart — based on sidereal Lahiri ayanamsha ✦
+    </p>`
+  };
+}
 
 // ─── RENDER SERVICES ──────────────────────────────────────────────────────
 function renderServices(){
@@ -775,7 +858,7 @@ function drawCards(){
         <div class="card-frame">
           <div class="card-img-wrap">
             <img 
-              src="/cards/${card.name}.jpg"
+              src="cards/${card.name}.jpg"
               class="${card.reversed?'reversed':''}"
               loading="lazy"
               onerror="this.outerHTML='<div class=\"card-back-design\">🔮</div>'"
@@ -815,6 +898,32 @@ function showCardMeaning(idx){
 }
 
 // ─── ASTROLOGY ────────────────────────────────────────────────────────────
+function waBookingLink(name,dob,city,question){
+  const msg=`Hi Jyogi! I would like a full Vedic chart reading.\nName: ${name}\nDOB: ${dob}\nCity: ${city}${question?'\nQuestion: '+question:''}`;
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function showChartWithInsight(result, name, chart, insight){
+  result.innerHTML=`
+    <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:20px;text-align:center;">
+      ✦ ${name}'s Vedic Preview
+    </h3>
+    ${chart.html}
+    <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:20px;margin:20px 0;">
+      <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
+      <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
+    </div>
+    <div style="background:rgba(37,211,102,0.07);border:1px solid rgba(37,211,102,0.2);border-radius:14px;padding:20px;text-align:center;">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">
+        🔒 Full reading includes: Planetary positions in all 12 houses · Antardasha breakdown · Sadhe Sati status · Remedies &amp; mantras
+      </p>
+      <a id="wa-book-btn" href="#" style="display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:linear-gradient(135deg,#25D366,#1fa854);color:#fff;border-radius:28px;font-family:'Cormorant SC',serif;font-size:12px;letter-spacing:0.2em;">
+        💬 Get Full Reading on WhatsApp
+      </a>
+    </div>
+  `;
+}
+
 async function submitAstrology(){
   const name=document.getElementById('astro-name').value.trim();
   const dob=document.getElementById('astro-dob').value;
@@ -822,35 +931,77 @@ async function submitAstrology(){
   const city=document.getElementById('astro-city').value.trim();
   const question=document.getElementById('astro-question').value.trim();
   const result=document.getElementById('astro-result');
-  
+
   if(!name||!dob||!city){
     result.innerHTML='<p style="color:#f87171;font-style:italic;">Please fill in your name, date of birth, and city.</p>';
     result.className='astro-result visible';
     return;
   }
-  
-  result.innerHTML='<div class="loading-ring" style="margin-top:8px;"></div><p style="text-align:center;margin-top:12px;font-style:italic;color:var(--muted);">Calculating your Vedic chart…</p>';
+
+  // ── LOG the submission (name, dob, city, question — no AI send) ──
+  saveLog({name, dob, time:time||'unknown', city, question:question||'—'});
+
+  result.innerHTML='<div class="loading-ring" style="margin-top:8px;"></div><p style="text-align:center;margin-top:12px;font-style:italic;color:var(--muted);">Reading your stars…</p>';
   result.className='astro-result visible';
-  
-  try {
-    const resp=await fetch('https://jyogi-api.onrender.com/api/chart',{
+
+  // ── Build JS chart (always works, no server) ──
+  const chart=buildFallbackChart(name,dob,time);
+
+  // ── Try AI insight — send ONLY sign/dasha info, NEVER name/dob/city ──
+  let insight='Your chart carries the energy of '+chart.lagna+' rising with '+chart.moon+' Moon — a powerful combination. You are currently in '+chart.dasha.current+' Mahadasha, a period of significant karmic unfolding. Book a full session with Jyogi for your complete planetary story and personalised remedies.';
+  try{
+    const anonPrompt=`You are Jyogi, a Vedic astrology guide. Give a warm, mystical 2-3 sentence insight for someone with ${chart.lagna} Lagna, ${chart.moon} Moon sign, ${chart.nakshatra} nakshatra, currently in ${chart.dasha.current} Mahadasha (${chart.dasha.yrsLeft} years remaining).${question?' Their question is about: '+question:''} Do NOT mention names or personal data. Be poetic and encouraging.`;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
+    const resp=await fetch('https://jyogi-api.onrender.com/api/insight',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,dob,time,city,question})
+      body:JSON.stringify({prompt:anonPrompt}),
+      signal:controller.signal
     });
-    if(!resp.ok) throw new Error('API error');
-    const data=await resp.json();
-    result.innerHTML=`
-      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:16px;">✦ ${data.name || name}'s Vedic Chart</h3>
-      <div style="white-space:pre-wrap;font-size:15px;line-height:1.8;color:var(--text);">${data.report || data.text || JSON.stringify(data,null,2)}</div>
-    `;
-  } catch(e) {
-    result.innerHTML=`
-      <h3 style="font-family:'Cinzel',serif;color:var(--gold);margin-bottom:12px;">✦ Chart Ready — Book Your Full Reading</h3>
-      <p style="color:var(--muted);font-style:italic;margin-bottom:16px;">Your details have been noted. To receive your complete Vedic chart with Lagna, Dasha analysis, Sadhe Sati, and planetary remedies — book a live session with Jyogi via WhatsApp.</p>
-      <a href="https://wa.me/${WA_NUMBER}?text=Hi Jyogi! I would like a Vedic chart reading. Name: ${name}, DOB: ${dob}, City: ${city}${question?', Question: '+question:''}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#25D366,#1fa854);color:#fff;border-radius:24px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.25em;text-decoration:none;">💬 Send My Chart Details to Jyogi</a>
-    `;
-  }
+    clearTimeout(timeout);
+    if(resp.ok){
+      const data=await resp.json();
+      if(data.insight) insight=data.insight;
+    }
+  }catch(e){/* fallback insight already set */}
+
+  showChartWithInsight(result, name, chart, insight);
+
+  // ── Set WhatsApp link after render ──
+  const btn=document.getElementById('wa-book-btn');
+  if(btn) btn.href=waBookingLink(name,dob,city,question);
+}
+
+// ─── ADMIN PANEL ──────────────────────────────────────────────────────────
+function openAdmin(){
+  const pass=prompt('Enter admin password:');
+  if(pass!==ADMIN_PASS){alert('Incorrect password.');return;}
+  const win=window.open('','_blank','width=800,height=600');
+  const rows=CLIENT_LOG.length?CLIENT_LOG.map((e,i)=>`
+    <tr style="border-bottom:1px solid #333;">
+      <td style="padding:10px;color:#9d8c6a;">${i+1}</td>
+      <td style="padding:10px;">${e.ts}</td>
+      <td style="padding:10px;color:#FFC340;font-weight:bold;">${e.name}</td>
+      <td style="padding:10px;">${e.dob}</td>
+      <td style="padding:10px;">${e.time}</td>
+      <td style="padding:10px;">${e.city}</td>
+      <td style="padding:10px;color:#a78bfa;">${e.question}</td>
+    </tr>`).join('')
+    :'<tr><td colspan="7" style="padding:20px;text-align:center;color:#9d8c6a;">No submissions yet this session.</td></tr>';
+  win.document.write(`<!DOCTYPE html><html><head><title>Jyogi — Client Log</title>
+  <style>body{background:#03010a;color:#f5ecd7;font-family:sans-serif;padding:24px;}
+  h2{color:#FFC340;margin-bottom:20px;} table{width:100%;border-collapse:collapse;}
+  th{background:#160840;color:#FFC340;padding:10px;text-align:left;font-size:12px;letter-spacing:0.1em;}
+  tr:hover{background:rgba(255,195,64,0.05);}
+  .note{color:#9d8c6a;font-size:12px;margin-bottom:16px;}
+  </style></head><body>
+  <h2>✦ Jyogi Client Log</h2>
+  <p class="note">⚠ This log resets when the page is refreshed. ${CLIENT_LOG.length} submission(s) this session.</p>
+  <table><thead><tr>
+    <th>#</th><th>TIME (IST)</th><th>NAME</th><th>DOB</th><th>BIRTH TIME</th><th>CITY</th><th>QUESTION</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
 }
 
 // ─── WHATSAPP ─────────────────────────────────────────────────────────────
