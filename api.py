@@ -1,17 +1,17 @@
 """
-Jyogi AI â€” FastAPI Backend
+Jyogi AI — FastAPI Backend
 --------------------------
 Wraps the existing jyogi/ package with a clean REST API.
 Deploy to Railway.app (or any cloud that can run Python).
 
-Your existing jyogi/ folder is UNCHANGED â€” this file is the only new code.
+Your existing jyogi/ folder is UNCHANGED — this file is the only new code.
 
 Endpoints:
-  POST /api/geocode   â€” city name â†’ lat/lon
-  POST /api/chart     â€” birth details â†’ full Vedic chart + PDF
-  POST /api/tarot     â€” spread id + question â†’ AI tarot reading
-  GET  /api/pdf/{id}  â€” download a generated PDF by session id
-  GET  /health        â€” health check (for Railway uptime monitor)
+  POST /api/geocode   — city name → lat/lon
+  POST /api/chart     — birth details → full Vedic chart + PDF
+  POST /api/tarot     — spread id + question → AI tarot reading
+  GET  /api/pdf/{id}  — download a generated PDF by session id
+  GET  /health        — health check (for Railway uptime monitor)
 """
 
 from __future__ import annotations
@@ -31,15 +31,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-# â”€â”€ Logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Logging ────────────────────────────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s")
 log = logging.getLogger("jyogi_api")
 
-# â”€â”€ PDF temp store: session_id â†’ filepath â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── PDF temp store: session_id → filepath ─────────────────────────────────
 pdf_store: dict[str, str] = {}
 
-# â”€â”€ In-memory rate limiter (replaces Streamlit session_state) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Key: client IP â€” Value: (call_count, window_start_time)
+# ── In-memory rate limiter (replaces Streamlit session_state) ─────────────
+# Key: client IP — Value: (call_count, window_start_time)
 _rate_state: dict[str, tuple[int, float]] = defaultdict(lambda: (0, time.time()))
 MAX_CALLS_PER_HOUR = 20
 
@@ -57,7 +57,7 @@ def check_rate_limit(client_ip: str) -> bool:
     return True
 
 
-# â”€â”€ Monkey-patch: replace Streamlit AI client with plain OpenAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Monkey-patch: replace Streamlit AI client with plain OpenAI ────────────
 # The jyogi/clients/ai.py uses st.cache_resource and st.session_state.
 # We replace it here so the rest of the package works without Streamlit.
 import openai as _openai
@@ -69,7 +69,7 @@ def _get_openai_client() -> _openai.OpenAI:
     if not api_key:
         raise RuntimeError(
             "OPENAI_API_KEY environment variable not set.\n"
-            "Add it to Railway â†’ Variables â†’ OPENAI_API_KEY=sk-..."
+            "Add it to Railway → Variables → OPENAI_API_KEY=sk-..."
         )
     return _openai.OpenAI(api_key=api_key)
 
@@ -80,7 +80,7 @@ def _patched_chat(
     temperature: float | None = None,
     max_tokens: int | None = None,
 ) -> str:
-    """Drop-in replacement for jyogi.clients.ai.chat â€” no Streamlit dependency."""
+    """Drop-in replacement for jyogi.clients.ai.chat — no Streamlit dependency."""
     if len(user_message) > 4000:
         user_message = user_message[:4000] + "\n[truncated]"
     try:
@@ -97,7 +97,7 @@ def _patched_chat(
         return r.choices[0].message.content or ""
     except Exception as exc:
         log.error("OpenAI error: %s", exc)
-        return f"âš ï¸ AI Error: {exc}"
+        return f"⚠️ AI Error: {exc}"
 
 
 # Patch before any pipeline import touches the old client
@@ -112,7 +112,7 @@ from jyogi.reports.pdf_writer import save_reading_to_pdf         # noqa: E402
 from geopy.geocoders import Nominatim                             # noqa: E402
 
 
-# â”€â”€ Geocoder (plain, no Streamlit cache) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Geocoder (plain, no Streamlit cache) ──────────────────────────────────
 _geocoder = Nominatim(user_agent="jyogi_api_v1")
 _geocache: dict[str, dict] = {}
 
@@ -135,12 +135,12 @@ def geocode_city(query: str) -> dict | None:
         return None
 
 
-# â”€â”€ FastAPI app â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── FastAPI app ────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.info("ðŸª Jyogi API starting up")
+    log.info("🪐 Jyogi API starting up")
     yield
-    log.info("Jyogi API shutting down â€” clearing %d PDFs", len(pdf_store))
+    log.info("Jyogi API shutting down — clearing %d PDFs", len(pdf_store))
     for path in pdf_store.values():
         try:
             Path(path).unlink(missing_ok=True)
@@ -150,12 +150,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Jyogi AI API",
-    description="Vedic Astrology Â· Tarot Â· Sacred Crystals â€” Backend API",
+    description="Vedic Astrology · Tarot · Sacred Crystals — Backend API",
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# â”€â”€ CORS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── CORS ──────────────────────────────────────────────────────────────────
 # Replace "jyogi.netlify.app" with your actual Netlify URL or custom domain.
 ALLOWED_ORIGINS = [
     "https://jyogi.netlify.app",
@@ -174,7 +174,7 @@ app.add_middleware(
 )
 
 
-# â”€â”€ Request / Response models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Request / Response models ──────────────────────────────────────────────
 
 class GeocodeRequest(BaseModel):
     city: str = Field(..., min_length=2, max_length=100, description="City name to geocode")
@@ -222,14 +222,14 @@ class TarotResponse(BaseModel):
     sections:     list[dict]
 
 
-# â”€â”€ Health â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Health ─────────────────────────────────────────────────────────────────
 
 @app.get("/health", tags=["System"])
 def health():
     return {"status": "ok", "service": "Jyogi AI API", "version": "1.0.0"}
 
 
-# â”€â”€ Geocode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Geocode ────────────────────────────────────────────────────────────────
 
 @app.post("/api/geocode", response_model=GeocodeResponse, tags=["Utilities"])
 def api_geocode(body: GeocodeRequest, request: Request):
@@ -241,11 +241,11 @@ def api_geocode(body: GeocodeRequest, request: Request):
     if not result:
         raise HTTPException(404, f"City not found: {body.city!r}. Try a major nearby city.")
 
-    log.info("Geocoded '%s' â†’ %.4f, %.4f", body.city, result["lat"], result["lon"])
+    log.info("Geocoded '%s' → %.4f, %.4f", body.city, result["lat"], result["lon"])
     return GeocodeResponse(**result)
 
 
-# â”€â”€ Vedic Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Vedic Chart ────────────────────────────────────────────────────────────
 
 @app.post("/api/chart", response_model=ChartResponse, tags=["Astrology"])
 def api_chart(body: ChartRequest, request: Request):
@@ -258,7 +258,7 @@ def api_chart(body: ChartRequest, request: Request):
     if not geo:
         raise HTTPException(404, f"City not found: {body.city!r}")
 
-    log.info("Chart request â€” %s, %s, %s, city=%s", body.name, body.dob, body.time, body.city)
+    log.info("Chart request — %s, %s, %s, city=%s", body.name, body.dob, body.time, body.city)
 
     # 2. Generate report (Swiss Ephemeris + optional AI Q&A)
     try:
@@ -279,12 +279,12 @@ def api_chart(body: ChartRequest, request: Request):
     try:
         tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         tmp.close()
-        title = f"Jyogi Vedic Report â€” {body.name}"
+        title = f"Jyogi Vedic Report — {body.name}"
         ok = save_reading_to_pdf(tmp.name, report["sections"], title=title)
         if ok:
             pdf_id = str(uuid.uuid4())
             pdf_store[pdf_id] = tmp.name
-            log.info("PDF saved â†’ id=%s", pdf_id)
+            log.info("PDF saved → id=%s", pdf_id)
     except Exception as exc:
         log.warning("PDF generation failed (non-fatal): %s", exc)
 
@@ -309,7 +309,7 @@ def api_chart(body: ChartRequest, request: Request):
     )
 
 
-# â”€â”€ Tarot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Tarot ──────────────────────────────────────────────────────────────────
 
 @app.post("/api/tarot", response_model=TarotResponse, tags=["Tarot"])
 def api_tarot(body: TarotRequest, request: Request):
@@ -317,7 +317,7 @@ def api_tarot(body: TarotRequest, request: Request):
     if not check_rate_limit(client_ip):
         raise HTTPException(429, "Too many requests. Please try again later.")
 
-    log.info("Tarot request â€” spread=%s, q=%s", body.spread_id, body.question)
+    log.info("Tarot request — spread=%s, q=%s", body.spread_id, body.question)
 
     try:
         result = generate_tarot_report(
@@ -334,7 +334,7 @@ def api_tarot(body: TarotRequest, request: Request):
     try:
         tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         tmp.close()
-        title = f"Jyogi Tarot Reading â€” {body.client_name or 'Your Reading'}"
+        title = f"Jyogi Tarot Reading — {body.client_name or 'Your Reading'}"
         ok = save_reading_to_pdf(tmp.name, result["sections"], title=title)
         if ok:
             pdf_id = str(uuid.uuid4())
@@ -359,7 +359,7 @@ def api_tarot(body: TarotRequest, request: Request):
     )
 
 
-# â”€â”€ PDF Download â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── PDF Download ───────────────────────────────────────────────────────────
 
 @app.get("/api/pdf/{pdf_id}", tags=["Utilities"])
 def api_pdf_download(pdf_id: str):
