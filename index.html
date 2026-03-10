@@ -284,7 +284,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
       <span class="nav-link" onclick="scrollTo('#astrology')">Astrology</span>
       <span class="nav-link" onclick="scrollTo('#shop')">Shop</span>
       <span class="nav-link" onclick="scrollTo('#reviews')">Reviews</span>
-      <a class="nav-link nav-wa" href="https://wa.me/91XXXXXXXXXX?text=Hi Jyogi! I would like to book a session." target="_blank">
+      <a class="nav-link nav-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">
         <span>💬</span> Book Now
       </a>
     </div>
@@ -300,7 +300,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
   <span class="nav-link" onclick="scrollTo('#astrology');toggleMobileNav()">Astrology</span>
   <span class="nav-link" onclick="scrollTo('#shop');toggleMobileNav()">Shop</span>
   <span class="nav-link" onclick="scrollTo('#reviews');toggleMobileNav()">Reviews</span>
-  <a class="btn btn-wa" href="https://wa.me/91XXXXXXXXXX?text=Hi Jyogi! I would like to book a session." target="_blank" onclick="toggleMobileNav()">💬 Book Now on WhatsApp</a>
+  <a class="btn btn-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank" onclick="toggleMobileNav()">💬 Book Now on WhatsApp</a>
 </div>
 
 <!-- ── HERO ── -->
@@ -330,7 +330,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
   <div class="hero-ctas">
     <span class="btn btn-primary" onclick="scrollTo('#tarot')">🎴 Draw Your Cards</span>
     <span class="btn btn-outline" onclick="scrollTo('#astrology')">🪐 Get My Chart</span>
-    <a class="btn btn-wa" href="https://wa.me/91XXXXXXXXXX?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Book on WhatsApp</a>
+    <a class="btn btn-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Book on WhatsApp</a>
   </div>
   <div class="hero-scroll">
     <span class="hero-scroll-txt">Scroll to explore</span>
@@ -484,7 +484,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
         <span class="nav-logo-text">Jyogi AI</span>
         <span class="nav-logo-sub" style="letter-spacing:0.35em;font-size:9px;color:var(--muted);font-family:'Cormorant SC',serif;margin-bottom:12px;display:block;">✦ Vedic Astrology · Tarot · Sacred Crystals ✦</span>
         <p>Ancient wisdom meets modern clarity. Every soul has a map written in the stars — let Jyogi help you read it.</p>
-        <a class="footer-wa-btn" href="https://wa.me/91XXXXXXXXXX?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Chat on WhatsApp</a>
+        <a class="footer-wa-btn" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">💬 Chat on WhatsApp</a>
       </div>
       <div class="footer-col">
         <h4>Services</h4>
@@ -506,7 +506,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
       <div class="footer-col">
         <h4>Connect</h4>
         <div class="footer-links">
-          <a href="https://wa.me/91XXXXXXXXXX" target="_blank">WhatsApp</a>
+          <a href="https://wa.me/918310319870" target="_blank">WhatsApp</a>
           <span class="footer-link">Instagram</span>
           <span class="footer-link">YouTube</span>
         </div>
@@ -519,7 +519,7 @@ footer{position:relative;z-index:1;background:var(--bg);border-top:1px solid var
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/91XXXXXXXXXX?text=Hi Jyogi! I would like to book a session." target="_blank" title="Chat on WhatsApp">💬</a>
+<a class="wa-float" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank" title="Chat on WhatsApp">💬</a>
 
 <script>
 // ─── STAR FIELD ───────────────────────────────────────────────────────────
@@ -652,7 +652,7 @@ const GOD_GALLERY = [
     img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Goddess_Lakshmi.jpg/600px-Goddess_Lakshmi.jpg'},
 ];
 
-const WA_NUMBER = '91XXXXXXXXXX';
+const WA_NUMBER = '918310319870';
 
 // ─── RENDER SERVICES ──────────────────────────────────────────────────────
 function renderServices(){
@@ -833,7 +833,7 @@ async function submitAstrology(){
   result.className='astro-result visible';
   
   try {
-    const resp=await fetch('https://jyogi-api.railway.app/api/chart',{
+    const resp=await fetch('https://jyogi-api.onrender.com/api/chart',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name,dob,time,city,question})
