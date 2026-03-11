@@ -11,7 +11,7 @@ Endpoints:
   POST /api/chart     — birth details → full Vedic chart + PDF
   POST /api/tarot     — spread id + question → AI tarot reading
   GET  /api/pdf/{id}  — download a generated PDF by session id
-  GET  /health        — health check (for Railway uptime monitor)
+  GET  /health        —  check (for Railway uptime monitor)
 """
 
 from __future__ import annotations
@@ -158,12 +158,13 @@ app = FastAPI(
 # ── CORS ──────────────────────────────────────────────────────────────────
 # Replace "jyogi.netlify.app" with your actual Netlify URL or custom domain.
 ALLOWED_ORIGINS = [
-    "https://jyogi.netlify.app",
-    "https://www.jyogi.com",          # add your custom domain here
-    "https://jyogi.com",
-    "http://localhost:3000",          # local dev
-    "http://127.0.0.1:5500",          # VS Code Live Server
-    "null",                           # file:// testing
+    "https://kaleidoscopic-gingersnap-448bbf.netlify.app",
+    "https://jyogi-api.onrender.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "null",
+    "*",
+  
 ]
 
 app.add_middleware(
@@ -222,12 +223,14 @@ class TarotResponse(BaseModel):
     sections:     list[dict]
 
 
-# ── Health ─────────────────────────────────────────────────────────────────
+# ──  ─────────────────────────────────────────────────────────────────
 
 @app.get("/health", tags=["System"])
 def health():
     return {"status": "ok", "service": "Jyogi AI API", "version": "1.0.0"}
-
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "Jyogi AI API"}
 
 # ── Geocode ────────────────────────────────────────────────────────────────
 
@@ -360,6 +363,124 @@ def api_tarot(body: TarotRequest, request: Request):
 
 
 # ── PDF Download ───────────────────────────────────────────────────────────
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# PERMANENT SUBMISSION LOG
+# ══════════════════════════════════════════════════════════════════════════
+import json
+import csv
+import io
+from datetime import datetime, timezone, timedelta
+from fastapi.responses import StreamingResponse
+from fastapi import Header
+
+LOG_FILE = Path("jyogi_submissions.json")  # persists on Render disk
+LOG_SECRET = os.getenv("LOG_SECRET", "jyogi2025")  # set in Render env vars
+
+IST = timedelta(hours=5, minutes=30)
+
+def _now_ist() -> str:
+    return (datetime.now(timezone.utc) + IST).strftime("%d %b %Y %I:%M:%S %p IST")
+
+def append_log(entry: dict):
+    """Append one entry to the JSON log file atomically."""
+    try:
+        if LOG_FILE.exists():
+            data = json.loads(LOG_FILE.read_text())
+        else:
+            data = []
+        entry["ts"] = _now_ist()
+        data.insert(0, entry)          # newest first
+        LOG_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        log.info("📝 Log saved — total %d entries", len(data))
+    except Exception as exc:
+        log.error("Log write error: %s", exc)
+
+def read_log() -> list[dict]:
+    """Read all log entries."""
+    try:
+        if LOG_FILE.exists():
+            return json.loads(LOG_FILE.read_text())
+    except Exception as exc:
+        log.error("Log read error: %s", exc)
+    return []
+
+
+class LogRequest(BaseModel):
+    secret:   str
+    entry:    dict
+
+
+class LogQueryRequest(BaseModel):
+    secret: str
+    format: str = "json"   # "json" or "csv"
+
+
+# ── POST /api/log — frontend saves submission ─────────────────────────────
+@app.post("/api/log", tags=["Admin"])
+def api_save_log(body: LogRequest):
+    if body.secret != LOG_SECRET:
+        raise HTTPException(403, "Invalid secret.")
+    append_log(body.entry)
+    return {"saved": True}
+
+
+# ── GET /api/logs?secret=xxx&format=csv ───────────────────────────────────
+@app.get("/api/logs", tags=["Admin"])
+def api_get_logs(secret: str = "", format: str = "json"):
+    if secret != LOG_SECRET:
+        raise HTTPException(403, "Invalid secret. Add ?secret=YOUR_PASSWORD")
+
+    data = read_log()
+
+    if format == "csv":
+        # Build CSV in memory
+        output = io.StringIO()
+        if data:
+            fieldnames = ["ts", "type", "name", "dob", "time", "city", "question", "lagna", "moon", "dasha", "ip"]
+            writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(data)
+        csv_bytes = output.getvalue().encode("utf-8-sig")  # utf-8-sig for Excel
+        return StreamingResponse(
+            iter([csv_bytes]),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=jyogi_submissions.csv"}
+        )
+
+    # Default: JSON download
+    json_bytes = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
+    return StreamingResponse(
+        iter([json_bytes]),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=jyogi_submissions.json"}
+    )
+
+
+# ── GET /api/logs/stats — quick summary ───────────────────────────────────
+@app.get("/api/logs/stats", tags=["Admin"])
+def api_log_stats(secret: str = ""):
+    if secret != LOG_SECRET:
+        raise HTTPException(403, "Invalid secret.")
+    data = read_log()
+    types = {}
+    cities = {}
+    for e in data:
+        t = e.get("type", "chart")
+        types[t] = types.get(t, 0) + 1
+        c = e.get("city", "")
+        if c:
+            cities[c] = cities.get(c, 0) + 1
+    top_cities = sorted(cities.items(), key=lambda x: -x[1])[:10]
+    return {
+        "total": len(data),
+        "by_type": types,
+        "top_cities": dict(top_cities),
+        "latest": data[0] if data else None,
+    }
+
+
 
 @app.get("/api/pdf/{pdf_id}", tags=["Utilities"])
 def api_pdf_download(pdf_id: str):
