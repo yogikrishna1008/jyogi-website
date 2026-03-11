@@ -274,43 +274,58 @@ body.hindi .lang-btn[data-lang="hi"]{background:linear-gradient(135deg,var(--gol
 body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
 
 /* ── Mobile-Friendly Date Picker ── */
-.date-picker-wrap{display:flex;gap:8px;width:100%;}
-.date-select{
+.picker-row{display:flex;gap:8px;width:100%;}
+.picker-btn{
   flex:1;background:rgba(10,5,30,0.7);
   border:1px solid rgba(255,195,64,0.25);border-radius:10px;
-  padding:14px 10px;color:#f8f0e0;font-size:16px;
-  font-family:'Cormorant Garamond',serif;outline:none;
-  transition:border-color 0.25s;cursor:pointer;
-  -webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFC340' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  padding-right:28px;text-align:center;
+  padding:14px 10px;color:#f8f0e0;font-size:17px;
+  font-family:'Cormorant Garamond',serif;
+  cursor:pointer;transition:all 0.2s;text-align:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.date-select:focus{border-color:rgba(255,195,64,0.5);}
-.date-select option{background:#0f0428;color:#f8f0e0;}
-.time-picker-wrap{display:flex;gap:8px;align-items:center;width:100%;}
-.time-select{
-  flex:1;background:rgba(10,5,30,0.7);
-  border:1px solid rgba(255,195,64,0.25);border-radius:10px;
-  padding:14px 10px;color:#f8f0e0;font-size:16px;
-  font-family:'Cormorant Garamond',serif;outline:none;
-  transition:border-color 0.25s;cursor:pointer;
-  -webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFC340' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  padding-right:28px;text-align:center;
+.picker-btn.empty{color:#6b5e44;}
+.picker-btn.filled{border-color:rgba(255,195,64,0.5);color:#f8f0e0;}
+.picker-btn:active{background:rgba(255,195,64,0.08);}
+.picker-btn .chv{font-size:9px;color:var(--gold);opacity:0.6;}
+.picker-overlay{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;justify-content:flex-end;}
+.picker-overlay.open{display:flex;}
+.picker-bg{position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);}
+.picker-sheet{
+  position:relative;z-index:1;
+  background:linear-gradient(180deg,#0d0530,#06021a);
+  border-radius:20px 20px 0 0;border-top:1px solid rgba(255,195,64,0.2);
+  max-height:65vh;display:flex;flex-direction:column;
+  animation:slideUp 0.22s ease;
 }
-.time-select:focus{border-color:rgba(255,195,64,0.5);}
-.time-select option{background:#0f0428;color:#f8f0e0;}
-.time-ampm{
-  padding:14px 16px;border-radius:10px;
-  border:1px solid rgba(255,195,64,0.25);
-  background:rgba(10,5,30,0.7);color:#f8f0e0;
-  font-size:16px;font-family:'Cormorant Garamond',serif;
-  cursor:pointer;transition:all 0.2s;white-space:nowrap;
-  -webkit-appearance:none;appearance:none;
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.picker-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 10px;border-bottom:1px solid rgba(255,195,64,0.1);
+  flex-shrink:0;
 }
-.time-ampm option{background:#0f0428;}
+.picker-head-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:0.12em;}
+.picker-head-close{
+  background:rgba(255,255,255,0.06);border:none;color:#9d8c6a;
+  width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;
+}
+.picker-items{
+  display:grid;gap:6px;padding:14px 14px 24px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.picker-items.g4{grid-template-columns:repeat(4,1fr);}
+.picker-items.g3{grid-template-columns:repeat(3,1fr);}
+.picker-items.g2{grid-template-columns:repeat(2,1fr);}
+.pi{
+  padding:13px 4px;border-radius:10px;text-align:center;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  font-family:'Cormorant Garamond',serif;font-size:16px;color:#c4a97a;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.12s;
+  min-height:46px;display:flex;align-items:center;justify-content:center;
+}
+.pi:active{background:rgba(255,195,64,0.15);border-color:rgba(255,195,64,0.5);color:#fff;}
+.pi.sel{background:rgba(255,195,64,0.18);border-color:var(--gold);color:var(--gold);font-weight:bold;}
+
 </style>
 </head>
 <body>
@@ -487,38 +502,37 @@ body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
         </div>
         <div class="form-group">
           <label class="form-label"><span data-en>Date of Birth</span><span data-hi>जन्म तिथि</span></label>
-          <div class="date-picker-wrap">
-            <select class="date-select" id="dob-day" aria-label="Day">
-              <option value="">DD</option>
-            </select>
-            <select class="date-select" id="dob-month" aria-label="Month">
-              <option value="">MM</option>
-              <option value="01">Jan</option><option value="02">Feb</option>
-              <option value="03">Mar</option><option value="04">Apr</option>
-              <option value="05">May</option><option value="06">Jun</option>
-              <option value="07">Jul</option><option value="08">Aug</option>
-              <option value="09">Sep</option><option value="10">Oct</option>
-              <option value="11">Nov</option><option value="12">Dec</option>
-            </select>
-            <select class="date-select" id="dob-year" aria-label="Year">
-              <option value="">YYYY</option>
-            </select>
+          <div class="picker-row">
+            <button type="button" class="picker-btn empty" id="btn-day" onclick="openPicker('day')">
+              <span id="lbl-day">Day</span><span class="chv">&#9660;</span>
+            </button>
+            <button type="button" class="picker-btn empty" id="btn-month" onclick="openPicker('month')">
+              <span id="lbl-month">Month</span><span class="chv">&#9660;</span>
+            </button>
+            <button type="button" class="picker-btn empty" id="btn-year" onclick="openPicker('year')">
+              <span id="lbl-year">Year</span><span class="chv">&#9660;</span>
+            </button>
           </div>
+          <input type="hidden" id="dob-day" value="">
+          <input type="hidden" id="dob-month" value="">
+          <input type="hidden" id="dob-year" value="">
         </div>
         <div class="form-group">
           <label class="form-label"><span data-en>Time of Birth</span><span data-hi>जन्म समय</span></label>
-          <div class="time-picker-wrap">
-            <select class="time-select" id="time-hour" aria-label="Hour">
-              <option value="">HH</option>
-            </select>
-            <select class="time-select" id="time-min" aria-label="Minute">
-              <option value="">MM</option>
-            </select>
-            <select class="time-ampm" id="time-ampm" aria-label="AM/PM">
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
+          <div class="picker-row">
+            <button type="button" class="picker-btn empty" id="btn-hour" onclick="openPicker('hour')">
+              <span id="lbl-hour">Hour</span><span class="chv">&#9660;</span>
+            </button>
+            <button type="button" class="picker-btn empty" id="btn-min" onclick="openPicker('min')">
+              <span id="lbl-min">Min</span><span class="chv">&#9660;</span>
+            </button>
+            <button type="button" class="picker-btn filled" id="btn-ampm" onclick="toggleAMPM()">
+              <span id="lbl-ampm">AM</span><span class="chv">&#9660;</span>
+            </button>
           </div>
+          <input type="hidden" id="time-hour" value="">
+          <input type="hidden" id="time-min" value="">
+          <input type="hidden" id="time-ampm" value="AM">
         </div>
         <div class="form-group">
           <label class="form-label"><span data-en>City of Birth</span><span data-hi>जन्म स्थान</span></label>
@@ -1225,8 +1239,7 @@ const ACCESS_CONFIG = {
   // 'admin'   → only admin password unlocks full reading (current)
   // 'code'    → unique codes you send to each client
   // 'open'    → full reading for everyone, no code needed
-  #mode: 'admin',
-  mode: 'open',
+  mode: 'admin',
 
   // ── VALID ACCESS CODES ───────────────────────────────────────
   // Add or remove codes here. Each code can have metadata.
@@ -1569,17 +1582,17 @@ function unlockFullReading(name, chart) {
 
 async function submitAstrology(){
   const name=document.getElementById('astro-name').value.trim();
-  // Read from dropdown pickers
+  // Read from picker hidden inputs
   const dobD=document.getElementById('dob-day').value;
   const dobM=document.getElementById('dob-month').value;
   const dobY=document.getElementById('dob-year').value;
-  const dob=(dobY&&dobM&&dobD)?`${dobY}-${dobM}-${dobD.padStart(2,'0')}`:'';
+  const dob=(dobY&&dobM&&dobD)?(dobY+'-'+dobM+'-'+dobD):'';
   const tH=document.getElementById('time-hour').value;
   const tM=document.getElementById('time-min').value;
   const tAMPM=document.getElementById('time-ampm').value;
   let hour24=tH?parseInt(tH):null;
   if(hour24!==null){if(tAMPM==='PM'&&hour24!==12)hour24+=12;if(tAMPM==='AM'&&hour24===12)hour24=0;}
-  const time=(hour24!==null&&tM)?`${String(hour24).padStart(2,'0')}:${tM}`:'12:00';
+  const time=(hour24!==null&&tM)?(String(hour24).padStart(2,'0')+':'+tM):'12:00';
   const city=document.getElementById('astro-city').value.trim();
   const question=document.getElementById('astro-question').value.trim();
   const result=document.getElementById('astro-result');
@@ -1626,35 +1639,89 @@ async function submitAstrology(){
 }
 
 // ─── ADMIN PANEL ──────────────────────────────────────────────────────────
-function openAdmin(){
+async function openAdmin(){
   const pass=prompt('Enter admin password:');
   if(pass!==ADMIN_PASS){alert('Incorrect password.');return;}
-  const win=window.open('','_blank','width=800,height=600');
-  const rows=CLIENT_LOG.length?CLIENT_LOG.map((e,i)=>`
-    <tr style="border-bottom:1px solid #333;">
-      <td style="padding:10px;color:#9d8c6a;">${i+1}</td>
-      <td style="padding:10px;">${e.ts}</td>
-      <td style="padding:10px;color:#FFC340;font-weight:bold;">${e.name}</td>
-      <td style="padding:10px;">${e.dob}</td>
-      <td style="padding:10px;">${e.time}</td>
-      <td style="padding:10px;">${e.city}</td>
-      <td style="padding:10px;color:#a78bfa;">${e.question}</td>
-    </tr>`).join('')
-    :'<tr><td colspan="7" style="padding:20px;text-align:center;color:#9d8c6a;">No submissions yet this session.</td></tr>';
-  win.document.write(`<!DOCTYPE html><html><head><title>Jyogi — Client Log</title>
-  <style>body{background:#03010a;color:#f5ecd7;font-family:sans-serif;padding:24px;}
-  h2{color:#FFC340;margin-bottom:20px;} table{width:100%;border-collapse:collapse;}
-  th{background:#160840;color:#FFC340;padding:10px;text-align:left;font-size:12px;letter-spacing:0.1em;}
-  tr:hover{background:rgba(255,195,64,0.05);}
-  .note{color:#9d8c6a;font-size:12px;margin-bottom:16px;}
-  </style></head><body>
-  <h2>✦ Jyogi Client Log</h2>
-  <p class="note">⚠ This log resets when the page is refreshed. ${CLIENT_LOG.length} submission(s) this session.</p>
-  <table><thead><tr>
-    <th>#</th><th>TIME (IST)</th><th>NAME</th><th>DOB</th><th>BIRTH TIME</th><th>CITY</th><th>QUESTION</th>
-  </tr></thead><tbody>${rows}</tbody></table>
-  </body></html>`);
+  // Create modal overlay
+  let modal=document.getElementById('admin-modal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='admin-modal';
+    modal.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(3,1,10,0.97);overflow-y:auto;padding:0;';
+    modal.innerHTML=
+      '<div style="background:#0f0428;border-bottom:1px solid rgba(255,195,64,0.2);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:10;">'+
+        '<div><h2 style="font-family:Cinzel,serif;color:#FFC340;font-size:18px;">✦ Jyogi Admin — Submissions</h2>'+
+        '<div id="adm-updated" style="font-size:11px;color:#6b5e44;margin-top:2px;"></div></div>'+
+        '<div style="display:flex;gap:10px;align-items:center;">'+
+          '<div id="adm-stats" style="display:flex;gap:10px;"></div>'+
+          '<button onclick="admDownload(&apos;csv&apos;)" style="padding:8px 16px;border-radius:20px;border:none;background:linear-gradient(135deg,#2B7A0B,#1a5208);color:#fff;cursor:pointer;font-size:12px;">⬇ CSV</button>'+
+          '<button onclick="admDownload(&apos;json&apos;)" style="padding:8px 16px;border-radius:20px;border:none;background:linear-gradient(135deg,#1d4ed8,#1e3a8a);color:#fff;cursor:pointer;font-size:12px;">⬇ JSON</button>'+
+          '<button onclick="admRefresh()" style="padding:8px 16px;border-radius:20px;border:1px solid rgba(255,195,64,0.3);background:transparent;color:#FFC340;cursor:pointer;font-size:12px;">↻ Refresh</button>'+
+          '<button onclick="document.getElementById(&apos;admin-modal&apos;).remove()" style="padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#9d8c6a;cursor:pointer;font-size:13px;">✕ Close</button>'+
+        '</div>'+
+      '</div>'+
+      '<div id="adm-note" style="padding:8px 24px;font-size:12px;color:#6b5e44;"></div>'+
+      '<div id="adm-table" style="padding:16px 24px;overflow-x:auto;"><p style="color:#9d8c6a;text-align:center;padding:40px;font-style:italic;">⏳ Loading submissions…</p></div>';
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display='';
+  }
+  admRefresh();
 }
+
+function admStatBox(num,lbl){
+  return '<div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.15);border-radius:8px;padding:8px 14px;text-align:center;min-width:60px;">'+
+    '<div style="font-size:20px;color:#FFC340;font-weight:bold;">'+num+'</div>'+
+    '<div style="font-size:9px;color:#6b5e44;letter-spacing:0.12em;margin-top:2px;">'+lbl+'</div></div>';
+}
+
+async function admRefresh(){
+  const tbl=document.getElementById('adm-table');
+  const note=document.getElementById('adm-note');
+  const stats=document.getElementById('adm-stats');
+  const upd=document.getElementById('adm-updated');
+  if(!tbl) return;
+  tbl.innerHTML='<p style="color:#9d8c6a;text-align:center;padding:40px;font-style:italic;">⏳ Fetching from server…</p>';
+  try{
+    const r=await fetch(API_BASE+'/api/logs?secret='+LOG_SECRET+'&format=json');
+    if(!r.ok){tbl.innerHTML='<p style="color:#f87171;text-align:center;padding:40px;">❌ Error '+r.status+' — Is Render server awake? Wait 30s and refresh.</p>';return;}
+    const data=await r.json();
+    note.textContent=data.length+' total submission(s) — saved permanently on server.';
+    upd.textContent='Updated: '+new Date().toLocaleTimeString('en-IN');
+    // Stats
+    let charts=0,tarot=0,codes=0;
+    data.forEach(e=>{if(e.type==='tarot')tarot++;else if(e.type==='CODE_FAIL'||e.type==='UNLOCKED')codes++;else charts++;});
+    stats.innerHTML=admStatBox(data.length,'TOTAL')+admStatBox(charts,'CHARTS')+admStatBox(tarot,'TAROT')+admStatBox(codes,'ACCESS');
+    // Table
+    if(!data.length){tbl.innerHTML='<p style="color:#6b5e44;text-align:center;padding:40px;">No submissions yet.</p>';return;}
+    const cols=['#','TIME (IST)','TYPE','NAME','DOB','TIME','CITY','QUESTION'];
+    let html='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html+='<thead><tr>'+cols.map(c=>'<th style="background:#160840;color:#FFC340;padding:10px 12px;text-align:left;font-size:10px;letter-spacing:0.1em;white-space:nowrap;border-bottom:2px solid rgba(255,195,64,0.15);">'+c+'</th>').join('')+'</tr></thead><tbody>';
+    data.forEach((e,i)=>{
+      const t=e.type||'chart';
+      const tc=t==='tarot'?'#a78bfa':t==='CODE_FAIL'?'#f87171':t==='UNLOCKED'?'#34d399':'#86efac';
+      html+='<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'+
+        '<td style="padding:9px 12px;color:#6b5e44;">'+(i+1)+'</td>'+
+        '<td style="padding:9px 12px;color:#9d8c6a;white-space:nowrap;">'+(e.ts||'—')+'</td>'+
+        '<td style="padding:9px 12px;color:'+tc+';font-size:11px;letter-spacing:0.08em;">'+t.toUpperCase()+'</td>'+
+        '<td style="padding:9px 12px;color:#FFC340;font-weight:bold;">'+(e.name||'—')+'</td>'+
+        '<td style="padding:9px 12px;">'+(e.dob||'—')+'</td>'+
+        '<td style="padding:9px 12px;">'+(e.time||'—')+'</td>'+
+        '<td style="padding:9px 12px;color:#86efac;">'+(e.city||'—')+'</td>'+
+        '<td style="padding:9px 12px;color:#c4a97a;max-width:200px;">'+(e.question||e.spread||'—')+'</td>'+
+      '</tr>';
+    });
+    html+='</tbody></table>';
+    tbl.innerHTML=html;
+  }catch(e2){
+    tbl.innerHTML='<p style="color:#f87171;text-align:center;padding:40px;">❌ Could not reach server.<br><small style=\'color:#6b5e44;\'>'+e2+'</small></p>';
+  }
+}
+
+function admDownload(fmt){
+  window.open(API_BASE+'/api/logs?secret='+LOG_SECRET+'&format='+fmt,'_blank');
+}
+
 
 // ─── WHATSAPP ─────────────────────────────────────────────────────────────
 function openWhatsApp(msg){
@@ -1687,30 +1754,80 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
-// ── Populate date/time dropdowns on load ─────────────────────────
-(function initPickers(){
-  // Days 1-31
-  const dayEl=document.getElementById('dob-day');
-  if(dayEl){for(let d=1;d<=31;d++){const o=document.createElement('option');o.value=String(d).padStart(2,'0');o.textContent=String(d).padStart(2,'0');dayEl.appendChild(o);}}
-  // Years (1940-2020)
-  const yrEl=document.getElementById('dob-year');
-  if(yrEl){for(let y=2020;y>=1940;y--){const o=document.createElement('option');o.value=y;o.textContent=y;yrEl.appendChild(o);}}
-  // Hours 1-12
-  const hrEl=document.getElementById('time-hour');
-  if(hrEl){for(let h=1;h<=12;h++){const o=document.createElement('option');o.value=h;o.textContent=String(h).padStart(2,'0');hrEl.appendChild(o);}}
-  // Minutes 00,05,10...55
-  const minEl=document.getElementById('time-min');
-  if(minEl){for(let m=0;m<60;m+=5){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=String(m).padStart(2,'0');minEl.appendChild(o);}
-  // Also add all individual minutes
-  for(let m=0;m<60;m++){
-    if(m%5!==0){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=String(m).padStart(2,'0');minEl.appendChild(o);}
+// ── Custom Picker ─────────────────────────────────────────────────
+const _MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let _pt=null;
+function openPicker(t){
+  _pt=t;
+  const ov=document.getElementById('picker-overlay');
+  const grid=document.getElementById('picker-items');
+  const title=document.getElementById('picker-title');
+  let items=[];
+  if(t==='day'){
+    title.textContent='Select Day';
+    grid.className='picker-items g4';
+    for(let d=1;d<=31;d++) items.push({v:String(d).padStart(2,'0'),l:String(d).padStart(2,'0')});
+  } else if(t==='month'){
+    title.textContent='Select Month';
+    grid.className='picker-items g3';
+    _MONTHS.forEach((m,i)=>items.push({v:String(i+1).padStart(2,'0'),l:m}));
+  } else if(t==='year'){
+    title.textContent='Select Year';
+    grid.className='picker-items g4';
+    for(let y=2015;y>=1940;y--) items.push({v:String(y),l:String(y)});
+  } else if(t==='hour'){
+    title.textContent='Select Hour';
+    grid.className='picker-items g4';
+    for(let h=1;h<=12;h++) items.push({v:String(h),l:String(h).padStart(2,'0')});
+  } else if(t==='min'){
+    title.textContent='Select Minute';
+    grid.className='picker-items g4';
+    for(let m=0;m<60;m+=5) items.push({v:String(m).padStart(2,'0'),l:String(m).padStart(2,'0')});
   }
-  // Sort options
-  const opts=Array.from(minEl.options).slice(1).sort((a,b)=>parseInt(a.value)-parseInt(b.value));
-  while(minEl.options.length>1)minEl.remove(1);
-  opts.forEach(o=>minEl.appendChild(o));
-  }
-})();
+  const hidId=t==='day'?'dob-day':t==='month'?'dob-month':t==='year'?'dob-year':t==='hour'?'time-hour':'time-min';
+  const curV=document.getElementById(hidId).value;
+  grid.innerHTML=items.map(it=>{
+    const sel=curV===it.v?' sel':'';
+    return '<div class="pi'+sel+'" onclick="pickVal(this)" data-v="'+it.v+'" data-l="'+it.l+'">'+it.l+'</div>';
+  }).join('');
+  ov.classList.add('open');
+  setTimeout(()=>{const s=grid.querySelector('.sel');if(s)s.scrollIntoView({block:'center'});},60);
+}
+function pickVal(el){const v=el.dataset.v,l=el.dataset.l;
+  if(_pt==='day'){document.getElementById('dob-day').value=v;setBtn('btn-day','lbl-day',l);}
+  else if(_pt==='month'){document.getElementById('dob-month').value=v;setBtn('btn-month','lbl-month',l);}
+  else if(_pt==='year'){document.getElementById('dob-year').value=v;setBtn('btn-year','lbl-year',l);}
+  else if(_pt==='hour'){document.getElementById('time-hour').value=v;setBtn('btn-hour','lbl-hour',l);}
+  else if(_pt==='min'){document.getElementById('time-min').value=v;setBtn('btn-min','lbl-min',l);}
+  closePicker();
+}
+function setBtn(btnId,lblId,l){
+  document.getElementById(lblId).textContent=l;
+  const b=document.getElementById(btnId);
+  b.classList.remove('empty');b.classList.add('filled');
+}
+function closePicker(){document.getElementById('picker-overlay').classList.remove('open');_pt=null;}
+function toggleAMPM(){
+  const h=document.getElementById('time-ampm');
+  const n=h.value==='AM'?'PM':'AM';
+  h.value=n;
+  document.getElementById('lbl-ampm').textContent=n;
+}
+window.addEventListener('popstate',closePicker);
+
+
 </script>
+
+<div class="picker-overlay" id="picker-overlay">
+  <div class="picker-bg" onclick="closePicker()"></div>
+  <div class="picker-sheet">
+    <div class="picker-head">
+      <span class="picker-head-title" id="picker-title">Select</span>
+      <button class="picker-head-close" onclick="closePicker()">&#10005;</button>
+    </div>
+    <div class="picker-items g4" id="picker-items"></div>
+  </div>
+</div>
+
 </body>
 </html>
