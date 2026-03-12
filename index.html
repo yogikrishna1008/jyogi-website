@@ -468,7 +468,7 @@ body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
       <span data-en>🎴 Draw Your Cards</span>
       <span data-hi>🎴 कार्ड खींचें</span>
     </span>
-    <span class="btn btn-outline" onclick="scrollTo('#astrology')">
+    <span class="btn btn-outline" onclick="goToChart()">
       <span data-en>🪐 Get My Chart</span>
       <span data-hi>🪐 कुंडली देखें</span>
     </span>
@@ -752,6 +752,13 @@ function scrollTo(id){document.querySelector(id).scrollIntoView({behavior:'smoot
 function toggleMobileNav(){document.getElementById('mobile-nav').classList.toggle('open');}
 
 // ── Go to Tarot: scroll + auto-draw cards ─────────────────────────────────
+function goToChart(){
+  document.querySelector('#astrology').scrollIntoView({behavior:'smooth'});
+  setTimeout(()=>{
+    const n=document.getElementById('astro-name');
+    if(n){ n.focus(); }
+  },700);
+}
 function goToTarot(){
   document.querySelector('#tarot').scrollIntoView({behavior:'smooth'});
   setTimeout(()=>{
@@ -896,7 +903,19 @@ const ADMIN_PASS = 'jyogi2025';
 // ─── CLIENT LOG (stored in memory, viewable in admin panel) ───────────────
 const CLIENT_LOG = [];
 function saveLog(entry){
-  CLIENT_LOG.unshift({...entry, ts: new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});
+  const full = {
+    ...entry,
+    ts: new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
+    ts_epoch: Date.now(),
+    ua: navigator.userAgent.slice(0,80)
+  };
+  CLIENT_LOG.unshift(full);
+  // ── Silently POST to Render server (permanent storage) ──
+  fetch(API_BASE+'/api/log',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({secret:LOG_SECRET, entry:full})
+  }).catch(()=>{});
 }
 
 // ─── VEDIC CHART ENGINE ────────────────────────────────────────────────────
@@ -1045,7 +1064,7 @@ function getCurrentDasha(moonLon,birthY,birthM,birthD){
   };
 }
 
-function buildFallbackChart(name,dob,time){
+function buildFallbackChart(name,dob,time,cityLat,cityLon){
   const parts=dob.split('-').map(Number);
   const y=parts[0],m=parts[1],d=parts[2];
   const tp=(time||'06:00').split(':').map(Number);
@@ -1054,8 +1073,8 @@ function buildFallbackChart(name,dob,time){
   const moonLon=P.Moon, sunLon=P.Sun;
   const moonSignIdx=Math.floor(moonLon/30);
   const nakshIdx=Math.floor(moonLon/(360/27));
-  // Proper Ascendant via Local Sidereal Time (Meeus formula)
-  const lat=23.0, lon=80.0; // approx India centre default coords
+  // Use actual city coordinates — accurate Lagna depends on exact lat/lon
+  const lat=cityLat||23.0, lon=cityLon||80.0;
   const utH=hr+(mn/60)-5.5; // IST → UT
   const jdForLagna=toJD(y,m,d,utH);
   const theta=mod(280.46061837+360.98564736629*(jdForLagna-2451545),360); // GAST
@@ -1075,6 +1094,7 @@ function buildFallbackChart(name,dob,time){
     lagna:rashi(lagnaIdx), moon:rashi(moonSignIdx),
     nakshatra:naksh(nakshIdx), dasha, planets:P,
     moonLon, sunLon,
+    lagnaIdx, planetSignMap: Object.fromEntries(Object.entries(P).map(([k,v])=>[k,Math.floor(v/30)])),
     html:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
       <div style="background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:12px;padding:14px;">
@@ -1197,6 +1217,11 @@ function getCardName(raw){
   return raw.replace(/_/g,' ').replace(/^\d+ /,'');
 }
 
+function cardImgFail(img){
+  var wrap=img.closest('.card-img-wrap');
+  var name=img.alt||'';
+  if(wrap){wrap.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;padding:12px;text-align:center;"><div style="font-size:44px;opacity:0.4;">🔮</div><div style="font-family:Cinzel,serif;font-size:11px;letter-spacing:0.1em;color:var(--muted);opacity:0.7;">'+name+'</div><div style="font-size:9px;color:var(--dim);opacity:0.6;">Add cards/ folder<br>to repo</div></div>';}
+}
 function drawCards(){
   const spread=SPREAD_TYPES[currentSpread];
   const btn=document.getElementById('draw-btn');
@@ -1218,13 +1243,15 @@ function drawCards(){
       <div class="card-slot" onclick="showCardMeaning(${i})">
         <div class="card-slot-label">${card.position}</div>
         <div class="card-frame">
-          <div class="card-img-wrap">
+          <div class="card-img-wrap" id="cw-${i}">
             <img 
               src="cards/${card.name}.jpg"
               class="${card.reversed?'reversed':''}"
               loading="lazy"
-              onerror="this.outerHTML='<div class=\"card-back-design\">🔮</div>'"
               alt="${getCardName(card.name)}"
+              style="opacity:0;transition:opacity 0.4s;"
+              onload="this.style.opacity=\'1\'"
+              onerror="cardImgFail(this)"
             >
           </div>
           <div class="card-name-bar">
@@ -1313,7 +1340,7 @@ const ACCESS_CONFIG = {
   // 'admin'   → only admin password unlocks full reading (current)
   // 'code'    → unique codes you send to each client
   // 'open'    → full reading for everyone, no code needed
-  mode: 'open',
+  mode: 'admin',
 
   // ── VALID ACCESS CODES ───────────────────────────────────────
   // Add or remove codes here. Each code can have metadata.
@@ -1567,6 +1594,16 @@ function buildFullReadingHTML(name, chart) {
 
 // Show preview + locked section + code entry
 function showChartWithInsight(result, name, chart, insight) {
+  // Compute numerology
+  const dob = document.getElementById('dob-year').value + '-' +
+    document.getElementById('dob-month').value + '-' +
+    document.getElementById('dob-day').value;
+  const numData = calcNumerology(dob, name);
+  const numHtml = renderNumerologySection(numData, dob, name);
+  // North Indian chart
+  const niSvg = renderNorthIndianChart(chart.lagnaIdx||0, chart.planets||{});
+  chart._numHtml = numHtml;
+  chart._niSvg = niSvg;
   const cfg = ACCESS_CONFIG.ui;
   const mode = ACCESS_CONFIG.mode;
 
@@ -1578,6 +1615,14 @@ function showChartWithInsight(result, name, chart, insight) {
       <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:20px;margin:20px 0;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
         <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
+        <!-- North Indian Kundli Chart -->
+        <div style="margin-top:20px;">
+          <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:0.1em;margin-bottom:12px;text-align:center;">✦ NORTH INDIAN KUNDLI ✦</div>
+          ${chart._niSvg||''}
+          <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
+        </div>
+        <!-- Numerology -->
+        ${chart._numHtml||''}
       </div>
       ${buildFullReadingHTML(name, chart)}
     `;
@@ -1592,6 +1637,13 @@ function showChartWithInsight(result, name, chart, insight) {
       <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
       <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
     </div>
+
+    <div style="margin:20px 0;padding:20px;background:rgba(15,4,40,0.5);border:1px solid rgba(255,195,64,0.12);border-radius:14px;">
+      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:0.12em;margin-bottom:14px;text-align:center;">✦ YOUR NORTH INDIAN KUNDLI ✦</div>
+      ${chart._niSvg||''}
+      <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
+    </div>
+    ${chart._numHtml||''}
 
     <div id="full-reading-gate" style="background:rgba(15,4,40,0.6);border:1px solid rgba(255,195,64,0.2);border-radius:14px;padding:24px;text-align:center;">
       <div style="font-size:20px;margin-bottom:8px;">🔒</div>
@@ -1678,13 +1730,26 @@ async function submitAstrology(){
   }
 
   // ── LOG the submission (name, dob, city, question — no AI send) ──
-  saveLog({name, dob, time:time||'unknown', city, question:question||'—'});
+  saveLog({type:'chart', name, dob, time:time||'unknown', city, question:question||'—', ts_raw:Date.now()});
 
   result.innerHTML='<div class="loading-ring" style="margin-top:8px;"></div><p style="text-align:center;margin-top:12px;font-style:italic;color:var(--muted);">Reading your stars…</p>';
   result.className='astro-result visible';
 
-  // ── Build JS chart (always works, no server) ──
-  const chart=buildFallbackChart(name,dob,time);
+  // ── Geocode city → get real lat/lon for accurate Lagna ──
+  let cityLat=null, cityLon=null;
+  try{
+    const geo=await fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(city)+'&format=json&limit=1',{
+      headers:{'Accept-Language':'en','User-Agent':'JyogiAI/1.0'}
+    });
+    const geoData=await geo.json();
+    if(geoData&&geoData.length>0){
+      cityLat=parseFloat(geoData[0].lat);
+      cityLon=parseFloat(geoData[0].lon);
+    }
+  }catch(e){/* fallback to default India centre */}
+
+  // ── Build JS chart with real coordinates ──
+  const chart=buildFallbackChart(name,dob,time,cityLat,cityLon);
 
   // ── Try AI insight — send ONLY sign/dasha info, NEVER name/dob/city ──
   let insight='Your chart carries the energy of '+chart.lagna+' rising with '+chart.moon+' Moon — a powerful combination. You are currently in '+chart.dasha.current+' Mahadasha, a period of significant karmic unfolding. Book a full session with Jyogi for your complete planetary story and personalised remedies.';
@@ -1705,6 +1770,8 @@ async function submitAstrology(){
     }
   }catch(e){/* fallback insight already set */}
 
+  // Update log with chart result
+  saveLog({type:'chart_result', name, lagna:chart.lagna, moon:chart.moon, nakshatra:chart.nakshatra, dasha:chart.dasha?chart.dasha.current:'', city, ts_raw:Date.now()});
   showChartWithInsight(result, name, chart, insight);
 
   // ── Set WhatsApp link after render ──
@@ -1942,6 +2009,192 @@ function initSpinners(){
 }
 document.addEventListener('DOMContentLoaded', initSpinners);
 
+
+
+// ── North Indian Kundli Chart ─────────────────────────────────────
+// House positions in North Indian diamond layout (fixed houses, moving signs)
+// House grid positions (row,col in 4x4 grid):
+const NI_HOUSES = [
+  {r:0,c:1}, // 1 Lagna
+  {r:0,c:2}, // 2
+  {r:0,c:3}, // 3
+  {r:1,c:3}, // 4
+  {r:2,c:3}, // 5
+  {r:3,c:2}, // 6
+  {r:3,c:1}, // 7
+  {r:3,c:0}, // 8
+  {r:2,c:0}, // 9
+  {r:1,c:0}, // 10
+  {r:0,c:0}, // 11
+  {r:1,c:1}, // 12 (top-left triangle)
+];
+// NI layout uses 12 triangular cells in a diamond
+// Standard NI positions (cell index 0-11, clockwise from top):
+const NI_CELL_PATHS = [
+  'M50,0 L150,0 L100,50 Z',         // 0: top
+  'M150,0 L200,50 L150,100 L100,50 Z', // 1: top-right-outer
+  'M200,50 L200,150 L150,100 Z',    // 2: right-top
+  'M200,150 L150,100 L150,200 Z',   // 3: right-bottom (unused in simple)
+  'M200,150 L200,200 L150,200 L150,100 Z', // adjust...
+];
+
+function renderNorthIndianChart(lagnaIdx, planetPositions) {
+  // lagnaIdx: 0=Aries…11=Pisces
+  // planetPositions: {Sun:signIdx, Moon:signIdx, ...}
+  const RASHIS_SHORT = ['Ar','Ta','Ge','Ca','Le','Vi','Li','Sc','Sa','Cp','Aq','Pi'];
+  const PLANET_ABBR = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+  const W = 280, H = 280, C = W/2;
+
+  // 12 triangular cells in NI chart (clockwise from top-middle)
+  // Each cell = which house number (1-12), fixed layout
+  // Cell 0=house12, going clockwise: 12,1,2,3,4,5,6,7,8,9,10,11
+  const CELL_HOUSE = [12,1,2,3,4,5,6,7,8,9,10,11]; // cell index → house number
+
+  // SVG paths for 12 triangular/trapezoidal cells (NI standard)
+  const cells = [
+    {path:`M${C},0 L${W},0 L${W},${H/4} L${C},${C} Z`, house:12, tx:C+30, ty:45},    // top-right
+    {path:`M${C},0 L${W},0 L${W},${H} L${C},${C} Z`, house:1, tx:C+50, ty:C-10}, // WRONG: use proper
+  ];
+
+  // Proper NI 4x4 grid approach:
+  // The chart is drawn as a square with diagonals creating 12 cells
+  // Let's use the standard NI grid: 4 corners + 4 sides + 4 center triangles
+  const S = W; // square size
+  const cells12 = [
+    // House, SVG path, text-x, text-y
+    [12, `M0,0 L${S/2},0 L${S/4},${S/4} Z`, S/6, S/8],
+    [1,  `M${S/2},0 L${S},0 L${S*3/4},${S/4} Z`, S*2.5/4, S/8],
+    [2,  `M${S},0 L${S},${S/2} L${S*3/4},${S/4} Z`, S*7/8, S/4],
+    [3,  `M${S},${S/2} L${S},${S} L${S*3/4},${S*3/4} Z`, S*7/8, S*5.5/8],
+    [4,  `M${S},${S} L${S/2},${S} L${S*3/4},${S*3/4} Z`, S*2.5/4, S*7.5/8],
+    [5,  `M${S/2},${S} L0,${S} L${S/4},${S*3/4} Z`, S*1.2/4, S*7.5/8],
+    [6,  `M0,${S} L0,${S/2} L${S/4},${S*3/4} Z`, S/8, S*5.5/8],
+    [7,  `M0,${S/2} L0,0 L${S/4},${S/4} Z`, S/8, S/4],
+    [8,  `M0,0 L${S/2},0 L${S/4},${S/4} L0,${S/2} Z`, S/5, S*1.5/8],
+    [9,  `M${S/2},0 L${S},0 L${S*3/4},${S/4} L${S/4},${S/4} Z`, S/2, S*1.5/8],
+    [10, `M${S},0 L${S},${S/2} L${S*3/4},${S*3/4} L${S*3/4},${S/4} Z`, S*3.1/4, S/2],
+    [11, `M${S/2},${S} L${S},${S} L${S*3/4},${S*3/4} L${S/4},${S*3/4} Z`, S/2, S*6.5/8],
+  ];
+
+  // Assign signs to houses (lagna = house 1 gets lagnaIdx sign)
+  // Build house→sign map
+  const houseSign = {};
+  for(let h=1;h<=12;h++){
+    houseSign[h] = (lagnaIdx + (h-1)) % 12;
+  }
+
+  // Build sign→planets map
+  const signPlanets = {};
+  Object.entries(planetPositions).forEach(([pl,lon])=>{
+    const si = typeof lon === 'number' ? Math.floor(lon/30) : lon;
+    if(!signPlanets[si]) signPlanets[si] = [];
+    signPlanets[si].push(PLANET_ABBR[pl]||pl);
+  });
+
+  // Render SVG
+  let svg = `<svg viewBox="0 0 ${S} ${S}" width="100%" style="max-width:280px;display:block;margin:0 auto;" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${S}" height="${S}" fill="rgba(10,5,30,0.8)" rx="8"/>`;
+
+  cells12.forEach(([house, path, tx, ty])=>{
+    const sign = houseSign[house];
+    const planets = signPlanets[sign] || [];
+    const isLagna = house === 1;
+    svg += `<path d="${path}" fill="${isLagna?'rgba(255,195,64,0.12)':'rgba(255,255,255,0.02)'}" stroke="rgba(255,195,64,0.3)" stroke-width="1"/>`;
+    // House number (small, corner)
+    svg += `<text x="${tx}" y="${ty}" font-size="9" fill="rgba(255,195,64,0.5)" font-family="serif" text-anchor="middle">${house}</text>`;
+    // Sign name
+    svg += `<text x="${tx}" y="${ty+13}" font-size="11" fill="#c4a97a" font-family="serif" text-anchor="middle">${RASHIS_SHORT[sign]}</text>`;
+    // Planets
+    if(planets.length>0){
+      const pText = planets.join(' ');
+      svg += `<text x="${tx}" y="${ty+26}" font-size="10" fill="#FFC340" font-family="serif" font-weight="bold" text-anchor="middle">${pText}</text>`;
+    }
+    if(isLagna){
+      svg += `<text x="${tx}" y="${ty-8}" font-size="8" fill="#FFC340" font-family="serif" text-anchor="middle">ASC</text>`;
+    }
+  });
+
+  // Center diamond
+  svg += `<polygon points="${S/4},${S/4} ${S*3/4},${S/4} ${S*3/4},${S*3/4} ${S/4},${S*3/4}" fill="rgba(22,8,64,0.6)" stroke="rgba(255,195,64,0.3)" stroke-width="1"/>`;
+  svg += `<text x="${S/2}" y="${S/2-8}" font-size="11" fill="#FFC340" font-family="Cinzel,serif" text-anchor="middle">जन्म</text>`;
+  svg += `<text x="${S/2}" y="${S/2+8}" font-size="10" fill="#9d8c6a" font-family="serif" text-anchor="middle">कुंडली</text>`;
+
+  svg += '</svg>';
+  return svg;
+}
+
+// ── Numerology ────────────────────────────────────────────────────
+function calcNumerology(dob, name) {
+  // Life Path Number
+  const digits = dob.replace(/-/g,'').split('').map(Number);
+  const sumAll = digits.reduce((a,b)=>a+b, 0);
+  function reduce(n){ while(n>9&&n!==11&&n!==22&&n!==33){const s=String(n).split('').map(Number).reduce((a,b)=>a+b,0);n=s;}return n;}
+  const lifePath = reduce(sumAll);
+
+  // Destiny/Expression Number (full name)
+  const PYTH = {a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:1,k:2,l:3,m:4,n:5,o:6,p:7,q:8,r:9,s:1,t:2,u:3,v:4,w:5,x:6,y:7,z:8};
+  const nameDigits = (name||'').toLowerCase().replace(/[^a-z]/g,'').split('').map(c=>PYTH[c]||0);
+  const destinyNum = nameDigits.length ? reduce(nameDigits.reduce((a,b)=>a+b,0)) : 0;
+
+  // Soul Urge (vowels only)
+  const vowels = (name||'').toLowerCase().replace(/[^aeiou]/g,'').split('').map(c=>PYTH[c]||0);
+  const soulUrge = vowels.length ? reduce(vowels.reduce((a,b)=>a+b,0)) : 0;
+
+  const LP_MEANINGS = {
+    1:'Leader & Pioneer — You are here to lead, initiate, and be independent. Your purpose is to develop confidence and blaze new trails.',
+    2:'Peacemaker & Partner — You are here to cooperate, bring harmony, and master sensitivity. Relationships are your greatest teacher.',
+    3:'Creator & Communicator — You are here to express, inspire, and bring joy through words, art, and creativity.',
+    4:'Builder & Organizer — You are here to create solid foundations, master discipline, and build lasting structures.',
+    5:'Freedom Seeker — You are here to experience life fully, embrace change, and inspire others through your adventurous spirit.',
+    6:'Nurturer & Healer — You are here to love, serve, and create beauty. Family and responsibility are your sacred path.',
+    7:'Seeker & Mystic — You are here to question deeply, seek truth, and connect with spiritual wisdom.',
+    8:'Powerhouse & Achiever — You are here to master material and spiritual power, abundance, and leadership.',
+    9:'Humanitarian — You are here to serve humanity, express universal love, and complete karmic cycles with grace.',
+    11:'Master Intuitive — You are an old soul with heightened intuition and spiritual sensitivity. Your purpose is to illuminate others.',
+    22:'Master Builder — You have the rare ability to turn grand visions into reality. You are here to build something that lasts.',
+    33:'Master Teacher — The rarest path. You are here to uplift humanity through selfless love and compassionate teaching.',
+  };
+  const DESTINY_SHORT = {1:'Independence',2:'Cooperation',3:'Expression',4:'Foundation',5:'Freedom',6:'Harmony',7:'Wisdom',8:'Power',9:'Completion',11:'Illumination',22:'Architecture',33:'Teaching'};
+  const SOUL_SHORT = {1:'Ambition',2:'Peace',3:'Joy',4:'Order',5:'Adventure',6:'Love',7:'Truth',8:'Success',9:'Service',11:'Vision',22:'Legacy',33:'Compassion'};
+
+  return {
+    lifePath, destinyNum, soulUrge,
+    lpMeaning: LP_MEANINGS[lifePath] || 'A unique path of spiritual discovery.',
+    destinyWord: DESTINY_SHORT[destinyNum] || '—',
+    soulWord: SOUL_SHORT[soulUrge] || '—',
+  };
+}
+
+function renderNumerologySection(num, dob, name) {
+  const n = num;
+  return `
+  <div style="margin-top:20px;background:rgba(22,8,64,0.5);border:1px solid rgba(255,195,64,0.15);border-radius:14px;padding:20px;">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.1em;margin-bottom:16px;">✦ NUMEROLOGY</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+      <div style="text-align:center;background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-bottom:4px;">LIFE PATH</div>
+        <div style="font-family:'Cinzel',serif;font-size:28px;color:var(--gold);font-weight:700;">${n.lifePath}</div>
+      </div>
+      <div style="text-align:center;background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-bottom:4px;">DESTINY</div>
+        <div style="font-family:'Cinzel',serif;font-size:28px;color:var(--gold);font-weight:700;">${n.destinyNum}</div>
+        <div style="font-size:10px;color:var(--muted);">${n.destinyWord}</div>
+      </div>
+      <div style="text-align:center;background:rgba(255,195,64,0.07);border:1px solid rgba(255,195,64,0.2);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-bottom:4px;">SOUL URGE</div>
+        <div style="font-family:'Cinzel',serif;font-size:28px;color:var(--gold);font-weight:700;">${n.soulUrge}</div>
+        <div style="font-size:10px;color:var(--muted);">${n.soulWord}</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,195,64,0.04);border-left:2px solid var(--gold);padding:12px 14px;border-radius:0 8px 8px 0;">
+      <div style="font-size:11px;letter-spacing:0.12em;color:var(--gold);margin-bottom:6px;">LIFE PATH ${n.lifePath} — YOUR SOUL PURPOSE</div>
+      <div style="font-size:14px;color:var(--text);line-height:1.7;">${n.lpMeaning}</div>
+    </div>
+    <div style="margin-top:12px;padding:10px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:8px;font-size:13px;color:#a78bfa;text-align:center;font-style:italic;">
+      ✨ Want your complete Numerology Blueprint — lucky dates, name corrections, karmic lessons? <span onclick="openWhatsApp('Hi Jyogi, I want my complete Numerology Blueprint. My Life Path is ${n.lifePath}.')" style="color:var(--gold);text-decoration:underline;cursor:pointer;">Book a session →</span>
+    </div>
+  </div>`;
+}
 
 </script>
 
