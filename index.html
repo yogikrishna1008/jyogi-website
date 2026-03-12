@@ -9,24 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cormorant+SC:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-#:root{
- # --bg:#03010a;--bg2:#060112;--bg3:#0a0220;
- # --card:#0f0428;--panel:#160840;--panel2:#1d0f50;
-#  --border:rgba(255,195,64,0.12);--bhi:rgba(255,195,64,0.3);
-#  --gold:#FFC340;--gold2:#e8a800;--gold-lt:#ffe9a3;--gold-dk:#a87200;
-#  --green:#2B7A0B;--green2:#3d9e12;--green-lt:#86efac;
-#  --rose:#f472b6;--teal:#2dd4bf;--violet:#a78bfa;
-  #--text:#f8f0e0;--muted:#c4a97a;--dim:#8a7355;
- # --wa:#25D366;
-#}
- :root{
-  --bg:#FFFBF5;--bg2:#FFF6E8;--bg3:#FEF0D8;
-  --card:#FFFFFF;--panel:#FDF4E3;--panel2:#FDE8C4;
-  --border:rgba(180,120,0,0.18);--bhi:rgba(180,120,0,0.4);
-  --gold:#B8820A;--gold2:#9A6A00;--gold-lt:#D4A830;--gold-dk:#7A5500;
-  --green:#2B7A0B;--green2:#3d9e12;--green-lt:#1a5208;
-  --rose:#c2185b;--teal:#00796b;--violet:#6a1b9a;
-  --text:#1A0E00;--muted:#6B4C1E;--dim:#A08050;
+:root{
+  --bg:#03010a;--bg2:#060112;--bg3:#0a0220;
+  --card:#0f0428;--panel:#160840;--panel2:#1d0f50;
+  --border:rgba(255,195,64,0.12);--bhi:rgba(255,195,64,0.3);
+  --gold:#FFC340;--gold2:#e8a800;--gold-lt:#ffe9a3;--gold-dk:#a87200;
+  --green:#2B7A0B;--green2:#3d9e12;--green-lt:#86efac;
+  --rose:#f472b6;--teal:#2dd4bf;--violet:#a78bfa;
+  --text:#f8f0e0;--muted:#c4a97a;--dim:#8a7355;
   --wa:#25D366;
 }
 html{scroll-behavior:smooth;}
@@ -398,6 +388,68 @@ body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
   background:rgba(255,195,64,0.15);border-color:var(--gold);
   color:var(--gold);font-weight:bold;
 }
+
+/* ── Feature Sections ─────────────────────────────────────── */
+#compat,#dreams,#muhurta{padding:80px 0;background:var(--bg2);}
+#compat{background:linear-gradient(180deg,var(--bg2),var(--bg3));}
+#dreams{background:linear-gradient(180deg,var(--bg3),var(--bg));}
+#muhurta{background:linear-gradient(180deg,var(--bg),var(--bg2));}
+
+/* Yoga cards */
+.yoga-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+@media(max-width:480px){.yoga-grid{grid-template-columns:1fr;}}
+.yoga-card{border-radius:14px;padding:16px;border:1px solid;cursor:pointer;transition:all 0.2s;}
+.yoga-card:hover{transform:translateY(-2px);filter:brightness(1.05);}
+.yoga-name{font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.06em;margin:6px 0 4px;}
+.yoga-brief{font-size:12px;line-height:1.6;opacity:0.8;}
+.yoga-badge{font-size:9px;letter-spacing:0.2em;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.1);}
+
+/* Compatibility */
+.compat-score-ring{width:120px;height:120px;border-radius:50%;margin:0 auto 16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:3px solid var(--gold);background:rgba(255,195,64,0.07);}
+.compat-score-num{font-family:'Cinzel',serif;font-size:38px;color:var(--gold);font-weight:700;line-height:1;}
+.compat-score-lbl{font-size:9px;letter-spacing:0.2em;color:var(--muted);margin-top:2px;}
+.compat-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.07);margin:6px 0;overflow:hidden;}
+.compat-bar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.compat-row{display:flex;align-items:center;justify-content:space-between;margin:8px 0;}
+.compat-label{font-size:11px;color:var(--muted);width:100px;}
+.compat-val{font-size:12px;color:var(--text);font-weight:600;}
+
+/* Dream Journal */
+.dream-entry{background:rgba(255,255,255,0.03);border:1px solid rgba(255,195,64,0.1);
+  border-radius:14px;padding:16px;margin-bottom:12px;}
+.dream-date{font-size:10px;letter-spacing:0.15em;color:var(--dim);}
+.dream-text{font-size:14px;color:var(--text);margin:6px 0;line-height:1.7;}
+.dream-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.dream-tag{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(167,139,250,0.15);
+  border:1px solid rgba(167,139,250,0.25);color:var(--violet);}
+.dream-empty{text-align:center;padding:40px;color:var(--dim);font-style:italic;}
+.dream-input{background:rgba(10,5,30,0.7);border:1px solid rgba(255,195,64,0.25);border-radius:12px;
+  padding:14px 16px;color:var(--text);font-size:15px;font-family:'Cormorant Garamond',serif;
+  outline:none;width:100%;resize:none;line-height:1.7;transition:border-color 0.25s;}
+.dream-input:focus{border-color:rgba(255,195,64,0.5);}
+.dream-mood{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.mood-btn{font-size:20px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;}
+.mood-btn.sel{background:rgba(255,195,64,0.12);border-color:rgba(255,195,64,0.4);}
+
+/* Muhurta */
+.muhurta-day{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;transition:all 0.2s;cursor:pointer;}
+.muhurta-day:hover{border-color:var(--bhi);}
+.muhurta-day.today{border-color:rgba(255,195,64,0.5);background:rgba(255,195,64,0.05);}
+.muhurta-weekday{font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.3em;color:var(--muted);}
+.muhurta-date-num{font-family:'Cinzel',serif;font-size:24px;color:var(--gold);line-height:1;}
+.muhurta-rating{display:flex;gap:2px;margin:6px 0;}
+.muhurta-star{font-size:12px;}
+.muhurta-best{font-size:11px;color:var(--muted);line-height:1.5;}
+.muhurta-planet{font-size:11px;padding:2px 8px;border-radius:8px;background:rgba(255,195,64,0.08);
+  border:1px solid rgba(255,195,64,0.15);color:var(--gold);display:inline-block;margin-top:4px;}
+.panchang-row{display:flex;justify-content:space-between;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
+.panchang-label{color:var(--muted);font-size:10px;letter-spacing:0.15em;}
+.panchang-val{color:var(--text);font-weight:600;}
 </style>
 </head>
 <body>
@@ -418,6 +470,8 @@ body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
       <span class="nav-link" onclick="scrollTo('#services')">Services</span>
       <span class="nav-link" onclick="scrollTo('#tarot')"><span data-en>Tarot</span><span data-hi>तारो</span></span>
       <span class="nav-link" onclick="scrollTo('#astrology')"><span data-en>Astrology</span><span data-hi>ज्योतिष</span></span>
+      <span class="nav-link" onclick="scrollTo('#compat')">Match</span>
+      <span class="nav-link" onclick="scrollTo('#dreams')">Dreams</span>
       <span class="nav-link" onclick="scrollTo('#shop')"><span data-en>Shop</span><span data-hi>शॉप</span></span>
       <span class="nav-link" onclick="scrollTo('#reviews')"><span data-en>Reviews</span><span data-hi>समीक्षाएं</span></span>
       <a class="nav-link nav-wa" href="https://wa.me/918310319870?text=Hi Jyogi! I would like to book a session." target="_blank">
@@ -637,6 +691,113 @@ body.hindi .lang-btn[data-lang="en"]{background:transparent;color:var(--muted);}
 </section>
 
 <!-- ── SHOP ── -->
+
+<!-- ══ COMPATIBILITY SECTION ══ -->
+<section id="compat">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ Vedic Compatibility ✦</div>
+      <h2 class="sec-title">Love & Relationship Match</h2>
+      <p class="sec-desc">Enter both birth dates for a Vedic compatibility reading — Moon sign Kuta, Nakshatra match, and Dasha harmony.</p>
+    </div>
+    <div style="max-width:580px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">✦ Person 1</div>
+            <input class="form-input" id="c1-name" placeholder="Your name" style="margin-bottom:8px;">
+            <div class="picker-row">
+              <button type="button" class="picker-btn empty" id="c1-day-btn" onclick="openCompPicker('c1-day','day')"><span id="c1-day-lbl">Day</span><span class="chv">&#9660;</span></button>
+              <button type="button" class="picker-btn empty" id="c1-month-btn" onclick="openCompPicker('c1-month','month')"><span id="c1-month-lbl">Mon</span><span class="chv">&#9660;</span></button>
+              <button type="button" class="picker-btn empty" id="c1-year-btn" onclick="openCompPicker('c1-year','year')"><span id="c1-year-lbl">Year</span><span class="chv">&#9660;</span></button>
+            </div>
+            <input type="hidden" id="c1-day" value=""><input type="hidden" id="c1-month" value=""><input type="hidden" id="c1-year" value="">
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">✦ Person 2</div>
+            <input class="form-input" id="c2-name" placeholder="Partner name" style="margin-bottom:8px;">
+            <div class="picker-row">
+              <button type="button" class="picker-btn empty" id="c2-day-btn" onclick="openCompPicker('c2-day','day')"><span id="c2-day-lbl">Day</span><span class="chv">&#9660;</span></button>
+              <button type="button" class="picker-btn empty" id="c2-month-btn" onclick="openCompPicker('c2-month','month')"><span id="c2-month-lbl">Mon</span><span class="chv">&#9660;</span></button>
+              <button type="button" class="picker-btn empty" id="c2-year-btn" onclick="openCompPicker('c2-year','year')"><span id="c2-year-lbl">Year</span><span class="chv">&#9660;</span></button>
+            </div>
+            <input type="hidden" id="c2-day" value=""><input type="hidden" id="c2-month" value=""><input type="hidden" id="c2-year" value="">
+          </div>
+        </div>
+        <button class="submit-btn" onclick="calcCompatibility()">💑 Check Our Compatibility</button>
+        <div id="compat-result" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DREAM JOURNAL SECTION ══ -->
+<section id="dreams">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ Sacred Dreams ✦</div>
+      <h2 class="sec-title">Dream Journal</h2>
+      <p class="sec-desc">Record your dreams, receive tarot guidance, and discover the patterns your subconscious is revealing.</p>
+    </div>
+    <div style="max-width:640px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px;">
+        <div class="form-label" style="margin-bottom:10px;">Describe your dream…</div>
+        <textarea class="dream-input" id="dream-text" rows="4" placeholder="Last night I dreamed of…"></textarea>
+        <div style="margin:12px 0;">
+          <div class="form-label" style="margin-bottom:8px;">Mood on waking</div>
+          <div class="dream-mood" id="dream-mood-row">
+            <div class="mood-btn" data-mood="peaceful" onclick="selectMood(this)">😌</div>
+            <div class="mood-btn" data-mood="anxious" onclick="selectMood(this)">😰</div>
+            <div class="mood-btn" data-mood="confused" onclick="selectMood(this)">😕</div>
+            <div class="mood-btn" data-mood="joyful" onclick="selectMood(this)">😊</div>
+            <div class="mood-btn" data-mood="fearful" onclick="selectMood(this)">😨</div>
+            <div class="mood-btn" data-mood="mysterious" onclick="selectMood(this)">🌙</div>
+            <div class="mood-btn" data-mood="powerful" onclick="selectMood(this)">⚡</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="submit-btn" style="flex:1;" onclick="saveDream()">✨ Save & Get Tarot Card</button>
+          <button class="submit-btn" style="flex:0 0 50px;background:rgba(255,255,255,0.06);color:var(--muted);" onclick="clearDreamForm()" title="Clear">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold);">✦ Your Dream Log</div>
+        <button onclick="clearAllDreams()" style="background:none;border:none;color:var(--dim);font-size:12px;cursor:pointer;font-family:inherit;">Clear all</button>
+      </div>
+      <div id="dream-log"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MUHURTA SECTION ══ -->
+<section id="muhurta">
+  <div class="container">
+    <div class="sec-header">
+      <div class="sec-badge">✦ Auspicious Timing ✦</div>
+      <h2 class="sec-title">Muhurta — Lucky Days</h2>
+      <p class="sec-desc">Vedic panchang for the next 7 days — choose the best time for new ventures, travel, marriage planning, and important decisions.</p>
+    </div>
+    <div style="max-width:700px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:0.1em;margin-bottom:14px;">✦ TODAY'S PANCHANG</div>
+        <div id="today-panchang"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px;" id="muhurta-week"></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;">
+        <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:0.1em;margin-bottom:14px;">✦ CHOOSE YOUR ACTIVITY</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;" id="muhurta-activity-btns"></div>
+        <div id="muhurta-advice" style="font-size:14px;color:var(--muted);font-style:italic;text-align:center;padding:16px;">
+          Select an activity above to see the best days this week.
+        </div>
+        <div style="margin-top:16px;padding:14px;background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;text-align:center;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">For exact Muhurta (hour-level precision) with your birth chart:</div>
+          <button onclick="openWhatsApp('Hi Jyogi, I need an exact Muhurta for my upcoming event. Please help.')" style="padding:10px 24px;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;border-radius:20px;font-family:inherit;font-size:13px;cursor:pointer;">📅 Book Muhurta Consultation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="shop">
   <div class="container">
     <div class="sec-header">
@@ -1350,7 +1511,7 @@ const ACCESS_CONFIG = {
   // 'admin'   → only admin password unlocks full reading (current)
   // 'code'    → unique codes you send to each client
   // 'open'    → full reading for everyone, no code needed
-  mode: 'open',
+  mode: 'admin',
 
   // ── VALID ACCESS CODES ───────────────────────────────────────
   // Add or remove codes here. Each code can have metadata.
@@ -1612,8 +1773,15 @@ function showChartWithInsight(result, name, chart, insight) {
   const numHtml = renderNumerologySection(numData, dob, name);
   // North Indian chart
   const niSvg = renderNorthIndianChart(chart.lagnaIdx||0, chart.planets||{});
+  const yogas = detectYogas(chart);
+  const yogaHtml = renderYogasHTML(yogas);
+  const navHtml = renderNavamshaHTML(chart);
+  const remHtml = renderRemediesHTML(chart);
   chart._numHtml = numHtml;
   chart._niSvg = niSvg;
+  chart._yogaHtml = yogaHtml;
+  chart._navHtml = navHtml;
+  chart._remHtml = remHtml;
   const cfg = ACCESS_CONFIG.ui;
   const mode = ACCESS_CONFIG.mode;
 
@@ -1631,8 +1799,20 @@ function showChartWithInsight(result, name, chart, insight) {
           ${chart._niSvg||''}
           <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
         </div>
+        <!-- North Indian Kundli Chart -->
+        <div style="margin-top:20px;">
+          <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:0.1em;margin-bottom:12px;text-align:center;">✦ NORTH INDIAN KUNDLI ✦</div>
+          ${chart._niSvg||''}
+          <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
+        </div>
         <!-- Numerology -->
         ${chart._numHtml||''}
+        <!-- Yogas -->
+        ${chart._yogaHtml||''}
+        <!-- Navamsha -->
+        ${chart._navHtml||''}
+        <!-- Remedies -->
+        ${chart._remHtml||''}
       </div>
       ${buildFullReadingHTML(name, chart)}
     `;
@@ -2205,6 +2385,727 @@ function renderNumerologySection(num, dob, name) {
     </div>
   </div>`;
 }
+
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: YOGA DETECTION
+// ════════════════════════════════════════════════════════════════
+function detectYogas(chart) {
+  const P = chart.planets;
+  const psm = chart.planetSignMap;
+  const li = chart.lagnaIdx;
+  function house(p){ return (psm[p]-li+12)%12+1; }
+  function isK(h){ return [1,4,7,10].includes(h); }
+  function isTr(h){ return [1,5,9].includes(h); }
+  function isD(h){ return [6,8,12].includes(h); }
+  const EXALT={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+  const OWN={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[2,5],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+  function isEx(p){ return psm[p]===EXALT[p]; }
+  function isOwn(p){ return OWN[p]&&OWN[p].includes(psm[p]); }
+  function isStr(p){ return isEx(p)||isOwn(p); }
+  const yogas=[];
+
+  // Gaj Kesari — Jupiter in kendra from Moon
+  const jupFromMoon=(psm.Jupiter-psm.Moon+12)%12+1;
+  if(isK(jupFromMoon)){
+    yogas.push({name:'Gaj Kesari Yoga',icon:'🐘',strength:'Powerful',color:'rgba(255,195,64,0.12)',bc:'rgba(255,195,64,0.5)',
+      brief:'Jupiter in kendra from Moon — wisdom, lasting reputation and prosperity.',
+      full:'You carry the blessings of an elephant and a lion combined. This yoga brings natural authority, financial stability and deep wisdom. Leaders, teachers and respected professionals carry Gaj Kesari. Book a session to discover exactly when your peak Gaj Kesari period activates.'});
+  }
+
+  // Hamsa — Jupiter strong in kendra
+  if(isStr('Jupiter')&&isK(house('Jupiter'))){
+    yogas.push({name:'Hamsa Yoga',icon:'🦢',strength:'Divine',color:'rgba(167,139,250,0.1)',bc:'rgba(167,139,250,0.4)',
+      brief:'Jupiter exalted or own-sign in kendra — spiritual wisdom, noble character.',
+      full:'One of the rare Pancha Mahapurusha Yogas. You possess a refined, spiritual nature and deep philosophical wisdom. People are naturally drawn to you for guidance. Book a session to understand which life chapters activate this yoga fully.'});
+  }
+
+  // Malavya — Venus strong in kendra
+  if(isStr('Venus')&&isK(house('Venus'))){
+    yogas.push({name:'Malavya Yoga',icon:'🌹',strength:'Luxurious',color:'rgba(244,114,182,0.1)',bc:'rgba(244,114,182,0.4)',
+      brief:'Venus strong in kendra — beauty, love, artistic gifts and material comfort.',
+      full:'Malavya Yoga (Pancha Mahapurusha) blesses with refined taste, artistic genius and magnetic charm. Relationships, luxury and creative success follow you naturally. Book a session for timing.'});
+  }
+
+  // Ruchaka — Mars strong in kendra
+  if(isStr('Mars')&&isK(house('Mars'))){
+    yogas.push({name:'Ruchaka Yoga',icon:'🔥',strength:'Courageous',color:'rgba(248,113,113,0.1)',bc:'rgba(248,113,113,0.4)',
+      brief:'Mars strong in kendra — courage, physical excellence, natural leadership.',
+      full:'Ruchaka Yoga (Pancha Mahapurusha) — the warrior yoga. You have exceptional drive, physical vitality and the qualities of a natural leader. Book to understand how this manifests in your career.'});
+  }
+
+  // Budh-Aditya — Sun+Mercury within 14°
+  const smDiff=Math.min(Math.abs(P.Sun-P.Mercury),360-Math.abs(P.Sun-P.Mercury));
+  if(smDiff<=14){
+    yogas.push({name:'Budh-Aditya Yoga',icon:'💡',strength:'Intellectual',color:'rgba(125,211,252,0.1)',bc:'rgba(125,211,252,0.4)',
+      brief:'Sun + Mercury close — razor-sharp intellect, communication mastery.',
+      full:'This yoga blesses with an articulate, analytical mind. Writing, speaking, teaching, technology and business communication all flow naturally. Book a session to see which houses light up this yoga in your chart.'});
+  }
+
+  // Chandra-Mangal — Moon+Mars same sign
+  if(psm.Moon===psm.Mars){
+    yogas.push({name:'Chandra-Mangal Yoga',icon:'💰',strength:'Wealth',color:'rgba(134,239,172,0.1)',bc:'rgba(134,239,172,0.4)',
+      brief:'Moon + Mars conjunct — business instinct, ambitious drive, earning power.',
+      full:'The classic wealth yoga. An entrepreneurial spirit with the drive to create financial success through one\'s own efforts. Book a session to see when this activates most powerfully in your timeline.'});
+  }
+
+  // Raj Yoga — any strong planet in both kendra and trikona
+  const rjPlanets=['Jupiter','Venus','Mercury','Moon','Sun'];
+  rjPlanets.forEach(p=>{
+    if(isStr(p)&&isK(house(p))&&isTr(house(p))){
+      yogas.push({name:'Raj Yoga ('+p+')',icon:'👑',strength:'Auspicious',color:'rgba(255,195,64,0.1)',bc:'rgba(255,195,64,0.4)',
+        brief:p+' in kendra-trikona — authority, success and rise in social status.',
+        full:'Raj Yoga is the yoga of kings. It indicates a rise to prominence and material success. This activates during specific Mahadasha periods. Book a session to discover exactly when your Raj Yoga peak occurs.'});
+    }
+  });
+
+  // Viparita Raj — lord of dusthana in dusthana
+  if(isD(house('Saturn'))&&isD(house('Rahu'))){
+    yogas.push({name:'Viparita Raj Yoga',icon:'🔄',strength:'Transformative',color:'rgba(45,212,191,0.1)',bc:'rgba(45,212,191,0.4)',
+      brief:'Adversity becomes your greatest strength — rise through challenges.',
+      full:'Viparita Raj Yoga is the yoga of dramatic reversal. Difficulties transform into power. People with this yoga often rise dramatically after hardship. Book a session to time these transformative periods.'});
+  }
+
+  // Kemadruma — Moon with no planet adjacent
+  const mp=psm.Moon;
+  const allP=['Sun','Mars','Mercury','Jupiter','Venus','Saturn'];
+  const hasAdj=allP.some(p=>psm[p]===(mp-1+12)%12||psm[p]===mp||psm[p]===(mp+1)%12);
+  if(!hasAdj){
+    yogas.push({name:'Kemadruma Yoga',icon:'🌑',strength:'Sensitive',color:'rgba(107,114,128,0.1)',bc:'rgba(107,114,128,0.35)',
+      brief:'Moon isolated — emotional sensitivity needs conscious care and remedy.',
+      full:'Kemadruma Yoga indicates periods of emotional isolation. However this can be remedied and transformed into deep inner resilience. Book a session for your personalised remedy protocol.',challenging:true});
+  }
+
+  if(!yogas.length){
+    yogas.push({name:'Saraswati Yoga',icon:'📚',strength:'Wisdom',color:'rgba(255,195,64,0.1)',bc:'rgba(255,195,64,0.4)',
+      brief:'Mercury, Jupiter and Venus blessing — intelligence, creativity and learning.',
+      full:'Your chart carries Saraswati blessings — a refined, creative and intelligent nature. Book a session for a complete yoga analysis of your full chart.'});
+  }
+  return yogas;
+}
+
+function renderYogasHTML(yogas) {
+  const grid=yogas.map(y=>`
+    <div class="yoga-card" style="background:${y.color};border-color:${y.bc};">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:22px;">${y.icon}</span>
+        <span class="yoga-badge" style="color:${y.bc};">${y.strength}</span>
+      </div>
+      <div class="yoga-name" style="color:${y.bc};">${y.name}</div>
+      <div class="yoga-brief" style="color:var(--text);">${y.brief}</div>
+    </div>`).join('');
+  return `
+  <div style="margin-top:24px;">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.1em;margin-bottom:6px;">✦ YOGAS IN YOUR CHART</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-style:italic;">Planetary combinations shaping your destiny</div>
+    <div class="yoga-grid">${grid}</div>
+    <div style="padding:14px;background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;text-align:center;margin-top:8px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">⬇ The full interpretation of each yoga — when it activates, which areas of life it impacts — is unlocked in your personal session with Jyogi.</div>
+      <button onclick="openWhatsApp('Hi Jyogi, I want to understand the yogas in my birth chart.')" style="padding:10px 20px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:20px;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:0.1em;">🌟 Book Full Yoga Reading →</button>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: NAVAMSHA (D9) CHART
+// ════════════════════════════════════════════════════════════════
+function calcNavamsha(chart) {
+  function d9Sign(lon) {
+    const si=Math.floor(lon/30);
+    const inSign=lon%30;
+    const n=Math.floor(inSign/(30/9));
+    // Movable=0,Fixed=1,Dual=2
+    const t=si%3;
+    const s= t===0?0 : t===1?9 : 3;
+    return (s+n)%12;
+  }
+  const P=chart.planets;
+  const d9={};
+  ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu','Ketu'].forEach(p=>{d9[p]=d9Sign(P[p]);});
+  d9.lagna=d9Sign(chart.lagnaIdx*30+0.5);
+  return d9;
+}
+
+function renderNavamshaHTML(chart) {
+  const d9=calcNavamsha(chart);
+  const ni=d9.lagna;
+  const ABBR={Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+  // Build North Indian style 4x4 grid
+  const HOUSE_SIGNS=[];
+  for(let h=0;h<12;h++) HOUSE_SIGNS.push((ni+h)%12);
+  const RASHI_SHORT=['Ar','Ta','Ge','Ca','Le','Vi','Li','Sc','Sa','Cp','Aq','Pi'];
+  // Planet → house map
+  const phMap={};
+  Object.entries(ABBR).forEach(([full,abbr])=>{
+    const hIdx=(d9[full]-ni+12)%12+1;
+    if(!phMap[hIdx]) phMap[hIdx]=[];
+    phMap[hIdx].push(abbr);
+  });
+  // North Indian fixed layout: houses 1-12 in diamond grid
+  const LAYOUT=[
+    [12,1,2],[11,'',3],[10,9,4],[null,8,null],[7,6,5]
+  ]; // simplified 3-col rows
+  // Use same SVG approach as NI chart
+  const svgW=240, svgH=240;
+  const housePos=[
+    {x:90,y:0,w:60,h:40},{x:150,y:0,w:90,h:90},{x:200,y:90,w:40,h:60},
+    {x:150,y:150,w:90,h:90},{x:90,y:200,w:60,h:40},{x:0,y:150,w:90,h:90},
+    {x:0,y:90,w:40,h:60},{x:0,y:0,w:90,h:90},
+    {x:90,y:40,w:60,h:50},{x:150,y:90,w:50,h:60},{x:90,y:150,w:60,h:50},{x:40,y:90,w:50,h:60}
+  ];
+  // Simpler: render as a table
+  const rows=[];
+  for(let h=1;h<=12;h++){
+    const sign=HOUSE_SIGNS[h-1];
+    const planets=(phMap[h]||[]).join(' ');
+    rows.push(`<tr><td style="padding:5px 10px;color:var(--muted);font-size:11px;">H${h}</td>
+      <td style="padding:5px 10px;color:var(--gold);font-size:12px;">${RASHI_SHORT[sign]}</td>
+      <td style="padding:5px 10px;color:var(--text);font-size:12px;">${planets||'—'}</td></tr>`);
+  }
+  const tableLeft=rows.slice(0,6).join('');
+  const tableRight=rows.slice(6).join('');
+
+  // D9 Venus interpretation
+  const venSign=RASHIS[d9.Venus];
+  const venHouse=(d9.Venus-ni+12)%12+1;
+  const jupSign=RASHIS[d9.Jupiter];
+
+  return `
+  <div style="margin-top:24px;">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.1em;margin-bottom:6px;">✦ NAVAMSHA (D9) — Soul & Marriage Chart</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-style:italic;">The D9 chart reveals your soul's true nature and the quality of marriage/partnerships</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div style="background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:12px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">${tableLeft}</table>
+      </div>
+      <div style="background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:12px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">${tableRight}</table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div style="background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:#f472b6;margin-bottom:4px;">D9 VENUS (SPOUSE)</div>
+        <div style="font-family:'Cinzel',serif;color:#f472b6;font-size:16px;">${venSign}</div>
+        <div style="font-size:11px;color:var(--muted);">House ${venHouse} — ${D9_VENUS_HINTS[venSign]||'Grace and love'}</div>
+      </div>
+      <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:var(--violet);margin-bottom:4px;">D9 JUPITER (DHARMA)</div>
+        <div style="font-family:'Cinzel',serif;color:var(--violet);font-size:16px;">${jupSign}</div>
+        <div style="font-size:11px;color:var(--muted);">Soul's dharmic purpose through ${jupSign} qualities</div>
+      </div>
+    </div>
+    <div style="padding:14px;background:rgba(244,114,182,0.05);border:1px solid rgba(244,114,182,0.15);border-radius:10px;text-align:center;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Your complete D9 reading — spouse description, marriage timing, and soul contract — in a personal session.</div>
+      <button onclick="openWhatsApp('Hi Jyogi, I want a Navamsha D9 reading for marriage and soul purpose.')" style="padding:10px 20px;background:linear-gradient(135deg,#c2185b,#880e4f);color:#fff;border:none;border-radius:20px;font-family:inherit;font-size:12px;cursor:pointer;">💍 Book D9 Reading →</button>
+    </div>
+  </div>`;
+}
+
+const D9_VENUS_HINTS={
+  Aries:'Energetic, independent spouse',Taurus:'Stable, sensual and devoted',
+  Gemini:'Witty, communicative partner',Cancer:'Nurturing, emotionally deep',
+  Leo:'Charismatic, generous partner',Virgo:'Devoted, service-minded',
+  Libra:'Balanced, artistic soul-mate',Scorpio:'Intense, transformative bond',
+  Sagittarius:'Philosophical, adventurous',Capricorn:'Disciplined, ambitious partner',
+  Aquarius:'Unconventional, humanitarian',Pisces:'Spiritual, compassionate soul'
+};
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: REMEDIES
+// ════════════════════════════════════════════════════════════════
+const PLANET_INFO={
+  Sun:  {day:'Sunday',   stone:'Ruby',      metal:'Gold',   mantra:'Om Hraam Hreem Hraum Sah Suryaya Namah',    color:'#fb923c',  gem_color:'red',   deity:'Surya Dev',   num:108},
+  Moon: {day:'Monday',   stone:'Pearl',     metal:'Silver', mantra:'Om Shraam Shreem Shraum Sah Chandraya Namah', color:'#e2e8f0',  gem_color:'white', deity:'Chandra Dev', num:108},
+  Mars: {day:'Tuesday',  stone:'Red Coral', metal:'Copper', mantra:'Om Kraam Kreem Kraum Sah Bhaumaya Namah',    color:'#f87171',  gem_color:'red',   deity:'Mangal Dev',  num:108},
+  Mercury:{day:'Wednesday',stone:'Emerald',  metal:'Gold',   mantra:'Om Braam Breem Braum Sah Budhaya Namah',    color:'#86efac',  gem_color:'green', deity:'Budh Dev',    num:108},
+  Jupiter:{day:'Thursday',stone:'Yellow Sapphire',metal:'Gold',mantra:'Om Graam Greem Graum Sah Guruve Namah',   color:'#fbbf24',  gem_color:'yellow',deity:'Brihaspati',  num:108},
+  Venus: {day:'Friday',  stone:'Diamond',   metal:'Silver', mantra:'Om Draam Dreem Draum Sah Shukraya Namah',   color:'#f472b6',  gem_color:'white', deity:'Shukra Dev',  num:108},
+  Saturn:{day:'Saturday',stone:'Blue Sapphire',metal:'Iron', mantra:'Om Praaam Preem Praum Sah Shanishcharaya Namah',color:'#818cf8',gem_color:'blue',  deity:'Shani Dev',   num:23},
+  Rahu:  {day:'Saturday',stone:'Hessonite', metal:'Silver', mantra:'Om Bhraaam Bhreem Bhraum Sah Rahave Namah',  color:'#6b7280',  gem_color:'brown', deity:'Rahu Dev',    num:18},
+  Ketu:  {day:'Tuesday', stone:'Cat\'s Eye',metal:'Gold',   mantra:'Om Sraaam Sreem Sraum Sah Ketave Namah',    color:'#a78bfa',  gem_color:'smoky', deity:'Ketu Dev',    num:17},
+};
+
+function calcRemedies(chart) {
+  const P=chart.planets;
+  const psm=chart.planetSignMap;
+  const DEBIL={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+  const DEBIL_NAME={Sun:'Libra',Moon:'Scorpio',Mars:'Cancer',Mercury:'Pisces',Jupiter:'Capricorn',Venus:'Virgo',Saturn:'Aries'};
+  const issues=[];
+
+  // Debilitated planets
+  Object.entries(DEBIL).forEach(([pl,si])=>{
+    if(psm[pl]===si){
+      issues.push({
+        planet:pl, severity:'high',
+        issue:`${pl} is debilitated in ${DEBIL_NAME[pl]}`,
+        impact:DEBIL_IMPACT[pl]||'Challenges in this planet\'s significations',
+        remedy_preview:`${pl} mantra on ${PLANET_INFO[pl].day}s`
+      });
+    }
+  });
+
+  // Saturn transit pressure (already computed)
+  const moonIdx=RASHIS.indexOf(chart.moon);
+  const satIdx=RASHIS.indexOf(SATURN_NOW);
+  const satDiff=mod(satIdx-moonIdx,12);
+  if(satDiff===11||satDiff===0||satDiff===1){
+    issues.push({planet:'Saturn',severity:'high',
+      issue:'Sadhe Sati — Saturn transiting Moon sign',
+      impact:'This 7.5-year cycle brings life restructuring. Extra discipline and patience are key.',
+      remedy_preview:'Shani mantra + blue donation on Saturdays'});
+  }
+
+  // Dasha lord check — if dasha lord debilitated
+  const dashaLord=chart.dasha.current;
+  if(issues.every(i=>i.planet!==dashaLord)){
+    // Add general dasha remedy
+    issues.push({planet:dashaLord,severity:'medium',
+      issue:`You are in ${dashaLord} Mahadasha (${chart.dasha.yrsLeft} years remaining)`,
+      impact:`This period highlights ${dashaLord} themes. Strengthen ${dashaLord} for best results.`,
+      remedy_preview:`${PLANET_INFO[dashaLord]?PLANET_INFO[dashaLord].day:''} rituals for ${dashaLord}`});
+  }
+
+  // Rahu-Ketu axis
+  issues.push({planet:'Rahu',severity:'low',
+    issue:`Rahu in ${RASHIS[psm.Rahu]} — karmic obsession zone`,
+    impact:'Rahu shows what your soul craves but hasn\'t mastered yet. This house shows your karmic path.',
+    remedy_preview:'Rahu mantra on Saturdays'});
+
+  return issues.slice(0,4); // show max 4
+}
+
+const DEBIL_IMPACT={
+  Sun:'Leadership, confidence and health may need extra support. Father-related matters.',
+  Moon:'Emotional stability and mental peace need conscious nurturing. Mother-related matters.',
+  Mars:'Energy, courage and property matters face obstacles. Drive must be consciously cultivated.',
+  Mercury:'Communication, business and intellect may be inconsistent. Focus on clear thinking.',
+  Jupiter:'Wisdom, prosperity and relationships with teachers need attention. Financial caution advised.',
+  Venus:'Love, comfort and creative expression face hurdles. Relationship matters need care.',
+  Saturn:'Career, discipline and life structure are being tested. Perseverance is key.',
+};
+
+function renderRemediesHTML(chart) {
+  const remedies=calcRemedies(chart);
+  const cards=remedies.map(r=>{
+    const pi=PLANET_INFO[r.planet]||{color:'#c4a97a',day:'—',stone:'—',mantra:'—',num:108};
+    const sev=r.severity==='high'?'rgba(248,113,113,0.12)':r.severity==='medium'?'rgba(251,191,36,0.08)':'rgba(134,239,172,0.07)';
+    const sevBorder=r.severity==='high'?'rgba(248,113,113,0.35)':r.severity==='medium'?'rgba(251,191,36,0.25)':'rgba(134,239,172,0.2)';
+    const sevColor=r.severity==='high'?'#f87171':r.severity==='medium'?'#fbbf24':'#86efac';
+    return `<div style="background:${sev};border:1px solid ${sevBorder};border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-family:'Cinzel',serif;font-size:13px;color:${pi.color};">${r.planet}</div>
+        <span style="font-size:9px;letter-spacing:0.15em;color:${sevColor};background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:8px;">${r.severity.toUpperCase()}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:4px;font-weight:600;">${r.issue}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.6;">${r.impact}</div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px 10px;">
+        <div style="font-size:11px;color:${pi.color};">🔒 Remedy Preview:</div>
+        <div style="font-size:11px;color:var(--muted);">${r.remedy_preview} · Gemstone: ${pi.stone}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <div style="margin-top:24px;">
+    <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.1em;margin-bottom:6px;">✦ PLANETARY REMEDIES</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-style:italic;">Issues identified in your chart — full remedy protocol unlocked in session</div>
+    ${cards}
+    <div style="padding:14px;background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;text-align:center;margin-top:4px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Full remedy protocol includes: exact mantras with count, timing, metal/gemstone prescription, puja recommendations, and dietary advice for each planet.</div>
+      <button onclick="openWhatsApp('Hi Jyogi, I want my personalised planetary remedy protocol.')" style="padding:10px 20px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:20px;font-family:inherit;font-size:12px;cursor:pointer;">🔮 Get My Remedy Protocol →</button>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: COMPATIBILITY
+// ════════════════════════════════════════════════════════════════
+let _compPickerTarget=null;
+function openCompPicker(hidId, type){
+  _compPickerTarget={hidId, type};
+  _pt=null; // disable normal picker
+  const ov=document.getElementById('picker-overlay');
+  const grid=document.getElementById('picker-items');
+  const title=document.getElementById('picker-title');
+  const items=[];
+  if(type==='day'){title.textContent='Select Day';grid.className='picker-items g4';for(let d=1;d<=31;d++)items.push({v:String(d).padStart(2,'0'),l:String(d).padStart(2,'0')});}
+  else if(type==='month'){title.textContent='Select Month';grid.className='picker-items g3';_MONTHS.forEach((m,i)=>items.push({v:String(i+1).padStart(2,'0'),l:m}));}
+  else{title.textContent='Select Year';grid.className='picker-items g4';for(let y=2010;y>=1940;y--)items.push({v:String(y),l:String(y)});}
+  const cur=document.getElementById(hidId).value;
+  grid.innerHTML=items.map(it=>'<div class="pi'+(cur===it.v?' sel':'')+'" onclick="pickCompVal(\''+it.v+'\',\''+it.l+'\')" >'+it.l+'</div>').join('');
+  ov.classList.add('open');
+}
+function pickCompVal(v,l){
+  if(!_compPickerTarget) return pickVal(arguments[0]||v,l); // fallback
+  const t=_compPickerTarget;
+  document.getElementById(t.hidId).value=v;
+  // Find label span
+  const btnId=t.hidId+'-btn';
+  const lblId=t.hidId+'-lbl';
+  const b=document.getElementById(btnId);
+  const lb=document.getElementById(lblId);
+  if(lb) lb.textContent=l;
+  if(b){b.classList.remove('empty');b.classList.add('filled');}
+  _compPickerTarget=null;
+  closePicker();
+}
+
+// Kuta (Ashtakoot) compatibility — simplified 8-factor
+const KUTA_LORDS=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const RASHI_ELEMENT=[0,1,2,3,0,1,2,3,0,1,2,3]; // Fire=0 Earth=1 Air=2 Water=3
+const RASHI_GENDER=[0,1,0,1,0,1,0,1,0,1,0,1]; // M=0 F=1
+const NADI=[0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2]; // Adi=0 Madhya=1 Antya=2
+
+function getMoonSignFromDOB(day,month,year){
+  // Approximate moon sign using Julian day
+  const jd=toJD(year,month,day,6);
+  const moonLon=calcMoon(jd);
+  const sidereal=mod(moonLon-getLahiri(jd),360);
+  return Math.floor(sidereal/30);
+}
+
+function calcCompatibility(){
+  const c1d=document.getElementById('c1-day').value;
+  const c1m=document.getElementById('c1-month').value;
+  const c1y=document.getElementById('c1-year').value;
+  const c2d=document.getElementById('c2-day').value;
+  const c2m=document.getElementById('c2-month').value;
+  const c2y=document.getElementById('c2-year').value;
+  const c1n=document.getElementById('c1-name').value||'Person 1';
+  const c2n=document.getElementById('c2-name').value||'Person 2';
+
+  if(!c1d||!c1m||!c1y||!c2d||!c2m||!c2y){
+    document.getElementById('compat-result').innerHTML='<p style="color:#f87171;text-align:center;">Please select birth dates for both persons.</p>';
+    return;
+  }
+
+  const ms1=getMoonSignFromDOB(+c1d,+c1m,+c1y);
+  const ms2=getMoonSignFromDOB(+c2d,+c2m,+c2y);
+
+  // Simplified Kuta scoring (out of 36)
+  const scores={};
+
+  // Varna (1 pt)
+  const VARNA=[3,2,0,1,0,2,3,0,2,3,0,1];
+  scores.varna=VARNA[ms1]===VARNA[ms2]?1:VARNA[ms1]>VARNA[ms2]?1:0;
+
+  // Vashya (2 pts)
+  scores.vashya=Math.abs(ms1-ms2)<=1?2:ms1===ms2?2:1;
+
+  // Tara (3 pts)
+  const nk1=Math.floor(getMoonNakshatra(c1d,c1m,c1y));
+  const nk2=Math.floor(getMoonNakshatra(c2d,c2m,c2y));
+  const taraDiff=mod(nk2-nk1,27);
+  const taraKuta=[3,2,1,3,1,2,3,1,0][taraDiff%9];
+  scores.tara=taraKuta;
+
+  // Yoni (4 pts) — simplified by sign element
+  scores.yoni=RASHI_ELEMENT[ms1]===RASHI_ELEMENT[ms2]?4:Math.abs(RASHI_ELEMENT[ms1]-RASHI_ELEMENT[ms2])===2?0:2;
+
+  // Graha Maitri (5 pts) — lord friendship
+  const lord1=KUTA_LORDS[mod(ms1,9)];
+  const lord2=KUTA_LORDS[mod(ms2,9)];
+  scores.maitri=lord1===lord2?5:FRIENDLY_LORDS[lord1]&&FRIENDLY_LORDS[lord1].includes(lord2)?4:2;
+
+  // Gana (6 pts)
+  const GANA=['Deva','Manushya','Rakshasa','Deva','Rakshasa','Manushya','Deva','Deva','Rakshasa',
+              'Manushya','Manushya','Deva','Deva','Rakshasa','Deva','Rakshasa','Manushya','Deva',
+              'Manushya','Manushya','Deva','Deva','Rakshasa','Deva','Deva','Manushya','Rakshasa'];
+  const g1=GANA[nk1]||'Deva', g2=GANA[nk2]||'Deva';
+  scores.gana=g1===g2?6:g1==='Deva'&&g2==='Manushya'?5:g1==='Manushya'&&g2==='Deva'?4:1;
+
+  // Rashi (7 pts)
+  const rashiDiff=mod(ms2-ms1,12);
+  scores.rashi=rashiDiff===0?7:rashiDiff===6?0:rashiDiff<=3?5:3;
+
+  // Nadi (8 pts)
+  const n1=NADI[nk1], n2=NADI[nk2];
+  scores.nadi=n1===n2?0:8;
+
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  const pct=Math.round((total/36)*100);
+  const verdict=pct>=75?'Highly Compatible':pct>=60?'Good Match':pct>=45?'Average — Needs Work':'Challenging — Remedies Advised';
+  const verdictColor=pct>=75?'#86efac':pct>=60?'#fbbf24':pct>=45?'#fb923c':'#f87171';
+
+  // Nakshatra description
+  const nak1Name=NAKSH[nk1], nak2Name=NAKSH[nk2];
+
+  const resultHTML=`
+  <div style="text-align:center;margin-bottom:20px;">
+    <div class="compat-score-ring" style="border-color:${verdictColor};background:rgba(255,255,255,0.03);">
+      <div class="compat-score-num" style="color:${verdictColor};">${pct}%</div>
+      <div class="compat-score-lbl">MATCH</div>
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:15px;color:${verdictColor};margin-bottom:4px;">${verdict}</div>
+    <div style="font-size:12px;color:var(--muted);">${RASHIS[ms1]} Moon × ${RASHIS[ms2]} Moon</div>
+    <div style="font-size:11px;color:var(--dim);">${nak1Name} × ${nak2Name} Nakshatra</div>
+  </div>
+  <div style="margin-bottom:16px;">
+    ${Object.entries(scores).map(([k,v])=>{
+      const maxes={varna:1,vashya:2,tara:3,yoni:4,maitri:5,gana:6,rashi:7,nadi:8};
+      const mx=maxes[k];
+      const pctFill=Math.round((v/mx)*100);
+      const label={varna:'Varna',vashya:'Vashya',tara:'Tara / Nakshatra',yoni:'Yoni',maitri:'Graha Maitri',gana:'Gana',rashi:'Rashi',nadi:'Nadi'}[k];
+      const fc=pctFill>=80?'#86efac':pctFill>=50?'#fbbf24':'#f87171';
+      return `<div class="compat-row">
+        <span class="compat-label">${label}</span>
+        <div style="flex:1;margin:0 10px;"><div class="compat-bar"><div class="compat-bar-fill" style="width:${pctFill}%;background:${fc};"></div></div></div>
+        <span class="compat-val" style="color:${fc};">${v}/${mx}</span>
+      </div>`;
+    }).join('')}
+    <div style="font-weight:bold;display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,195,64,0.15);margin-top:4px;">
+      <span style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);">TOTAL KUTA SCORE</span>
+      <span style="font-family:'Cinzel',serif;color:${verdictColor};">${total} / 36</span>
+    </div>
+  </div>
+  <div style="padding:14px;background:rgba(255,195,64,0.05);border:1px solid rgba(255,195,64,0.15);border-radius:10px;text-align:center;">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Full compatibility includes: Manglik analysis, Dasha match, Bhakoot dosha, and personalised remedies for doshas.</div>
+    <button onclick="openWhatsApp('Hi Jyogi, I want a full Kundali matching for ${c1n} and ${c2n}. Our score was ${total}/36.')" style="padding:10px 20px;background:linear-gradient(135deg,#e11d48,#9f1239);color:#fff;border:none;border-radius:20px;font-family:inherit;font-size:12px;cursor:pointer;">💑 Book Full Kundali Match →</button>
+  </div>
+  `;
+  document.getElementById('compat-result').innerHTML=resultHTML;
+  saveLog({type:'compatibility',c1:c1n,ms1:RASHIS[ms1],c2:c2n,ms2:RASHIS[ms2],score:total,pct});
+}
+
+function getMoonNakshatra(d,m,y){
+  const jd=toJD(+y,+m,+d,6);
+  const moonLon=mod(calcMoon(jd)-getLahiri(jd),360);
+  return Math.floor(moonLon/(360/27));
+}
+
+const FRIENDLY_LORDS={
+  Sun:['Moon','Mars','Jupiter'],Moon:['Sun','Mercury'],
+  Mars:['Sun','Moon','Jupiter'],Mercury:['Sun','Venus'],
+  Jupiter:['Sun','Moon','Mars'],Venus:['Mercury','Saturn'],
+  Saturn:['Mercury','Venus'],Rahu:['Venus','Saturn'],Ketu:['Mars','Saturn']
+};
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: DREAM JOURNAL
+// ════════════════════════════════════════════════════════════════
+const DREAM_KEY='jyogi_dreams';
+let _dreamMood='peaceful';
+
+function selectMood(el){
+  _dreamMood=el.dataset.mood;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function saveDream(){
+  const text=document.getElementById('dream-text').value.trim();
+  if(!text){alert('Please describe your dream first.');return;}
+  const dreams=getDreams();
+  // Draw a tarot card for this dream
+  const card=TAROT_CARDS[Math.floor(Math.random()*TAROT_CARDS.length)];
+  const isRev=Math.random()<0.35;
+  const entry={
+    id:Date.now(),
+    text,
+    mood:_dreamMood,
+    date:new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),
+    card:card.name,
+    cardDisplay:card.name.replace(/_/g,' ').replace(/^\d+\s/,''),
+    cardReversed:isRev,
+    cardMsg: isRev ? card.shadow : card.meaning,
+    tags:extractDreamTags(text)
+  };
+  dreams.unshift(entry);
+  if(dreams.length>30) dreams.pop();
+  try{ localStorage.setItem(DREAM_KEY, JSON.stringify(dreams)); }catch(e){}
+  clearDreamForm();
+  renderDreamLog();
+}
+
+function getDreams(){
+  try{ const d=localStorage.getItem(DREAM_KEY); return d?JSON.parse(d):[]; }
+  catch(e){ return []; }
+}
+
+function clearDreamForm(){
+  document.getElementById('dream-text').value='';
+  _dreamMood='peaceful';
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+}
+
+function clearAllDreams(){
+  if(!confirm('Clear all dream entries?')) return;
+  try{ localStorage.removeItem(DREAM_KEY); }catch(e){}
+  renderDreamLog();
+}
+
+const DREAM_KEYWORDS={
+  water:['water','ocean','river','rain','flood','swim','sea','lake','wave'],
+  flying:['fly','flying','float','soar','sky','cloud','bird'],
+  falling:['fall','falling','drop','plunge','cliff','abyss'],
+  chasing:['chase','chased','run','escape','flee','follow'],
+  family:['mother','father','mom','dad','sister','brother','child','baby','family'],
+  death:['death','die','dead','funeral','grave','cemetery'],
+  snake:['snake','serpent','cobra','naga'],
+  temple:['temple','god','goddess','prayer','puja','mandir','deity','divine'],
+};
+
+function extractDreamTags(text){
+  const lower=text.toLowerCase();
+  const found=[];
+  Object.entries(DREAM_KEYWORDS).forEach(([tag,words])=>{
+    if(words.some(w=>lower.includes(w))) found.push(tag);
+  });
+  return found.slice(0,4);
+}
+
+const DREAM_TAG_MEANINGS={
+  water:'Emotions & the unconscious',flying:'Freedom & aspiration',falling:'Loss of control',
+  chasing:'Avoidance & anxiety',family:'Karmic bonds',death:'Transformation',
+  snake:'Kundalini energy & healing',temple:'Spiritual calling'
+};
+
+function renderDreamLog(){
+  const dreams=getDreams();
+  const el=document.getElementById('dream-log');
+  if(!el) return;
+  if(!dreams.length){
+    el.innerHTML='<div class="dream-empty">✦ Your dream log is empty. Record your first dream above and receive a tarot guidance card.</div>';
+    return;
+  }
+  el.innerHTML=dreams.map(d=>`
+    <div class="dream-entry">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="dream-date">${d.date}</div>
+        <div style="font-size:18px;">${{peaceful:'😌',anxious:'😰',confused:'😕',joyful:'😊',fearful:'😨',mysterious:'🌙',powerful:'⚡'}[d.mood]||'😌'}</div>
+      </div>
+      <div class="dream-text">${d.text.length>200?d.text.slice(0,200)+'…':d.text}</div>
+      ${d.tags.length?'<div class="dream-tags">'+d.tags.map(t=>`<span class="dream-tag" title="${DREAM_TAG_MEANINGS[t]||''}">✦ ${t}</span>`).join('')+'</div>':''}
+      <div style="margin-top:10px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:10px;">
+        <div style="font-size:9px;letter-spacing:0.2em;color:var(--violet);margin-bottom:4px;">TAROT GUIDANCE • ${d.cardDisplay}${d.cardReversed?' (Reversed)':''}</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">${(d.cardMsg||'').slice(0,120)}…</div>
+        <div style="font-size:11px;color:var(--violet);margin-top:6px;cursor:pointer;" onclick="openWhatsApp('Hi Jyogi, I had a dream and received the ${d.cardDisplay} card. I want to understand this deeper.')">Book a dream interpretation session →</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// FEATURE: MUHURTA — AUSPICIOUS TIMING
+// ════════════════════════════════════════════════════════════════
+const WEEKDAY_LORDS=['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
+const WEEKDAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const TITHI_NAMES=['Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Purnima/Amavasya'];
+
+function getTithiNum(jd){
+  const sunLon=mod(calcSun(jd)-getLahiri(jd),360);
+  const moonLon=mod(calcMoon(jd)-getLahiri(jd),360);
+  return Math.floor(mod(moonLon-sunLon,360)/12)+1;
+}
+
+const DAY_QUALITY={
+  0:{rating:3,good:'Business deals, starting new work',avoid:'Travel, marriage',color:'#fb923c'},
+  1:{rating:4,good:'New ventures, emotional matters, marriage',avoid:'Major surgery',color:'#e2e8f0'},
+  2:{rating:2,good:'Courage-requiring tasks, sports',avoid:'Marriage, loans',color:'#f87171'},
+  3:{rating:5,good:'Education, business, contracts, travel',avoid:'Nothing major',color:'#86efac'},
+  4:{rating:5,good:'Marriage, auspicious rituals, expansion',avoid:'Starting fights',color:'#fbbf24'},
+  5:{rating:4,good:'Art, beauty, love, luxury purchases',avoid:'Confrontation',color:'#f472b6'},
+  6:{rating:2,good:'Discipline tasks, karma clearing, charity',avoid:'New ventures, marriage',color:'#818cf8'},
+};
+
+const ACTIVITY_DATA={
+  'Marriage':   {good:[1,3,4,5],great:[4],mantra:'Book Muhurta consultation for exact date'},
+  'New Business':{good:[0,1,3,4,5],great:[3],mantra:'Consult Jyogi for auspicious launch muhurta'},
+  'Travel':     {good:[1,3,4,5],great:[3,5],mantra:'Wednesday and Friday are best for journeys'},
+  'Education':  {good:[1,3,4],great:[3],mantra:'Thursday (Jupiter day) blesses all learning'},
+  'Property':   {good:[1,3,4],great:[4],mantra:'Thursday or Wednesday for property matters'},
+  'Medical':    {good:[1,3,4,5],great:[3],mantra:'Avoid Tuesday and Saturday for surgery'},
+  'Interview':  {good:[1,3,4],great:[3],mantra:'Mercury day for communication success'},
+};
+
+let _muhurtaActivity=null;
+
+function renderMuhurta(){
+  const today=new Date();
+  const todayWd=today.getDay();
+  const jdToday=toJD(today.getFullYear(),today.getMonth()+1,today.getDate(),12);
+  const moonNakIdx=Math.floor(mod(calcMoon(jdToday)-getLahiri(jdToday),360)/(360/27));
+  const moonSign=RASHIS[Math.floor(mod(calcMoon(jdToday)-getLahiri(jdToday),360)/30)];
+  const tithi=getTithiNum(jdToday);
+  const tithiName=TITHI_NAMES[(tithi-1)%15]||'Tithi '+tithi;
+
+  // Today panchang
+  const panEl=document.getElementById('today-panchang');
+  if(panEl){
+    panEl.innerHTML=`
+      <div class="panchang-row"><span class="panchang-label">VARA (DAY)</span><span class="panchang-val">${WEEKDAY_NAMES[todayWd]} · ${WEEKDAY_LORDS[todayWd]} day</span></div>
+      <div class="panchang-row"><span class="panchang-label">TITHI</span><span class="panchang-val">${tithiName} (${tithi})</span></div>
+      <div class="panchang-row"><span class="panchang-label">NAKSHATRA</span><span class="panchang-val">${NAKSH[moonNakIdx]}</span></div>
+      <div class="panchang-row" style="border:none"><span class="panchang-label">MOON SIGN</span><span class="panchang-val">${moonSign}</span></div>
+    `;
+  }
+
+  // 7-day grid
+  const weekEl=document.getElementById('muhurta-week');
+  if(weekEl){
+    let weekHtml='';
+    for(let i=0;i<7;i++){
+      const d=new Date(today); d.setDate(today.getDate()+i);
+      const wd=d.getDay();
+      const dq=DAY_QUALITY[wd];
+      const stars='★'.repeat(dq.rating)+'☆'.repeat(5-dq.rating);
+      const isToday=i===0;
+      weekHtml+=`<div class="muhurta-day${isToday?' today':''}" onclick="selectMuhurtaDay(${i},${wd})">
+        <div class="muhurta-weekday">${WEEKDAY_NAMES[wd].slice(0,3).toUpperCase()}</div>
+        <div class="muhurta-date-num" style="color:${dq.color};">${d.getDate()}</div>
+        <div class="muhurta-rating" style="color:${dq.color};">${stars}</div>
+        <div class="muhurta-planet" style="color:${dq.color};border-color:${dq.color}20;">${WEEKDAY_LORDS[wd]}</div>
+      </div>`;
+    }
+    weekEl.innerHTML=weekHtml;
+  }
+
+  // Activity buttons
+  const actEl=document.getElementById('muhurta-activity-btns');
+  if(actEl){
+    actEl.innerHTML=Object.keys(ACTIVITY_DATA).map(a=>
+      `<button class="picker-btn empty" style="flex:0 0 auto;padding:8px 14px;font-size:12px;" onclick="selectMuhurtaActivity('${a}')">${a}</button>`
+    ).join('');
+  }
+}
+
+function selectMuhurtaDay(offset, wd){
+  const dq=DAY_QUALITY[wd];
+  document.getElementById('muhurta-advice').innerHTML=`
+    <div style="text-align:left;">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:${dq.color};margin-bottom:8px;">${WEEKDAY_NAMES[wd]} — ${WEEKDAY_LORDS[wd]} Day</div>
+      <div style="margin-bottom:6px;"><span style="color:#86efac;font-size:11px;">✓ GOOD FOR: </span>${dq.good}</div>
+      <div><span style="color:#f87171;font-size:11px;">✗ AVOID: </span>${dq.avoid}</div>
+    </div>`;
+}
+
+function selectMuhurtaActivity(act){
+  _muhurtaActivity=act;
+  document.querySelectorAll('#muhurta-activity-btns button').forEach(b=>{
+    b.classList.toggle('filled',b.textContent===act);
+    b.classList.toggle('empty',b.textContent!==act);
+  });
+  const ad=ACTIVITY_DATA[act];
+  const today=new Date();
+  const goodDays=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(today); d.setDate(today.getDate()+i);
+    if(ad.good.includes(d.getDay())) goodDays.push(WEEKDAY_NAMES[d.getDay()]+' '+d.getDate());
+  }
+  document.getElementById('muhurta-advice').innerHTML=`
+    <div style="text-align:left;">
+      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--gold);margin-bottom:8px;">${act} — Best Days This Week</div>
+      <div style="color:#86efac;margin-bottom:8px;">✓ ${goodDays.join(' · ')||'No ideal days this week'}</div>
+      <div style="font-size:12px;color:var(--muted);">${ad.mantra}</div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// INIT — render dream log and muhurta on page load
+// ════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  renderDreamLog();
+  renderMuhurta();
+});
 
 </script>
 
