@@ -2219,112 +2219,88 @@ document.addEventListener('DOMContentLoaded', initSpinners);
 
 
 // ── North Indian Kundli Chart ─────────────────────────────────────
-// House positions in North Indian diamond layout (fixed houses, moving signs)
-// House grid positions (row,col in 4x4 grid):
-const NI_HOUSES = [
-  {r:0,c:1}, // 1 Lagna
-  {r:0,c:2}, // 2
-  {r:0,c:3}, // 3
-  {r:1,c:3}, // 4
-  {r:2,c:3}, // 5
-  {r:3,c:2}, // 6
-  {r:3,c:1}, // 7
-  {r:3,c:0}, // 8
-  {r:2,c:0}, // 9
-  {r:1,c:0}, // 10
-  {r:0,c:0}, // 11
-  {r:1,c:1}, // 12 (top-left triangle)
-];
-// NI layout uses 12 triangular cells in a diamond
-// Standard NI positions (cell index 0-11, clockwise from top):
-const NI_CELL_PATHS = [
-  'M50,0 L150,0 L100,50 Z',         // 0: top
-  'M150,0 L200,50 L150,100 L100,50 Z', // 1: top-right-outer
-  'M200,50 L200,150 L150,100 Z',    // 2: right-top
-  'M200,150 L150,100 L150,200 Z',   // 3: right-bottom (unused in simple)
-  'M200,150 L200,200 L150,200 L150,100 Z', // adjust...
-];
-
+// ════════════════════════════════════════════════════════════════
+// NORTH INDIAN KUNDALI CHART — Correct Whole Sign / Anti-clockwise
+// Layout: 8 outer triangles + 4 inner triangles = 12 houses
+// House 1 (Lagna) = top-right, anti-clockwise numbering
+// Sign numbers shown in each house cell (Rashi 1=Aries … 12=Pisces)
+// ════════════════════════════════════════════════════════════════
 function renderNorthIndianChart(lagnaIdx, planetPositions) {
-  // lagnaIdx: 0=Aries…11=Pisces
-  // planetPositions: {Sun:signIdx, Moon:signIdx, ...}
   const RASHIS_SHORT = ['Ar','Ta','Ge','Ca','Le','Vi','Li','Sc','Sa','Cp','Aq','Pi'];
-  const PLANET_ABBR = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
-  const W = 280, H = 280, C = W/2;
+  const RASHI_NUM    = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+  const PLANET_ABBR  = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+  const S = 280, mx = 140, qx = 70, qx3 = 210;
 
-  // 12 triangular cells in NI chart (clockwise from top-middle)
-  // Each cell = which house number (1-12), fixed layout
-  // Cell 0=house12, going clockwise: 12,1,2,3,4,5,6,7,8,9,10,11
-  const CELL_HOUSE = [12,1,2,3,4,5,6,7,8,9,10,11]; // cell index → house number
-
-  // SVG paths for 12 triangular/trapezoidal cells (NI standard)
-  const cells = [
-    {path:`M${C},0 L${W},0 L${W},${H/4} L${C},${C} Z`, house:12, tx:C+30, ty:45},    // top-right
-    {path:`M${C},0 L${W},0 L${W},${H} L${C},${C} Z`, house:1, tx:C+50, ty:C-10}, // WRONG: use proper
+  // 12 house cells: (houseNum, svgPoints, labelX, labelY)
+  // Anti-clockwise from top-right; house 1 = Lagna at top-right corner
+  const CELLS = [
+    [1,  `${mx},0 ${S},0 ${qx3},${qx}`,          195, 32  ],  // top-right corner  ← LAGNA
+    [2,  `${S},0 ${S},${mx} ${qx3},${qx}`,        258, 92  ],  // right-top
+    [3,  `${S},${mx} ${S},${S} ${qx3},${qx3}`,    258, 190 ],  // right-bottom
+    [4,  `${S},${S} ${mx},${S} ${qx3},${qx3}`,    195, 252 ],  // bottom-right corner
+    [5,  `${mx},${S} 0,${S} ${qx},${qx3}`,        85,  252 ],  // bottom-left corner
+    [6,  `0,${S} 0,${mx} ${qx},${qx3}`,           22,  190 ],  // left-bottom
+    [7,  `0,${mx} 0,0 ${qx},${qx}`,               22,  92  ],  // left-top
+    [8,  `0,0 ${mx},0 ${qx},${qx}`,               85,  32  ],  // top-left corner
+    [9,  `${qx},${qx} ${qx3},${qx} ${mx},${mx}`,  140, 95  ],  // inner top
+    [10, `${qx3},${qx} ${qx3},${qx3} ${mx},${mx}`,192, 140 ],  // inner right
+    [11, `${qx3},${qx3} ${qx},${qx3} ${mx},${mx}`,140, 185 ],  // inner bottom
+    [12, `${qx},${qx3} ${qx},${qx} ${mx},${mx}`,  88,  140 ],  // inner left
   ];
 
-  // Proper NI 4x4 grid approach:
-  // The chart is drawn as a square with diagonals creating 12 cells
-  // Let's use the standard NI grid: 4 corners + 4 sides + 4 center triangles
-  const S = W; // square size
-  const cells12 = [
-    // House, SVG path, text-x, text-y
-    [12, `M0,0 L${S/2},0 L${S/4},${S/4} Z`, S/6, S/8],
-    [1,  `M${S/2},0 L${S},0 L${S*3/4},${S/4} Z`, S*2.5/4, S/8],
-    [2,  `M${S},0 L${S},${S/2} L${S*3/4},${S/4} Z`, S*7/8, S/4],
-    [3,  `M${S},${S/2} L${S},${S} L${S*3/4},${S*3/4} Z`, S*7/8, S*5.5/8],
-    [4,  `M${S},${S} L${S/2},${S} L${S*3/4},${S*3/4} Z`, S*2.5/4, S*7.5/8],
-    [5,  `M${S/2},${S} L0,${S} L${S/4},${S*3/4} Z`, S*1.2/4, S*7.5/8],
-    [6,  `M0,${S} L0,${S/2} L${S/4},${S*3/4} Z`, S/8, S*5.5/8],
-    [7,  `M0,${S/2} L0,0 L${S/4},${S/4} Z`, S/8, S/4],
-    [8,  `M0,0 L${S/2},0 L${S/4},${S/4} L0,${S/2} Z`, S/5, S*1.5/8],
-    [9,  `M${S/2},0 L${S},0 L${S*3/4},${S/4} L${S/4},${S/4} Z`, S/2, S*1.5/8],
-    [10, `M${S},0 L${S},${S/2} L${S*3/4},${S*3/4} L${S*3/4},${S/4} Z`, S*3.1/4, S/2],
-    [11, `M${S/2},${S} L${S},${S} L${S*3/4},${S*3/4} L${S/4},${S*3/4} Z`, S/2, S*6.5/8],
-  ];
-
-  // Assign signs to houses (lagna = house 1 gets lagnaIdx sign)
-  // Build house→sign map
+  // Whole Sign system: house h gets sign (lagnaIdx + h - 1) % 12
   const houseSign = {};
-  for(let h=1;h<=12;h++){
-    houseSign[h] = (lagnaIdx + (h-1)) % 12;
-  }
+  for(let h=1;h<=12;h++) houseSign[h] = (lagnaIdx + h - 1) % 12;
 
-  // Build sign→planets map
+  // Map sign index → planet abbreviations
   const signPlanets = {};
-  Object.entries(planetPositions).forEach(([pl,lon])=>{
-    const si = typeof lon === 'number' ? Math.floor(lon/30) : lon;
+  Object.entries(planetPositions).forEach(([pl, lon]) => {
+    const si = typeof lon === 'number' ? Math.floor(lon / 30) : lon;
     if(!signPlanets[si]) signPlanets[si] = [];
-    signPlanets[si].push(PLANET_ABBR[pl]||pl);
+    signPlanets[si].push(PLANET_ABBR[pl] || pl);
   });
 
-  // Render SVG
-  let svg = `<svg viewBox="0 0 ${S} ${S}" width="100%" style="max-width:280px;display:block;margin:0 auto;" xmlns="http://www.w3.org/2000/svg">`;
-  svg += `<rect width="${S}" height="${S}" fill="rgba(10,5,30,0.8)" rx="8"/>`;
+  let svg = `<svg viewBox="0 0 ${S} ${S}" width="100%" style="max-width:300px;display:block;margin:0 auto;" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${S}" height="${S}" fill="rgba(8,3,25,0.95)" rx="6"/>`;
 
-  cells12.forEach(([house, path, tx, ty])=>{
-    const sign = houseSign[house];
+  CELLS.forEach(([house, pts, tx, ty]) => {
+    const sign   = houseSign[house];
+    const isLagna= house === 1;
+    const fill   = isLagna ? 'rgba(255,195,64,0.13)' : 'rgba(255,255,255,0.02)';
+    const stroke = isLagna ? 'rgba(255,195,64,0.6)' : 'rgba(255,195,64,0.28)';
+    const sw     = isLagna ? '1.5' : '0.8';
+
+    svg += `<polygon points="${pts}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+
+    // Sign number (Rashi number 1–12) — primary label, gold
+    const rashiNum = ((sign) % 12) + 1; // 1=Aries … 12=Pisces
+    svg += `<text x="${tx}" y="${ty}" font-size="13" fill="${isLagna?'#FFC340':'#c4a97a'}" font-family="Georgia,serif" text-anchor="middle" font-weight="${isLagna?'bold':'normal'}">${rashiNum}</text>`;
+
+    // Sign abbreviation — small, muted
+    svg += `<text x="${tx}" y="${ty+13}" font-size="9" fill="rgba(196,169,122,0.6)" font-family="Georgia,serif" text-anchor="middle">${RASHIS_SHORT[sign]}</text>`;
+
+    // Planets in this sign
     const planets = signPlanets[sign] || [];
-    const isLagna = house === 1;
-    svg += `<path d="${path}" fill="${isLagna?'rgba(255,195,64,0.12)':'rgba(255,255,255,0.02)'}" stroke="rgba(255,195,64,0.3)" stroke-width="1"/>`;
-    // House number (small, corner)
-    svg += `<text x="${tx}" y="${ty}" font-size="9" fill="rgba(255,195,64,0.5)" font-family="serif" text-anchor="middle">${house}</text>`;
-    // Sign name
-    svg += `<text x="${tx}" y="${ty+13}" font-size="11" fill="#c4a97a" font-family="serif" text-anchor="middle">${RASHIS_SHORT[sign]}</text>`;
-    // Planets
-    if(planets.length>0){
-      const pText = planets.join(' ');
-      svg += `<text x="${tx}" y="${ty+26}" font-size="10" fill="#FFC340" font-family="serif" font-weight="bold" text-anchor="middle">${pText}</text>`;
+    if(planets.length > 0) {
+      // Stack planet abbreviations, 2 per line
+      const lines = [];
+      for(let i=0;i<planets.length;i+=2) lines.push(planets.slice(i,i+2).join(' '));
+      lines.forEach((line, li) => {
+        svg += `<text x="${tx}" y="${ty+26+(li*12)}" font-size="10" fill="#FFC340" font-family="Georgia,serif" font-weight="bold" text-anchor="middle">${line}</text>`;
+      });
     }
-    if(isLagna){
-      svg += `<text x="${tx}" y="${ty-8}" font-size="8" fill="#FFC340" font-family="serif" text-anchor="middle">ASC</text>`;
+
+    // ASC label for Lagna house
+    if(isLagna) {
+      svg += `<text x="${tx}" y="${ty-9}" font-size="7.5" fill="#FFC340" font-family="Cinzel,serif" text-anchor="middle" letter-spacing="0.08em">ASC</text>`;
     }
   });
 
-  // Center diamond
-  svg += `<polygon points="${S/4},${S/4} ${S*3/4},${S/4} ${S*3/4},${S*3/4} ${S/4},${S*3/4}" fill="rgba(22,8,64,0.6)" stroke="rgba(255,195,64,0.3)" stroke-width="1"/>`;
-  svg += `<text x="${S/2}" y="${S/2-8}" font-size="11" fill="#FFC340" font-family="Cinzel,serif" text-anchor="middle">जन्म</text>`;
-  svg += `<text x="${S/2}" y="${S/2+8}" font-size="10" fill="#9d8c6a" font-family="serif" text-anchor="middle">कुंडली</text>`;
+  // Centre square — decorative
+  svg += `<polygon points="${qx},${qx} ${qx3},${qx} ${qx3},${qx3} ${qx},${qx3}" fill="rgba(15,6,45,0.85)" stroke="rgba(255,195,64,0.35)" stroke-width="0.8"/>`;
+  svg += `<text x="${mx}" y="${mx-6}" font-size="12" fill="#FFC340" font-family="Georgia,serif" text-anchor="middle">जन्म</text>`;
+  svg += `<text x="${mx}" y="${mx+10}" font-size="9"  fill="#9d8c6a" font-family="Georgia,serif" text-anchor="middle">कुंडली</text>`;
+  svg += `<text x="${mx}" y="${mx+24}" font-size="7.5" fill="rgba(255,195,64,0.4)" font-family="Cinzel,serif" text-anchor="middle" letter-spacing="0.05em">WHOLE SIGN</text>`;
 
   svg += '</svg>';
   return svg;
