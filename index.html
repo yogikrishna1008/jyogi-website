@@ -2227,7 +2227,7 @@ document.addEventListener('DOMContentLoaded', initSpinners);
 // ════════════════════════════════════════════════════════════════
 function renderNorthIndianChart(lagnaIdx, planetPositions) {
   const PLANET_ABBR  = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
-  const PLANET_COLOR = {Su:'#e8341a',Mo:'#c4a97a',Ma:'#e8341a',Me:'#2d7a2d',Ju:'#c45e00',Ve:'#c0539c',Sa:'#185FA5',Ra:'#888',Ke:'#7B3F00'};
+  const PLANET_COLOR = {Su:'#cc2200',Mo:'#b08040',Ma:'#cc2200',Me:'#1a6b1a',Ju:'#b05500',Ve:'#aa1177',Sa:'#0d4a8f',Ra:'#666666',Ke:'#6b3300'};
 
   // Whole Sign houses
   const houseSign = {};
@@ -2241,97 +2241,72 @@ function renderNorthIndianChart(lagnaIdx, planetPositions) {
     signPlanets[si].push(PLANET_ABBR[pl] || pl);
   });
 
-  // Grid: 280×280 viewBox. Center=140. Quarter=70. Three-quarter=210.
-  // Key points: TL(0,0) TR(280,0) BR(280,280) BL(0,280)
-  //   Edge mids: T(140,0) R(280,140) B(140,280) L(0,140)
-  //   Inner diamond: iTL(70,70) iTR(210,70) iBR(210,210) iBL(70,210)
-  //   Center: C(140,140)
-  // Exact centroids (avg of polygon vertices):
-  //   H1 top-kite:       (140,0),(210,70),(140,140),(70,70)   → cx=140, cy=70
-  //   H2 top-right tri:  (140,0),(280,0),(210,70)             → cx=210, cy=23
-  //   H3 right-top tri:  (280,0),(280,140),(210,70)           → cx=257, cy=70
-  //   H4 right-kite:     (210,70),(280,140),(210,210),(140,140)→ cx=210, cy=140
-  //   H5 right-bot tri:  (280,140),(280,280),(210,210)        → cx=257, cy=210
-  //   H6 bot-right tri:  (210,210),(280,280),(140,280)        → cx=210, cy=257
-  //   H7 bot-kite:       (140,140),(210,210),(140,280),(70,210)→ cx=140, cy=210
-  //   H8 bot-left tri:   (70,210),(140,280),(0,280)           → cx=70,  cy=257
-  //   H9 left-bot tri:   (0,140),(0,280),(70,210)             → cx=23,  cy=210
-  //   H10 left-kite:     (0,140),(70,210),(140,140),(70,70)   → cx=70,  cy=140
-  //   H11 left-top tri:  (0,0),(0,140),(70,70)                → cx=23,  cy=70
-  //   H12 top-left tri:  (0,0),(140,0),(70,70)                → cx=70,  cy=23
-
+  // 280x280 grid. Centroids computed as avg of polygon vertices.
   const SLOTS = [
-    { h:1,  cx:140, cy:70,  pts:'140,0 210,70 140,140 70,70'   },
-    { h:2,  cx:210, cy:23,  pts:'140,0 280,0 210,70'           },
-    { h:3,  cx:257, cy:70,  pts:'280,0 280,140 210,70'         },
-    { h:4,  cx:210, cy:140, pts:'210,70 280,140 210,210 140,140'},
-    { h:5,  cx:257, cy:210, pts:'280,140 280,280 210,210'       },
-    { h:6,  cx:210, cy:257, pts:'210,210 280,280 140,280'       },
-    { h:7,  cx:140, cy:210, pts:'140,140 210,210 140,280 70,210'},
-    { h:8,  cx:70,  cy:257, pts:'70,210 140,280 0,280'         },
-    { h:9,  cx:23,  cy:210, pts:'0,140 0,280 70,210'           },
-    { h:10, cx:70,  cy:140, pts:'0,140 70,210 140,140 70,70'   },
-    { h:11, cx:23,  cy:70,  pts:'0,0 0,140 70,70'             },
-    { h:12, cx:70,  cy:23,  pts:'0,0 140,0 70,70'             },
+    { h:1,  cx:140, cy:70,  pts:'140,0 210,70 140,140 70,70'    },  // top kite    = Lagna
+    { h:2,  cx:210, cy:23,  pts:'140,0 280,0 210,70'            },  // top-right tri
+    { h:3,  cx:257, cy:70,  pts:'280,0 280,140 210,70'          },  // right-top tri
+    { h:4,  cx:210, cy:140, pts:'210,70 280,140 210,210 140,140' },  // right kite
+    { h:5,  cx:257, cy:210, pts:'280,140 280,280 210,210'        },  // right-bot tri
+    { h:6,  cx:210, cy:257, pts:'210,210 280,280 140,280'        },  // bot-right tri
+    { h:7,  cx:140, cy:210, pts:'140,140 210,210 140,280 70,210' },  // bot kite
+    { h:8,  cx:70,  cy:257, pts:'70,210 140,280 0,280'          },  // bot-left tri
+    { h:9,  cx:23,  cy:210, pts:'0,140 0,280 70,210'            },  // left-bot tri
+    { h:10, cx:70,  cy:140, pts:'0,140 70,210 140,140 70,70'    },  // left kite
+    { h:11, cx:23,  cy:70,  pts:'0,0 0,140 70,70'              },  // left-top tri
+    { h:12, cx:70,  cy:23,  pts:'0,0 140,0 70,70'              },  // top-left tri
   ];
 
-  // Line height and font sizes in viewBox units
-  const LH = 11;   // line height
-  const FS_NUM = 10; // rashi number font size
-  const FS_PL  = 8;  // planet font size
+  const LH = 11, FS_NUM = 11, FS_PL = 8;
 
-  let svg = `<svg viewBox="0 0 280 280" width="100%" style="max-width:320px;display:block;margin:0 auto;" xmlns="http://www.w3.org/2000/svg">`;
+  // Build SVG source string
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">`;
+  s += `<style>text{font-family:Georgia,serif;line-height:1;}</style>`;
 
   // Background + double border
-  svg += `<rect width="280" height="280" fill="#fdf8f0"/>`;
-  svg += `<rect x="0" y="0" width="280" height="280" fill="none" stroke="#1a3a8f" stroke-width="2.5"/>`;
-  svg += `<rect x="3" y="3" width="274" height="274" fill="none" stroke="#1a3a8f" stroke-width="0.8"/>`;
+  s += `<rect width="280" height="280" fill="#fdf8f0"/>`;
+  s += `<rect x="1" y="1" width="278" height="278" fill="none" stroke="#1a3a8f" stroke-width="2.5"/>`;
+  s += `<rect x="4.5" y="4.5" width="271" height="271" fill="none" stroke="#1a3a8f" stroke-width="1"/>`;
 
-  // Grid lines: full diagonals + inner diamond sides
-  [
-    [0,0,280,280],[280,0,0,280],
-    [140,0,280,140],[280,140,140,280],
-    [140,280,0,140],[0,140,140,0]
-  ].forEach(([x1,y1,x2,y2]) => {
-    svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#222" stroke-width="0.8"/>`;
-  });
+  // Grid lines
+  [[0,0,280,280],[280,0,0,280],[140,0,280,140],[280,140,140,280],[140,280,0,140],[0,140,140,0]]
+    .forEach(([x1,y1,x2,y2]) => { s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111" stroke-width="0.8"/>`; });
 
   // Cell fills
-  SLOTS.forEach(({h, pts}) => {
-    svg += `<polygon points="${pts}" fill="${h===1?'rgba(255,195,64,0.15)':'none'}"/>`;
+  SLOTS.forEach(({h,pts}) => {
+    s += `<polygon points="${pts}" fill="${h===1?'rgba(255,195,64,0.2)':'none'}" stroke="none"/>`;
   });
 
-  // Text labels — use single <text> with multiple <tspan> lines
-  // dy="0.35em" on each tspan gives reliable vertical centering across all browsers
+  // Labels — each cell gets a <text> with <tspan> children, NO dominant-baseline, NO page CSS influence
+  // because this SVG will be rendered as a data URI image, 100% isolated
   SLOTS.forEach(({h, cx, cy}) => {
     const signIdx = houseSign[h];
     const rashiNum = String(signIdx + 1);
-    const isLagna = h === 1;
-    const planets = signPlanets[signIdx] || [];
+    const isLagna  = h === 1;
+    const planets  = signPlanets[signIdx] || [];
 
-    // Build lines array: [text, color, fontSize]
-    const lines = [];
-    lines.push([rashiNum, isLagna ? '#b07d00' : '#222', FS_NUM, true]);
-    if(isLagna) lines.push(['As', '#7B3F00', FS_PL, true]);
-    planets.forEach(abbr => lines.push([abbr, PLANET_COLOR[abbr]||'#444', FS_PL, true]));
+    const rows = [];
+    rows.push({ t: rashiNum, fill: isLagna ? '#8a5c00' : '#111111', fs: FS_NUM, fw: 'bold' });
+    if (isLagna) rows.push({ t: 'As', fill: '#6b3300', fs: FS_PL, fw: 'bold' });
+    planets.forEach(abbr => rows.push({ t: abbr, fill: PLANET_COLOR[abbr]||'#333', fs: FS_PL, fw: 'bold' }));
 
-    // Total block height to center vertically
-    const totalH = lines.length * LH;
-    // yTop = cy minus half the block, then we add half LH to get to first baseline
-    const yBase = cy - totalH/2 + LH * 0.75;
+    // Vertical centering: total block height = rows*LH, start y = cy - totalH/2 + LH (first baseline)
+    const totalH = rows.length * LH;
+    const y0 = cy - totalH / 2 + LH;
 
-    lines.forEach(([txt, col, fs, bold], i) => {
-      const y = yBase + i * LH;
-      svg += `<text x="${cx}" y="${y}" text-anchor="middle" font-family="'Times New Roman',Georgia,serif" font-size="${fs}" font-weight="${bold?'bold':'normal'}" fill="${col}">${txt}</text>`;
+    rows.forEach((row, i) => {
+      s += `<text x="${cx}" y="${y0 + i*LH}" text-anchor="middle" font-size="${row.fs}" font-weight="${row.fw}" font-family="Georgia,serif" fill="${row.fill}">${row.t}</text>`;
     });
   });
 
-  // Center decoration
-  svg += `<text x="140" y="136" text-anchor="middle" font-family="'Times New Roman',Georgia,serif" font-size="9" font-weight="bold" fill="#b07d00">जन्म</text>`;
-  svg += `<text x="140" y="148" text-anchor="middle" font-family="'Times New Roman',Georgia,serif" font-size="7" fill="#888">कुंडली</text>`;
+  // Center text
+  s += `<text x="140" y="134" text-anchor="middle" font-size="9" font-weight="bold" font-family="Georgia,serif" fill="#8a5c00">&#x091C;&#x0928;&#x094D;&#x092E;</text>`;
+  s += `<text x="140" y="145" text-anchor="middle" font-size="7" font-family="Georgia,serif" fill="#888888">&#x0915;&#x0941;&#x0902;&#x0921;&#x0932;&#x0940;</text>`;
+  s += `</svg>`;
 
-  svg += '</svg>';
-  return svg;
+  // Encode as data URI → render as <img> so page CSS CANNOT touch it
+  const encoded = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  return `<img src="${encoded}" width="280" height="280" style="display:block;margin:0 auto;max-width:100%;" alt="North Indian Kundali"/>`;
 }
 
 // ── Numerology ────────────────────────────────────────────────────
