@@ -1773,14 +1773,11 @@ function showChartWithInsight(result, name, chart, insight) {
     document.getElementById('dob-day').value;
   const numData = calcNumerology(dob, name);
   const numHtml = renderNumerologySection(numData, dob, name);
-  // North Indian chart
-  const niSvg = renderNorthIndianChart(chart.lagnaIdx||0, chart.planets||{});
   const yogas = detectYogas(chart);
   const yogaHtml = renderYogasHTML(yogas);
   const navHtml = renderNavamshaHTML(chart);
   const remHtml = renderRemediesHTML(chart);
   chart._numHtml = numHtml;
-  chart._niSvg = niSvg;
   chart._yogaHtml = yogaHtml;
   chart._navHtml = navHtml;
   chart._remHtml = remHtml;
@@ -1795,12 +1792,6 @@ function showChartWithInsight(result, name, chart, insight) {
       <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:14px;padding:20px;margin:20px 0;">
         <div style="font-size:11px;letter-spacing:0.15em;color:var(--violet);margin-bottom:10px;">✦ JYOGI AI INSIGHT</div>
         <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
-        <!-- North Indian Kundli Chart -->
-        <div style="margin-top:20px;">
-          <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:0.1em;margin-bottom:12px;text-align:center;">✦ NORTH INDIAN KUNDLI ✦</div>
-          ${chart._niSvg||''}
-          <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
-        </div>
         <!-- Numerology -->
         ${chart._numHtml||''}
         <!-- Yogas -->
@@ -1824,11 +1815,6 @@ function showChartWithInsight(result, name, chart, insight) {
       <p style="font-size:15px;line-height:1.8;color:var(--text);font-style:italic;">${insight}</p>
     </div>
 
-    <div style="margin:20px 0;padding:20px;background:rgba(15,4,40,0.5);border:1px solid rgba(255,195,64,0.12);border-radius:14px;">
-      <div style="font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:0.12em;margin-bottom:14px;text-align:center;">✦ YOUR NORTH INDIAN KUNDLI ✦</div>
-      ${chart._niSvg||''}
-      <p style="font-size:11px;color:var(--dim);text-align:center;margin-top:8px;font-style:italic;">Fixed house system · Sidereal Lahiri</p>
-    </div>
     ${chart._numHtml||''}
 
     <div id="full-reading-gate" style="background:rgba(15,4,40,0.6);border:1px solid rgba(255,195,64,0.2);border-radius:14px;padding:24px;text-align:center;">
@@ -1839,7 +1825,7 @@ function showChartWithInsight(result, name, chart, insight) {
       <div style="display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 16px;">
         <input id="access-code-input" type="text" placeholder="${cfg.codePlaceholder}"
           style="padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,195,64,0.3);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px;text-align:center;letter-spacing:0.1em;">
-        <button onclick="unlockFullReading('${name.replace(/'/g,"\\'")}', ${JSON.stringify({...chart,_yogaHtml:'',_navHtml:'',_remHtml:'',_numHtml:'',_niSvg:'',html:''}).replace(/</g,'\\u003c')})"
+        <button onclick="unlockFullReading('${name.replace(/'/g,"\\'")}', ${JSON.stringify({...chart,_yogaHtml:'',_navHtml:'',_remHtml:'',_numHtml:'',html:''}).replace(/</g,'\\u003c')})"
           style="padding:12px 24px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;border-radius:10px;font-family:'Cormorant SC',serif;font-size:12px;letter-spacing:0.2em;cursor:pointer;">
           ${cfg.codeButtonLabel}
         </button>
@@ -1877,7 +1863,6 @@ function unlockFullReading(name, chartStripped) {
   if(!chart._yogaHtml) {
     const numData2 = calcNumerology(dob2, name2);
     chart._numHtml = renderNumerologySection(numData2, dob2, name2);
-    chart._niSvg = renderNorthIndianChart(chart.lagnaIdx||0, chart.planets||{});
     chart._yogaHtml = renderYogasHTML(detectYogas(chart));
     chart._navHtml = renderNavamshaHTML(chart);
     chart._remHtml = renderRemediesHTML(chart);
@@ -2225,89 +2210,7 @@ document.addEventListener('DOMContentLoaded', initSpinners);
 // House 1 (Lagna) = top-right, anti-clockwise numbering
 // Sign numbers shown in each house cell (Rashi 1=Aries … 12=Pisces)
 // ════════════════════════════════════════════════════════════════
-function renderNorthIndianChart(lagnaIdx, planetPositions) {
-  const PLANET_ABBR  = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
-  const PLANET_COLOR = {Su:'#cc2200',Mo:'#b08040',Ma:'#cc2200',Me:'#1a6b1a',Ju:'#b05500',Ve:'#aa1177',Sa:'#0d4a8f',Ra:'#666666',Ke:'#6b3300'};
 
-  // Whole Sign houses
-  const houseSign = {};
-  for(let h=1;h<=12;h++) houseSign[h] = (lagnaIdx + h - 1) % 12;
-
-  // Sign → planets
-  const signPlanets = {};
-  Object.entries(planetPositions).forEach(([pl, lon]) => {
-    const si = typeof lon === 'number' ? Math.floor(lon / 30) : lon;
-    if(!signPlanets[si]) signPlanets[si] = [];
-    signPlanets[si].push(PLANET_ABBR[pl] || pl);
-  });
-
-  // 280x280 grid. Centroids computed as avg of polygon vertices.
-  const SLOTS = [
-    { h:1,  cx:140, cy:70,  pts:'140,0 210,70 140,140 70,70'    },  // top kite    = Lagna
-    { h:2,  cx:210, cy:23,  pts:'140,0 280,0 210,70'            },  // top-right tri
-    { h:3,  cx:257, cy:70,  pts:'280,0 280,140 210,70'          },  // right-top tri
-    { h:4,  cx:210, cy:140, pts:'210,70 280,140 210,210 140,140' },  // right kite
-    { h:5,  cx:257, cy:210, pts:'280,140 280,280 210,210'        },  // right-bot tri
-    { h:6,  cx:210, cy:257, pts:'210,210 280,280 140,280'        },  // bot-right tri
-    { h:7,  cx:140, cy:210, pts:'140,140 210,210 140,280 70,210' },  // bot kite
-    { h:8,  cx:70,  cy:257, pts:'70,210 140,280 0,280'          },  // bot-left tri
-    { h:9,  cx:23,  cy:210, pts:'0,140 0,280 70,210'            },  // left-bot tri
-    { h:10, cx:70,  cy:140, pts:'0,140 70,210 140,140 70,70'    },  // left kite
-    { h:11, cx:23,  cy:70,  pts:'0,0 0,140 70,70'              },  // left-top tri
-    { h:12, cx:70,  cy:23,  pts:'0,0 140,0 70,70'              },  // top-left tri
-  ];
-
-  const LH = 11, FS_NUM = 11, FS_PL = 8;
-
-  // Build SVG source string
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">`;
-  s += `<style>text{font-family:Georgia,serif;line-height:1;}</style>`;
-
-  // Background + double border
-  s += `<rect width="280" height="280" fill="#fdf8f0"/>`;
-  s += `<rect x="1" y="1" width="278" height="278" fill="none" stroke="#1a3a8f" stroke-width="2.5"/>`;
-  s += `<rect x="4.5" y="4.5" width="271" height="271" fill="none" stroke="#1a3a8f" stroke-width="1"/>`;
-
-  // Grid lines
-  [[0,0,280,280],[280,0,0,280],[140,0,280,140],[280,140,140,280],[140,280,0,140],[0,140,140,0]]
-    .forEach(([x1,y1,x2,y2]) => { s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111" stroke-width="0.8"/>`; });
-
-  // Cell fills
-  SLOTS.forEach(({h,pts}) => {
-    s += `<polygon points="${pts}" fill="${h===1?'rgba(255,195,64,0.2)':'none'}" stroke="none"/>`;
-  });
-
-  // Labels — each cell gets a <text> with <tspan> children, NO dominant-baseline, NO page CSS influence
-  // because this SVG will be rendered as a data URI image, 100% isolated
-  SLOTS.forEach(({h, cx, cy}) => {
-    const signIdx = houseSign[h];
-    const rashiNum = String(signIdx + 1);
-    const isLagna  = h === 1;
-    const planets  = signPlanets[signIdx] || [];
-
-    const rows = [];
-    rows.push({ t: rashiNum, fill: isLagna ? '#8a5c00' : '#111111', fs: FS_NUM, fw: 'bold' });
-    if (isLagna) rows.push({ t: 'As', fill: '#6b3300', fs: FS_PL, fw: 'bold' });
-    planets.forEach(abbr => rows.push({ t: abbr, fill: PLANET_COLOR[abbr]||'#333', fs: FS_PL, fw: 'bold' }));
-
-    // Vertical centering: total block height = rows*LH, start y = cy - totalH/2 + LH (first baseline)
-    const totalH = rows.length * LH;
-    const y0 = cy - totalH / 2 + LH;
-
-    rows.forEach((row, i) => {
-      s += `<text x="${cx}" y="${y0 + i*LH}" text-anchor="middle" font-size="${row.fs}" font-weight="${row.fw}" font-family="Georgia,serif" fill="${row.fill}">${row.t}</text>`;
-    });
-  });
-
-  // Center text
-  s += `<text x="140" y="134" text-anchor="middle" font-size="9" font-weight="bold" font-family="Georgia,serif" fill="#8a5c00">&#x091C;&#x0928;&#x094D;&#x092E;</text>`;
-  s += `<text x="140" y="145" text-anchor="middle" font-size="7" font-family="Georgia,serif" fill="#888888">&#x0915;&#x0941;&#x0902;&#x0921;&#x0932;&#x0940;</text>`;
-  s += `</svg>`;
-
-  // Encode as data URI → render as <img> so page CSS CANNOT touch it
-  const encoded = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
-  return `<img src="${encoded}" width="280" height="280" style="display:block;margin:0 auto;max-width:100%;" alt="North Indian Kundali"/>`;
-}
 
 // ── Numerology ────────────────────────────────────────────────────
 function calcNumerology(dob, name) {
