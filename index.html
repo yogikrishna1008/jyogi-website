@@ -2216,7 +2216,7 @@ function initSpinners(){
 }
 document.addEventListener('DOMContentLoaded', initSpinners);
 
-/* 
+
 
 // ── North Indian Kundli Chart ─────────────────────────────────────
 // ════════════════════════════════════════════════════════════════
@@ -2226,85 +2226,135 @@ document.addEventListener('DOMContentLoaded', initSpinners);
 // Sign numbers shown in each house cell (Rashi 1=Aries … 12=Pisces)
 // ════════════════════════════════════════════════════════════════
 function renderNorthIndianChart(lagnaIdx, planetPositions) {
-  const RASHIS_SHORT = ['Ar','Ta','Ge','Ca','Le','Vi','Li','Sc','Sa','Cp','Aq','Pi'];
-  const RASHI_NUM    = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+  // ── Planet abbreviations & colors ───────────────────────────────
   const PLANET_ABBR  = {Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Me',Jupiter:'Ju',Venus:'Ve',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
-  const S = 280, mx = 140, qx = 70, qx3 = 210;
+  const PLANET_COLOR = {Su:'#e8341a',Mo:'#c4a97a',Ma:'#e8341a',Me:'#2d7a2d',Ju:'#c45e00',Ve:'#b5006e',Sa:'#185FA5',Ra:'#888',Ke:'#7B3F00'};
 
-  // 12 house cells: (houseNum, svgPoints, labelX, labelY)
-  // Anti-clockwise from top-right; house 1 = Lagna at top-right corner
-  const CELLS = [
-    [1,  `${mx},0 ${S},0 ${qx3},${qx}`,          195, 32  ],  // top-right corner  ← LAGNA
-    [2,  `${S},0 ${S},${mx} ${qx3},${qx}`,        258, 92  ],  // right-top
-    [3,  `${S},${mx} ${S},${S} ${qx3},${qx3}`,    258, 190 ],  // right-bottom
-    [4,  `${S},${S} ${mx},${S} ${qx3},${qx3}`,    195, 252 ],  // bottom-right corner
-    [5,  `${mx},${S} 0,${S} ${qx},${qx3}`,        85,  252 ],  // bottom-left corner
-    [6,  `0,${S} 0,${mx} ${qx},${qx3}`,           22,  190 ],  // left-bottom
-    [7,  `0,${mx} 0,0 ${qx},${qx}`,               22,  92  ],  // left-top
-    [8,  `0,0 ${mx},0 ${qx},${qx}`,               85,  32  ],  // top-left corner
-    [9,  `${qx},${qx} ${qx3},${qx} ${mx},${mx}`,  140, 95  ],  // inner top
-    [10, `${qx3},${qx} ${qx3},${qx3} ${mx},${mx}`,192, 140 ],  // inner right
-    [11, `${qx3},${qx3} ${qx},${qx3} ${mx},${mx}`,140, 185 ],  // inner bottom
-    [12, `${qx},${qx3} ${qx},${qx} ${mx},${mx}`,  88,  140 ],  // inner left
-  ];
-
-  // Whole Sign system: house h gets sign (lagnaIdx + h - 1) % 12
+  // ── Whole Sign: house h → sign index ────────────────────────────
   const houseSign = {};
   for(let h=1;h<=12;h++) houseSign[h] = (lagnaIdx + h - 1) % 12;
 
-  // Map sign index → planet abbreviations
+  // ── Map sign index → planet list ────────────────────────────────
   const signPlanets = {};
   Object.entries(planetPositions).forEach(([pl, lon]) => {
     const si = typeof lon === 'number' ? Math.floor(lon / 30) : lon;
     if(!signPlanets[si]) signPlanets[si] = [];
-    signPlanets[si].push(PLANET_ABBR[pl] || pl);
+    const abbr = PLANET_ABBR[pl] || pl;
+    signPlanets[si].push(abbr);
   });
 
-  let svg = `<svg viewBox="0 0 ${S} ${S}" width="100%" style="max-width:300px;display:block;margin:0 auto;" xmlns="http://www.w3.org/2000/svg">`;
-  svg += `<rect width="${S}" height="${S}" fill="rgba(8,3,25,0.95)" rx="6"/>`;
+  // ── Grid geometry (620×620 square, origin at 30,30) ─────────────
+  // Key points:
+  //   Corners: TL(30,30) TR(650,30) BR(650,650) BL(30,650)
+  //   Edge midpoints: T(340,30) R(650,340) B(340,650) L(30,340)
+  //   Inner diamond: iTL(185,185) iTR(495,185) iBR(495,495) iBL(185,495)
+  //   Center: C(340,340)
+  //
+  // 12 cells with exact geometric centroids:
+  //   H mapped to NI cell positions (top-center kite = house derived from lagna rotation)
+  //   Cell index 0..11 maps to houses 1..12 in standard NI anti-clockwise layout:
+  //   slot 0 = top kite, slot 1 = top-right tri, slot 2 = right-top tri,
+  //   slot 3 = right kite, slot 4 = right-bot tri, slot 5 = bot-right tri,
+  //   slot 6 = bot kite, slot 7 = bot-left tri, slot 8 = left-bot tri,
+  //   slot 9 = left kite, slot 10 = left-top tri, slot 11 = top-left tri
+  //
+  // Standard NI: slot 0 = H1 (Lagna at top kite).
+  // We rotate: houseAtSlot(s) = ((s - 0 + 0) % 12) + 1, then rashiNum = houseSign[h]+1
 
-  CELLS.forEach(([house, pts, tx, ty]) => {
-    const sign   = houseSign[house];
-    const isLagna= house === 1;
-    const fill   = isLagna ? 'rgba(255,195,64,0.13)' : 'rgba(255,255,255,0.02)';
-    const stroke = isLagna ? 'rgba(255,195,64,0.6)' : 'rgba(255,195,64,0.28)';
-    const sw     = isLagna ? '1.5' : '0.8';
+  const SLOTS = [
+    // [slotHouse, cx, cy, polygon-points]
+    // Top-center kite (H1 = Lagna)
+    { h:1,  cx:340, cy:185, pts:'340,30 495,185 340,340 185,185' },
+    // Top-right triangle (H2)
+    { h:2,  cx:495, cy:82,  pts:'340,30 650,30 495,185' },
+    // Right-top triangle (H3)
+    { h:3,  cx:598, cy:185, pts:'650,30 650,340 495,185' },
+    // Right kite (H4)
+    { h:4,  cx:496, cy:340, pts:'495,185 650,340 495,495 340,340' },
+    // Right-bot triangle (H5)
+    { h:5,  cx:598, cy:495, pts:'650,340 650,650 495,495' },
+    // Bot-right triangle (H6)
+    { h:6,  cx:495, cy:598, pts:'495,495 650,650 340,650' },
+    // Bot-center kite (H7)
+    { h:7,  cx:340, cy:495, pts:'340,340 495,495 340,650 185,495' },
+    // Bot-left triangle (H8)
+    { h:8,  cx:185, cy:598, pts:'185,495 340,650 30,650' },
+    // Left-bot triangle (H9)
+    { h:9,  cx:82,  cy:495, pts:'30,340 30,650 185,495' },
+    // Left kite (H10)
+    { h:10, cx:185, cy:340, pts:'30,340 185,495 340,340 185,185' },
+    // Left-top triangle (H11)
+    { h:11, cx:82,  cy:185, pts:'30,30 30,340 185,185' },
+    // Top-left triangle (H12)
+    { h:12, cx:185, cy:82,  pts:'30,30 340,30 185,185' },
+  ];
 
-    svg += `<polygon points="${pts}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+  // ── Build SVG string ─────────────────────────────────────────────
+  let svg = `<svg viewBox="0 0 680 680" width="100%" style="max-width:340px;display:block;margin:0 auto;font-family:'Times New Roman',Georgia,serif;" xmlns="http://www.w3.org/2000/svg">`;
 
-    // Sign number (Rashi number 1–12) — primary label, gold
-    const rashiNum = ((sign) % 12) + 1; // 1=Aries … 12=Pisces
-    svg += `<text x="${tx}" y="${ty}" font-size="13" fill="${isLagna?'#FFC340':'#c4a97a'}" font-family="Georgia,serif" text-anchor="middle" font-weight="${isLagna?'bold':'normal'}">${rashiNum}</text>`;
+  // Background
+  svg += `<rect x="30" y="30" width="620" height="620" fill="#fdf8f0"/>`;
+  // Double outer border
+  svg += `<rect x="30" y="30" width="620" height="620" fill="none" stroke="#1a3a8f" stroke-width="3"/>`;
+  svg += `<rect x="36" y="36" width="608" height="608" fill="none" stroke="#1a3a8f" stroke-width="1.2"/>`;
 
-    // Sign abbreviation — small, muted
-    svg += `<text x="${tx}" y="${ty+13}" font-size="9" fill="rgba(196,169,122,0.6)" font-family="Georgia,serif" text-anchor="middle">${RASHIS_SHORT[sign]}</text>`;
+  // Grid lines (diamond + X)
+  const lines = [
+    '30,30 650,650','650,30 30,650',
+    '340,30 650,340','650,340 340,650',
+    '340,650 30,340','30,340 340,30',
+  ];
+  lines.forEach(l => {
+    const [p1,p2] = l.split(' ');
+    svg += `<line x1="${p1.split(',')[0]}" y1="${p1.split(',')[1]}" x2="${p2.split(',')[0]}" y2="${p2.split(',')[1]}" stroke="#111" stroke-width="1.2"/>`;
+  });
 
-    // Planets in this sign
-    const planets = signPlanets[sign] || [];
-    if(planets.length > 0) {
-      // Stack planet abbreviations, 2 per line
-      const lines = [];
-      for(let i=0;i<planets.length;i+=2) lines.push(planets.slice(i,i+2).join(' '));
-      lines.forEach((line, li) => {
-        svg += `<text x="${tx}" y="${ty+26+(li*12)}" font-size="10" fill="#FFC340" font-family="Georgia,serif" font-weight="bold" text-anchor="middle">${line}</text>`;
-      });
-    }
+  // Cell fills (lagna highlighted)
+  SLOTS.forEach(slot => {
+    const isLagna = slot.h === 1;
+    const fill = isLagna ? 'rgba(255,195,64,0.18)' : 'none';
+    svg += `<polygon points="${slot.pts}" fill="${fill}"/>`;
+  });
 
-    // ASC label for Lagna house
+  // Labels for each house cell
+  SLOTS.forEach(slot => {
+    const signIdx  = houseSign[slot.h];         // 0–11
+    const rashiNum = signIdx + 1;               // 1–12
+    const isLagna  = slot.h === 1;
+    const planets  = signPlanets[signIdx] || [];
+
+    // Total text lines to center as a block:
+    // line 0: rashi number, line 1+: planets (one per line)
+    const totalLines = 1 + planets.length + (isLagna ? 1 : 0);
+    const lineH = 14; // px between lines
+    const blockH = (totalLines - 1) * lineH;
+    let yStart = slot.cy - blockH / 2;
+
+    // Rashi number
+    svg += `<text x="${slot.cx}" y="${yStart}" text-anchor="middle" dominant-baseline="central" font-size="15" font-weight="700" fill="${isLagna ? '#b07d00' : '#333'}">${rashiNum}</text>`;
+    yStart += lineH;
+
+    // "As" label for lagna
     if(isLagna) {
-      svg += `<text x="${tx}" y="${ty-9}" font-size="7.5" fill="#FFC340" font-family="Cinzel,serif" text-anchor="middle" letter-spacing="0.08em">ASC</text>`;
+      svg += `<text x="${slot.cx}" y="${yStart}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="700" fill="#7B3F00">As</text>`;
+      yStart += lineH;
     }
+
+    // Planets stacked
+    planets.forEach(abbr => {
+      const col = PLANET_COLOR[abbr] || '#444';
+      svg += `<text x="${slot.cx}" y="${yStart}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="700" fill="${col}">${abbr}</text>`;
+      yStart += lineH;
+    });
   });
 
-  // Centre square — decorative
-  svg += `<polygon points="${qx},${qx} ${qx3},${qx} ${qx3},${qx3} ${qx},${qx3}" fill="rgba(15,6,45,0.85)" stroke="rgba(255,195,64,0.35)" stroke-width="0.8"/>`;
-  svg += `<text x="${mx}" y="${mx-6}" font-size="12" fill="#FFC340" font-family="Georgia,serif" text-anchor="middle">जन्म</text>`;
-  svg += `<text x="${mx}" y="${mx+10}" font-size="9"  fill="#9d8c6a" font-family="Georgia,serif" text-anchor="middle">कुंडली</text>`;
-  svg += `<text x="${mx}" y="${mx+24}" font-size="7.5" fill="rgba(255,195,64,0.4)" font-family="Cinzel,serif" text-anchor="middle" letter-spacing="0.05em">WHOLE SIGN</text>`;
+  // Center label
+  svg += `<text x="340" y="332" text-anchor="middle" dominant-baseline="central" font-size="13" fill="#b07d00" font-weight="700">जन्म</text>`;
+  svg += `<text x="340" y="348" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#888">कुंडली</text>`;
 
   svg += '</svg>';
   return svg;
-} */
+}
 
 // ── Numerology ────────────────────────────────────────────────────
 function calcNumerology(dob, name) {
@@ -2619,7 +2669,7 @@ function renderNavamshaHTML(chart) {
     if(!phMap[hIdx]) phMap[hIdx]=[];
     phMap[hIdx].push(abbr);
   });
- /*  // North Indian fixed layout: houses 1-12 in diamond grid
+  // North Indian fixed layout: houses 1-12 in diamond grid
   const LAYOUT=[
     [12,1,2],[11,'',3],[10,9,4],[null,8,null],[7,6,5]
   ]; // simplified 3-col rows
@@ -2678,7 +2728,7 @@ function renderNavamshaHTML(chart) {
     </div>
   </div>`;
 }
- */
+
 
 // ════════════════════════════════════════════════════════════════
 // FEATURE: REMEDIES
